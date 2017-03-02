@@ -10,5 +10,7 @@ package com.cprassoc.solr.auth;
  * @author kevin
  */
 public class SolrHttpHandler {
+    public final static String AUTHORIZATION_URL_PART = "/solr/admin/authorization";
+    public final static String AUTHENTICATION_URL_PART = "/solr/admin/authentication";
     
 }

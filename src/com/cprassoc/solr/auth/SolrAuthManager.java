@@ -6,7 +6,11 @@
 package com.cprassoc.solr.auth;
 
 import com.cprassoc.solr.auth.ui.SolrAuthMainWindow;
+import com.cprassoc.solr.auth.ui.SolrSecurityPropertyManagerFrame;
+import java.awt.Desktop;
 import java.io.File;
+import java.io.FileReader;
+import java.util.Properties;
 
 /**
  *
@@ -14,16 +18,50 @@ import java.io.File;
  */
 public class SolrAuthManager {
 
+    private static Properties properties = null;
+    private static final Desktop desktop = Desktop.getDesktop();
+        private static String[] originalArgs = null;
+        
+    public final static String SOLR_AUTH_PROPERTIES = "solr-security.properties";
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        File props = new File("solr-security.properties");
-        if(props.exists()){
-        SolrAuthMainWindow.main(args);
-        } else {
-            
+        if(args != null){
+          originalArgs = args;
+        }
+        try {
+            File props = new File(SOLR_AUTH_PROPERTIES);
+            if (props.exists()) {
+                System.out.println("Properties File exists...");
+                properties = new Properties();
+                properties.load(new FileReader(props));
+                SolrAuthMainWindow.main(args);
+            } else {
+                 System.out.println("NO Properties File found...");
+                 properties = SolrSecurityPropertyManagerFrame.getSolrAuthProperties();
+                SolrSecurityPropertyManagerFrame.main(args);
+               
+              
+            }
+        } catch (Exception e) {
+             e.printStackTrace();
         }
     }
-    
+
+    /**
+     * @return the properties
+     */
+    public static Properties getProperties() {
+        return properties;
+    }
+
+    /**
+     * @return the desktop
+     */
+    public static Desktop getDesktop() {
+        return desktop;
+    }
+
 }
