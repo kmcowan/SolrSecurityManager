@@ -137,17 +137,17 @@
         </Component>
         <Component class="javax.swing.JTextField" name="solrInstallDirPath">
           <Properties>
-            <Property name="text" type="java.lang.String" value="jTextField1"/>
+            <Property name="text" type="java.lang.String" value="/usr/share/solr"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="solrHostPort">
           <Properties>
-            <Property name="text" type="java.lang.String" value="jTextField1"/>
+            <Property name="text" type="java.lang.String" value="localhost:8983"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="zooKeeperPort">
           <Properties>
-            <Property name="text" type="java.lang.String" value="jTextField1"/>
+            <Property name="text" type="java.lang.String" value="9983"/>
           </Properties>
         </Component>
       </SubComponents>

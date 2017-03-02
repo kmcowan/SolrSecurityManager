@@ -52,11 +52,11 @@ public class SolrSecurityPropertyManager extends javax.swing.JPanel {
 
         jButton2.setText("Cancel");
 
-        solrInstallDirPath.setText("jTextField1");
+        solrInstallDirPath.setText("/usr/share/solr");
 
-        solrHostPort.setText("jTextField1");
+        solrHostPort.setText("localhost:8983");
 
-        zooKeeperPort.setText("jTextField1");
+        zooKeeperPort.setText("9983");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
