@@ -18,7 +18,7 @@ import java.util.LinkedHashMap;
  */
 public class Authentication {
         String className = "";
-    LinkedHashMap<String,String> credentials = null;
+    private LinkedHashMap<String,String> credentials = null;
     public Authentication(LinkedHashMap map){
         init(map);
     }
@@ -49,5 +49,12 @@ public class Authentication {
             }
             
         }
+    }
+
+    /**
+     * @return the credentials
+     */
+    public LinkedHashMap<String,String> getCredentials() {
+        return credentials;
     }
 }

@@ -84,4 +84,18 @@ public class Authorization {
         }
         return false;
     }
+
+    /**
+     * @return the permissions
+     */
+    public ArrayList<LinkedHashMap> getPermissions() {
+        return permissions;
+    }
+
+    /**
+     * @return the userRoles
+     */
+    public LinkedHashMap getUserRoles() {
+        return userRoles;
+    }
 }
