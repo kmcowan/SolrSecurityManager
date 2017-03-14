@@ -5,6 +5,7 @@
  */
 package com.cprassoc.solr.auth;
 
+import com.cprassoc.solr.auth.model.SecurityJson;
 import com.cprassoc.solr.auth.ui.SolrAuthMainWindow;
 import com.cprassoc.solr.auth.ui.SolrSecurityPropertyManagerFrame;
 import java.awt.Desktop;
@@ -20,9 +21,14 @@ public class SolrAuthManager {
 
     private static Properties properties = null;
     private static final Desktop desktop = Desktop.getDesktop();
-        private static String[] originalArgs = null;
+   private static String[] originalArgs = null;
+ 
         
     public final static String SOLR_AUTH_PROPERTIES = "solr-security.properties";
+    
+    public SolrAuthManager(){
+       
+    }
 
     /**
      * @param args the command line arguments

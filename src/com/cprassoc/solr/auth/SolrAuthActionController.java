@@ -16,6 +16,8 @@ import java.util.Properties;
  */
 public class SolrAuthActionController {
     
+    public final static SolrHttpHandler SOLR = new SolrHttpHandler();
+    
     public static void doSavePropertiesAction(Properties props){
         try{
         File f = new File(SolrAuthManager.SOLR_AUTH_PROPERTIES);
@@ -25,4 +27,6 @@ public class SolrAuthActionController {
             e.printStackTrace();
         }
     }
+    
+ 
 }
