@@ -7,6 +7,7 @@ package com.cprassoc.solr.auth.ui;
 
 import com.cprassoc.solr.auth.SolrAuthActionController;
 import com.cprassoc.solr.auth.SolrAuthManager;
+import com.cprassoc.solr.auth.forms.AddUserDialog;
 import com.cprassoc.solr.auth.model.Authentication;
 import com.cprassoc.solr.auth.model.Authorization;
 import com.cprassoc.solr.auth.model.SecurityJson;
@@ -145,6 +146,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame {
         permissionsTable = new javax.swing.JTable();
         jLabel3 = new javax.swing.JLabel();
         jToolBar2 = new javax.swing.JToolBar();
+        jButton1 = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         logPane = new javax.swing.JEditorPane();
         jLabel4 = new javax.swing.JLabel();
@@ -248,6 +250,19 @@ public class SolrAuthMainWindow extends javax.swing.JFrame {
 
         jToolBar2.setRollover(true);
 
+        jButton1.setBackground(new java.awt.Color(0, 51, 102));
+        jButton1.setForeground(new java.awt.Color(255, 255, 255));
+        jButton1.setText("Add");
+        jButton1.setFocusable(false);
+        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doAddUserAction(evt);
+            }
+        });
+        jToolBar2.add(jButton1);
+
         logPane.setBackground(new java.awt.Color(0, 0, 51));
         logPane.setForeground(new java.awt.Color(255, 255, 255));
         jScrollPane3.setViewportView(logPane);
@@ -335,6 +350,12 @@ public class SolrAuthMainWindow extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void doAddUserAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doAddUserAction
+         AddUserDialog dialog = new AddUserDialog(this, true);
+         dialog.setVisible(true);
+         dialog.requestFocus();
+    }//GEN-LAST:event_doAddUserAction
+
     /**
      * @param args the command line arguments
      */
@@ -371,6 +392,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

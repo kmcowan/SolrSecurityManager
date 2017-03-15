@@ -15,11 +15,11 @@ public class Log {
         System.out.println(message);
     }
     
-    private static void log(String message){
+    public static void log(String message){
        logMessage(message);
     }
     
-    private static void log(Class clsName, String message){
+    public static void log(Class clsName, String message){
        logMessage("["+clsName.getSimpleName()+"] "+message);
     }
 }
