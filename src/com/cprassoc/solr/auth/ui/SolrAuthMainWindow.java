@@ -5,9 +5,11 @@
  */
 package com.cprassoc.solr.auth.ui;
 
+import com.cprassoc.solr.auth.Frameable;
 import com.cprassoc.solr.auth.SolrAuthActionController;
 import com.cprassoc.solr.auth.SolrAuthManager;
 import com.cprassoc.solr.auth.forms.AddUserDialog;
+import com.cprassoc.solr.auth.forms.AddUserDialog.SolrManagerAction;
 import com.cprassoc.solr.auth.model.Authentication;
 import com.cprassoc.solr.auth.model.Authorization;
 import com.cprassoc.solr.auth.model.SecurityJson;
@@ -24,7 +26,7 @@ import org.json.JSONObject;
  *
  * @author kevin
  */
-public class SolrAuthMainWindow extends javax.swing.JFrame {
+public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable{
 
     private SecurityJson securityJson = null;
     private static HashMap<String,Integer> permissionMap = null;
@@ -125,6 +127,20 @@ public class SolrAuthMainWindow extends javax.swing.JFrame {
     private Integer getPermissionItemColumn(String name){
        
         return (Integer)getPermissionMap().get(name);
+    }
+    
+    @Override
+    public java.awt.Frame getFrame(){
+        return this;
+    }
+    
+    public void fireAction(SolrManagerAction action, LinkedHashMap<String,String> args){
+        switch(action){
+            case create_user:
+                this.securityJson.getAuthentication().getCredentials().put(args.get("user"), args.get("pwd"));
+                populateAuthenticationTable(this.securityJson.getAuthentication());
+                break;
+        }
     }
 
     /**

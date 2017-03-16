@@ -5,7 +5,9 @@
  */
 package com.cprassoc.solr.auth.forms;
 
+import com.cprassoc.solr.auth.Frameable;
 import com.cprassoc.solr.auth.forms.resources.Resources;
+import com.cprassoc.solr.auth.ui.SolrAuthMainWindow;
 
 /**
  *
@@ -16,8 +18,8 @@ public class OKFormWithMessage extends javax.swing.JDialog {
     /**
      * Creates new form OKCancelFormWithMessage
      */
-    public OKFormWithMessage(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    public OKFormWithMessage(Frameable parent, boolean modal) {
+        super(parent.getFrame(), modal);
         initComponents();
     }
     
@@ -152,7 +154,7 @@ public class OKFormWithMessage extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                OKFormWithMessage dialog = new OKFormWithMessage(new javax.swing.JFrame(), true);
+                OKFormWithMessage dialog = new OKFormWithMessage(new SolrAuthMainWindow(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {

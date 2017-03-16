@@ -5,8 +5,12 @@
  */
 package com.cprassoc.solr.auth.forms;
 
+import com.cprassoc.solr.auth.Frameable;
+import com.cprassoc.solr.auth.SolrAuthActionController;
+import com.cprassoc.solr.auth.forms.resources.Resources;
+import com.cprassoc.solr.auth.ui.SolrAuthMainWindow;
 import com.cprassoc.solr.auth.util.Log;
-import java.awt.Frame;
+import java.util.LinkedHashMap;
 
 /**
  *
@@ -15,15 +19,15 @@ import java.awt.Frame;
 public class AddUserDialog extends javax.swing.JDialog {
 
     private static String ALLOWED_CHARS = "abcdefghijklmnopqrstuvwxyz1234567890";
-    private Frame frame = null;
+    private Frameable frame = null;
 
     /**
      * Creates new form AddUserDialog
      * @param parent
      * @param modal
      */
-    public AddUserDialog(Frame parent, boolean modal) {
-        super(parent, modal);
+    public AddUserDialog(Frameable parent, boolean modal) {
+        super(parent.getFrame(), modal);
         initComponents();
         this.frame = parent;
     }
@@ -201,6 +205,15 @@ public class AddUserDialog extends javax.swing.JDialog {
            
             if (allowedChars && pwdMatch) {
                     Log.log(getClass(), "Allowed Chars, Pwd check OK...");
+                    String userName = this.userNameField.getText();
+                    String pwd = new String(this.pwdField.getPassword());
+                   String result = SolrAuthActionController.SOLR.addUser(userName, pwd);
+                   if(result != null && !result.trim().equals("")){
+                       LinkedHashMap<String,String> results = new LinkedHashMap<>();
+                       results.put("user", userName);
+                       results.put("pwd", result);
+                       this.frame.fireAction(SolrManagerAction.create_user, results);
+                   }
             } else {
                 String message = "";
                 if (!allowedChars) {
@@ -225,9 +238,13 @@ public class AddUserDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_doAddUserAction
 
     private void showMessageDialog(String message) {
-        OKFormWithMessage dialog = new OKFormWithMessage(frame, true, message);
+        OKFormWithMessage dialog = new OKFormWithMessage(frame.getFrame(), true, message, Resources.Resource.warn);
         dialog.setVisible(true);
         dialog.requestFocus();
+    }
+    
+    public static enum SolrManagerAction {
+        create_user
     }
 
     /**
@@ -260,7 +277,7 @@ public class AddUserDialog extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                AddUserDialog dialog = new AddUserDialog(new javax.swing.JFrame(), true);
+                AddUserDialog dialog = new AddUserDialog(new SolrAuthMainWindow(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
