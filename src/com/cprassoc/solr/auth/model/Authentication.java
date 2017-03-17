@@ -54,6 +54,12 @@ public class Authentication {
             
         }
     }
+    
+    public void removeCredentials(String key){
+        if(credentials.get(key) != null){
+            credentials.remove(key);
+        }
+    }
 
     /**
      * @return the credentials

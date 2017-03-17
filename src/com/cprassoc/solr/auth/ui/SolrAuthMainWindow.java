@@ -18,6 +18,7 @@ import com.cprassoc.solr.auth.model.Authorization;
 import com.cprassoc.solr.auth.model.SecurityJson;
 import com.cprassoc.solr.auth.util.JsonHelper;
 import com.cprassoc.solr.auth.util.Log;
+import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import java.util.Map;
 import java.util.Properties;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableModel;
 import org.apache.cxf.helpers.IOUtils;
 import org.json.JSONObject;
 
@@ -56,6 +58,9 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         try {
             boolean online = SolrAuthActionController.SOLR.isOnline();
             if (online) {
+                this.serverStatusButton.setText("ONLINE");
+                this.serverStatusButton.setBackground(Color.green);
+                this.serverStatusButton.setForeground(Color.black);
                 String authentication = SolrAuthActionController.SOLR.getAuthentication();
                 String authorization = SolrAuthActionController.SOLR.getAuthorization();
 
@@ -84,6 +89,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 }
 
             } else {
+                 this.serverStatusButton.setText("OFFLINE");
+                this.serverStatusButton.setBackground(Color.red);
                 JSONObject authoeJson = getDefaultSecurityJson();
                 LinkedHashMap authoeMap = new LinkedHashMap(JsonHelper.jsonToMap(authoeJson));
                 securityJson = new SecurityJson(authoeMap);
@@ -221,7 +228,33 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 
             case delete_user:
                 Log.log(getClass(), "Delete User: "+selectedUser);
+                String result = SolrAuthActionController.deleteUser(selectedUser);
+                Log.log(result);
+                /*
+                {
+  "responseHeader":{
+    "status":0,
+    "QTime":12}}
+                */
+                JSONObject resp = new JSONObject(result);
+                if(resp.getJSONObject("responseHeader").getInt("status") == 0){
+                    Log.log(getClass(), "User Deleted OK");
+                    showOKOnlyMessageDialog("User "+selectedUser+" deleted successfully", null);
+                    securityJson.getAuthentication().removeCredentials(selectedUser);
+                    clearTable(this.usersTable.getModel());
+                     populateAuthenticationTable(securityJson.getAuthentication());
+                }
+                
                 break;
+        }
+    }
+    
+    private void clearTable(TableModel model){
+        
+        for(int i=0; i<model.getRowCount(); i++){
+            for(int j=0; j<model.getColumnCount(); j++){
+                model.setValueAt("", i, j);
+            }
         }
     }
     
@@ -267,6 +300,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         jScrollPane4 = new javax.swing.JScrollPane();
         rolesTable = new javax.swing.JTable();
         jToolBar3 = new javax.swing.JToolBar();
+        jLabel6 = new javax.swing.JLabel();
+        serverStatusButton = new javax.swing.JToggleButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -446,6 +481,14 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
 
         jToolBar3.setRollover(true);
 
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel6.setText("Solr Staus: ");
+
+        serverStatusButton.setBackground(new java.awt.Color(0, 0, 204));
+        serverStatusButton.setFont(new java.awt.Font("Dialog", 1, 11)); // NOI18N
+        serverStatusButton.setForeground(new java.awt.Color(255, 255, 255));
+        serverStatusButton.setText("Offline");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -453,9 +496,6 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
@@ -466,25 +506,41 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                                     .addComponent(jScrollPane1)
                                     .addComponent(jScrollPane2)
                                     .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.LEADING))
-                                .addGap(18, 18, 18)
+                                .addGap(22, 22, 22)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jToolBar1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jToolBar2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel6)
+                                .addGap(4, 4, 4)
+                                .addComponent(serverStatusButton)
+                                .addGap(38, 38, 38)))
                         .addGap(20, 20, 20))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 611, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3)
                             .addComponent(jLabel5)
                             .addComponent(jLabel4))
-                        .addGap(0, 80, Short.MAX_VALUE))))
+                        .addGap(0, 80, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(8, 8, 8)
-                .addComponent(jLabel2)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(21, 21, 21)
+                        .addComponent(jLabel2))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel6)
+                            .addComponent(serverStatusButton))))
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -562,7 +618,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     }//GEN-LAST:event_doQuitAction
 
     private void doDeleteUserConfirmAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doDeleteUserConfirmAction
-        if(selectedUser.equals("")){
+        if(selectedUser == null || selectedUser.equals("")){
             showOKOnlyMessageDialog("No user selected", Resources.Resource.warn);
         } else {
             showOKCancelMessageDialog("Are you sure you want to delete "+selectedUser+"? \n This action cannot be undone. ", SolrManagerAction.delete_user);
@@ -612,6 +668,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
@@ -629,6 +686,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     private javax.swing.JEditorPane logPane;
     private javax.swing.JTable permissionsTable;
     private javax.swing.JTable rolesTable;
+    private javax.swing.JToggleButton serverStatusButton;
     private javax.swing.JTable usersTable;
     // End of variables declaration//GEN-END:variables
 }

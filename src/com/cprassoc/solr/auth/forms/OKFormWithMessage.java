@@ -40,7 +40,7 @@ public class OKFormWithMessage extends BaseDialog {
         super(parent.getFrame(), modal);
         initComponents();
         this.messageArea.setText(message);
-        if (resc == null) {
+        if (resc != null) {
             this.imageIcon.setIcon(Resources.getNamedResourceIcon(resc));
         }
         this.frame = parent;
