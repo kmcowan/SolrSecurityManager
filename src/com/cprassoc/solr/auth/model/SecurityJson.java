@@ -6,6 +6,7 @@
 package com.cprassoc.solr.auth.model;
 
 import com.cprassoc.solr.auth.util.JsonHelper;
+import com.cprassoc.solr.auth.util.Log;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.apache.cxf.helpers.IOUtils;
@@ -35,12 +36,13 @@ public class SecurityJson {
         try {
             if (map == null) {
                 String sec = IOUtils.readStringFromStream(getClass().getResourceAsStream("security.json"));
+                Log.log(getClass(), sec);
                 map = JsonHelper.parse(sec);
             }
             LinkedHashMap autho = (LinkedHashMap) map.get("authorization");
             LinkedHashMap authi = (LinkedHashMap) map.get("authentication");
-            System.out.println("Authorization class: " + autho.getClass().getSimpleName());
-            System.out.println("Authentication class: " + authi.getClass().getSimpleName());
+         //   System.out.println("Authorization class: " + autho.getClass().getSimpleName());
+        //    System.out.println("Authentication class: " + authi.getClass().getSimpleName());
 
             authorization = new Authorization(autho);
             authentication = new Authentication(authi);

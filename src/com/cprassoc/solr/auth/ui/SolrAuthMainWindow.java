@@ -20,6 +20,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import org.json.JSONObject;
 
 /**
@@ -43,6 +45,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable{
         Properties props = SolrAuthManager.getProperties();
         System.out.println("INIT...");
         try {
+            boolean online = SolrAuthActionController.SOLR.isOnline();
+            if(online){
             String authentication = SolrAuthActionController.SOLR.getAuthentication();
             String authorization = SolrAuthActionController.SOLR.getAuthorization();
 
@@ -64,10 +68,36 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable{
 
                 securityJson = new SecurityJson(map);
                 populateAuthorizationTable(securityJson.getAuthorization());
+                populateUserRolesTable(securityJson.getAuthorization());
                 populateAuthenticationTable(securityJson.getAuthentication());
             } else {
                 securityJson = new SecurityJson();
             }
+            
+            } else {
+                securityJson = new SecurityJson();
+                logPane.setText("Solr is offline. ");
+            }
+            
+            
+            this.usersTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+      public void valueChanged(ListSelectionEvent e) {
+        String selectedData = null;
+
+        int[] selectedRow = usersTable.getSelectedRows();
+        int[] selectedColumns = usersTable.getSelectedColumns();
+
+        for (int i = 0; i < selectedRow.length; i++) {
+          for (int j = 0; j < selectedColumns.length; j++) {
+            selectedData = (String) usersTable.getValueAt(selectedRow[i], selectedColumns[j]);
+          }
+        }
+        if(e.getValueIsAdjusting()){
+          System.out.println("Selected: " + selectedData);
+        }
+      }
+
+    });
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -89,6 +119,24 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable{
                this.permissionsTable.getModel().setValueAt(value, i, col);
             }
         }
+    }
+    
+    private void populateUserRolesTable(Authorization auth){
+        LinkedHashMap<String,String> map = auth.getUserRoles();
+        Iterator<String> iter;
+        String key, value;
+        Integer col;
+        
+            iter = map.keySet().iterator();
+            int row = 0;
+            while(iter.hasNext()){
+                key = iter.next();
+                value = (String) map.get(key);
+               this.rolesTable.getModel().setValueAt(key, row, 0);
+               this.rolesTable.getModel().setValueAt(value, row, 1);
+               row++;
+            }
+        
     }
     
      private void populateAuthenticationTable(Authentication auth){
@@ -166,6 +214,10 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable{
         jScrollPane3 = new javax.swing.JScrollPane();
         logPane = new javax.swing.JEditorPane();
         jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        rolesTable = new javax.swing.JTable();
+        jToolBar3 = new javax.swing.JToolBar();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -279,12 +331,55 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable{
         });
         jToolBar2.add(jButton1);
 
-        logPane.setBackground(new java.awt.Color(0, 0, 51));
-        logPane.setForeground(new java.awt.Color(255, 255, 255));
+        logPane.setBackground(new java.awt.Color(255, 255, 255));
+        logPane.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        logPane.setForeground(new java.awt.Color(0, 0, 0));
         jScrollPane3.setViewportView(logPane);
 
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("Server Response:");
+
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel5.setText("User and Roles");
+
+        rolesTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
+            },
+            new String [] {
+                "User", "Role"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        jScrollPane4.setViewportView(rolesTable);
+
+        jToolBar3.setRollover(true);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -304,16 +399,19 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable{
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(jScrollPane1)
-                                    .addComponent(jScrollPane2))
+                                    .addComponent(jScrollPane2)
+                                    .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.LEADING))
                                 .addGap(18, 18, 18)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jToolBar1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jToolBar2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(jToolBar2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(20, 20, 20))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 611, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel3)
+                            .addComponent(jLabel5)
                             .addComponent(jLabel4))
                         .addGap(0, 39, Short.MAX_VALUE))))
         );
@@ -335,11 +433,17 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable{
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addComponent(jLabel4)
-                .addGap(3, 3, 3)
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(24, 24, 24))
         );
@@ -413,6 +517,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable{
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
@@ -420,10 +525,13 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable{
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
+    private javax.swing.JToolBar jToolBar3;
     private javax.swing.JEditorPane logPane;
     private javax.swing.JTable permissionsTable;
+    private javax.swing.JTable rolesTable;
     private javax.swing.JTable usersTable;
     // End of variables declaration//GEN-END:variables
 }

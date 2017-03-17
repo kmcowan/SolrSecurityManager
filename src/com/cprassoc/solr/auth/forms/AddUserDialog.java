@@ -207,7 +207,7 @@ public class AddUserDialog extends javax.swing.JDialog {
                     Log.log(getClass(), "Allowed Chars, Pwd check OK...");
                     String userName = this.userNameField.getText();
                     String pwd = new String(this.pwdField.getPassword());
-                   String result = SolrAuthActionController.SOLR.addUser(userName, pwd);
+                   String result = SolrAuthActionController.addUser(userName, pwd);
                    if(result != null && !result.trim().equals("")){
                        LinkedHashMap<String,String> results = new LinkedHashMap<>();
                        results.put("user", userName);

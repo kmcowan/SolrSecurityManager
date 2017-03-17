@@ -5,16 +5,12 @@
  */
 package com.cprassoc.solr.auth;
 
-import com.cprassoc.solr.auth.model.Authentication;
-import com.cprassoc.solr.auth.util.JsonHelper;
-import com.cprassoc.solr.auth.util.Log;
 import com.cprassoc.solr.auth.util.Utils;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.LinkedHashMap;
 import java.util.Properties;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -22,6 +18,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -30,7 +27,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
-import org.json.JSONObject;
+import org.apache.solr.client.solrj.response.SolrPingResponse;
 
 /**
  *
@@ -116,11 +113,38 @@ public class SolrHttpHandler {
             request.addHeader("Accept-Language", "en-US,en;q=0.8");
             request.setEntity(params);
 
-            request.setEntity(params);
             HttpResponse response = client.execute(request);
             result = Utils.streamToString(response.getEntity().getContent());
         } catch (Exception e) {
 
+        }
+        return result;
+    }
+    
+       public String delete(String path, String data) {
+        String result = "";
+        try {
+            HttpDelete request = new HttpDelete(path);
+ 
+            HttpResponse response = client.execute(request);
+            result = Utils.streamToString(response.getEntity().getContent());
+        } catch (Exception e) {
+
+        }
+        return result;
+    }
+       
+    public  boolean isOnline(){
+        boolean result = true;
+        try{
+          SolrPingResponse resp =  cloudClient.ping();
+          if(resp == null){
+              result = false;
+          } else if(resp.getStatus() != 200){
+              result = false;
+          }
+        }catch(Exception e){
+            result = false;
         }
         return result;
     }
@@ -137,30 +161,7 @@ public class SolrHttpHandler {
         return get(path);
     }
 
-    public String addUser(String uname, String pw) {
-        String result = "";
-        String path = solrBaseUrl + AUTHENTICATION_URL_PART;
-        String data = "{ \"set-user\": {\"" + uname + "\" : \"" + pw + "\" }}";
 
-        /*
-          curl --user solr:SolrRocks http://localhost:8983/solr/admin/authentication -H 'Content-type:application/json'-d '{ 
-  "set-user": {"tom" : "TomIsCool" , 
-               "harry":"HarrysSecret"}}'
-         */
-        // first, post the user to solr. 
-        result = post(path, data);
-        Log.log(getClass(), result);
-        // then pull back authentication to get the pwd hash
-        String authentication = SolrAuthActionController.SOLR.getAuthentication();
-        JSONObject authoeJson = new JSONObject(authentication);
-        LinkedHashMap authoeMap = new LinkedHashMap(JsonHelper.jsonToMap(authoeJson));
-        Authentication newauthentication = new Authentication(authoeMap);
-
-        // return the new pwd hash as result. 
-        String pwhash = newauthentication.getCredentials().get(uname);
-        Log.log(getClass(), "New User hash: " + pwhash);
-        return pwhash;
-    }
 
     private String cURLRequest(String url, String data, Method method) {
         String result = "";

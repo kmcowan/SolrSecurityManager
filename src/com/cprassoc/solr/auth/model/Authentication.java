@@ -25,7 +25,11 @@ public class Authentication {
     
     private void init(LinkedHashMap map){
             LinkedHashMap authMap = (LinkedHashMap)map.get("authentication");
+            if(authMap != null){
             credentials = (LinkedHashMap)authMap.get("credentials");
+            } else {
+               credentials = (LinkedHashMap)map.get("credentials");
+            }
         className = (String)map.get("class");
         if(credentials != null){
         //System.out.println("Credentials: "+credentials.getClass().getSimpleName());

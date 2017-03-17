@@ -23,7 +23,13 @@ public class Authorization {
 
     public Authorization(LinkedHashMap map) {
         LinkedHashMap authMap = (LinkedHashMap) map.get("authorization");
-        userRoles = (LinkedHashMap) authMap.get("user-role");
+        if (authMap != null) {
+            // loading from a live api response
+            userRoles = (LinkedHashMap) authMap.get("user-role");
+        } else {
+            // loading from default security json
+            userRoles = (LinkedHashMap) map.get("user-role");
+        }
         if (userRoles != null) {
             Iterator<String> iter = userRoles.keySet().iterator();
             String key;
@@ -45,16 +51,23 @@ public class Authorization {
             }
         }
         LinkedHashMap resp = (LinkedHashMap) map.get("responseHeader");
-        Iterator<String> iter = resp.keySet().iterator();
-        while (iter.hasNext()) {
-            System.out.println("Key0: " + iter.next());
+        Iterator<String> iter;
+        if (resp != null) {
+            iter = resp.keySet().iterator();
+            while (iter.hasNext()) {
+                System.out.println("Key0: " + iter.next());
+            }
         }
 
-        iter = authMap.keySet().iterator();
-        while (iter.hasNext()) {
-            System.out.println("Key1: " + iter.next());
+        if (authMap != null) {
+            iter = authMap.keySet().iterator();
+            while (iter.hasNext()) {
+                System.out.println("Key1: " + iter.next());
+            }
+            permissions = (ArrayList) authMap.get("permissions");
+        } else {
+            permissions = (ArrayList) map.get("permissions");
         }
-        permissions = (ArrayList) authMap.get("permissions");
         if (permissions != null) {
             LinkedHashMap perm;
             for (int i = 0; i < permissions.size(); i++) {
