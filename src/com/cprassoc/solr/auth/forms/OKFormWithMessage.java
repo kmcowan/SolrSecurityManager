@@ -6,6 +6,7 @@
 package com.cprassoc.solr.auth.forms;
 
 import com.cprassoc.solr.auth.Frameable;
+import com.cprassoc.solr.auth.forms.AddUserDialog.SolrManagerAction;
 import com.cprassoc.solr.auth.forms.resources.Resources;
 import com.cprassoc.solr.auth.ui.SolrAuthMainWindow;
 
@@ -15,28 +16,43 @@ import com.cprassoc.solr.auth.ui.SolrAuthMainWindow;
  */
 public class OKFormWithMessage extends javax.swing.JDialog {
 
+        private Frameable frame;
+        private SolrManagerAction callbackAction = null;
     /**
      * Creates new form OKCancelFormWithMessage
      */
     public OKFormWithMessage(Frameable parent, boolean modal) {
         super(parent.getFrame(), modal);
         initComponents();
+        this.frame = parent;
+    }
+
+    public OKFormWithMessage(Frameable parent, boolean modal, String message) {
+        super(parent.getFrame(), modal);
+        initComponents();
+        this.messageArea.setText(message);
+        this.frame = parent;
+    }
+
+    public OKFormWithMessage(Frameable parent, boolean modal, String message, Resources.Resource resc) {
+        super(parent.getFrame(), modal);
+        initComponents();
+        this.messageArea.setText(message);
+        if (resc == null) {
+            this.imageIcon.setIcon(Resources.getNamedResourceIcon(resc));
+        }
+        this.frame = parent;
     }
     
-     public OKFormWithMessage(java.awt.Frame parent, boolean modal, String message) {
-        super(parent, modal);
+    public OKFormWithMessage(Frameable parent, boolean modal, String message, Resources.Resource resc, SolrManagerAction callback) {
+        super(parent.getFrame(), modal);
         initComponents();
         this.messageArea.setText(message);
+        if (resc == null) {
+            this.imageIcon.setIcon(Resources.getNamedResourceIcon(resc));
+        }
+        this.frame = parent;
     }
-     
-        public OKFormWithMessage(java.awt.Frame parent, boolean modal, String message, Resources.Resource resc) {
-        super(parent, modal);
-        initComponents();
-        this.messageArea.setText(message);
-        this.imageIcon.setIcon(Resources.getNamedResourceIcon(resc));
-    }
-        
-   
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -117,8 +133,8 @@ public class OKFormWithMessage extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void doOKAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doOKAction
-       this.setVisible(false);
-       this.dispose();
+        this.setVisible(false);
+        this.dispose();
     }//GEN-LAST:event_doOKAction
 
     /**
@@ -165,9 +181,7 @@ public class OKFormWithMessage extends javax.swing.JDialog {
             }
         });
     }
-    
 
-    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel imageIcon;

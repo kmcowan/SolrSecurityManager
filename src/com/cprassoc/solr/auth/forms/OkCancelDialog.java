@@ -6,9 +6,11 @@
 package com.cprassoc.solr.auth.forms;
 
 import com.cprassoc.solr.auth.Frameable;
+import com.cprassoc.solr.auth.forms.AddUserDialog.SolrManagerAction;
 import com.cprassoc.solr.auth.ui.SolrAuthMainWindow;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.LinkedHashMap;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -31,12 +33,15 @@ public class OkCancelDialog extends javax.swing.JDialog {
     public static final int RET_OK = 1;
 
     private Frameable frame = null;
+    private SolrManagerAction callbackAction = null;
+
     /**
      * Creates new form OkCancelDialog
      */
-    public OkCancelDialog(Frameable parent, boolean modal) {
+    public OkCancelDialog(Frameable parent, boolean modal, String message, SolrManagerAction callback) {
         super(parent.getFrame(), modal);
         this.frame = parent;
+        this.callbackAction = callback;
         initComponents();
 
         // Close the dialog when Esc is pressed
@@ -161,11 +166,16 @@ public class OkCancelDialog extends javax.swing.JDialog {
     private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
         doClose(RET_CANCEL);
     }//GEN-LAST:event_closeDialog
-    
+
     private void doClose(int retStatus) {
         returnStatus = retStatus;
         setVisible(false);
         dispose();
+        if (frame != null && callbackAction != null) {
+            LinkedHashMap<String, String> args = new LinkedHashMap<>();
+            args.put("returnStatus", "" + returnStatus);
+            frame.fireAction(callbackAction, args);
+        }
     }
 
     /**
@@ -198,7 +208,7 @@ public class OkCancelDialog extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                OkCancelDialog dialog = new OkCancelDialog(new SolrAuthMainWindow(), true);
+                OkCancelDialog dialog = new OkCancelDialog(new SolrAuthMainWindow(), true, "Test message", null);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {

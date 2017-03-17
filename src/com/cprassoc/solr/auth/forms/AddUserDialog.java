@@ -238,13 +238,20 @@ public class AddUserDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_doAddUserAction
 
     private void showMessageDialog(String message) {
-        OKFormWithMessage dialog = new OKFormWithMessage(frame.getFrame(), true, message, Resources.Resource.warn);
+        OKFormWithMessage dialog = new OKFormWithMessage(frame, true, message, Resources.Resource.warn);
         dialog.setVisible(true);
         dialog.requestFocus();
     }
     
     public static enum SolrManagerAction {
-        create_user
+        create_user,
+        delete_user,
+        add_role,
+        delete_role,
+        update_role,
+        add_permission,
+        edit_permission,
+        delete_permission
     }
 
     /**

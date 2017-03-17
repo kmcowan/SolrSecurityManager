@@ -10,6 +10,8 @@ import com.cprassoc.solr.auth.SolrAuthActionController;
 import com.cprassoc.solr.auth.SolrAuthManager;
 import com.cprassoc.solr.auth.forms.AddUserDialog;
 import com.cprassoc.solr.auth.forms.AddUserDialog.SolrManagerAction;
+import com.cprassoc.solr.auth.forms.OKFormWithMessage;
+import com.cprassoc.solr.auth.forms.resources.Resources;
 import com.cprassoc.solr.auth.model.Authentication;
 import com.cprassoc.solr.auth.model.Authorization;
 import com.cprassoc.solr.auth.model.SecurityJson;
@@ -36,6 +38,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     private SecurityJson securityJson = null;
     private static HashMap<String, Integer> permissionMap = null;
     private static String SECURITY_JSON_FILE_NAME = "security.json";
+    private String selectedUser = "";
 
     /**
      * Creates new form SolrAuthMainWindow
@@ -103,6 +106,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                     }
                     if (e.getValueIsAdjusting()) {
                         System.out.println("Selected: " + selectedData);
+                        selectedUser = selectedData;
                     }
                 }
 
@@ -212,7 +216,17 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 this.securityJson.getAuthentication().getCredentials().put(args.get("user"), args.get("pwd"));
                 populateAuthenticationTable(this.securityJson.getAuthentication());
                 break;
+                
+            case delete_user:
+                break;
         }
+    }
+    
+    private void showMessageDialog(String message, Resources.Resource resc) {
+       
+        OKFormWithMessage dialog = new OKFormWithMessage(this, true, message, resc);
+        dialog.setVisible(true);
+        dialog.requestFocus();
     }
 
     /**
@@ -235,6 +249,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         jLabel3 = new javax.swing.JLabel();
         jToolBar2 = new javax.swing.JToolBar();
         jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         logPane = new javax.swing.JEditorPane();
         jLabel4 = new javax.swing.JLabel();
@@ -247,6 +262,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenu3 = new javax.swing.JMenu();
+        jMenuItem2 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -357,6 +373,17 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         });
         jToolBar2.add(jButton1);
 
+        jButton2.setText("Delete");
+        jButton2.setFocusable(false);
+        jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doDeleteUserConfirmAction(evt);
+            }
+        });
+        jToolBar2.add(jButton2);
+
         logPane.setBackground(new java.awt.Color(255, 255, 255));
         logPane.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         logPane.setForeground(new java.awt.Color(0, 0, 0));
@@ -439,7 +466,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                             .addComponent(jLabel3)
                             .addComponent(jLabel5)
                             .addComponent(jLabel4))
-                        .addGap(0, 39, Short.MAX_VALUE))))
+                        .addGap(0, 80, Short.MAX_VALUE))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -452,7 +479,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(21, 21, 21)
-                        .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(29, 29, 29)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -486,10 +513,14 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
 
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("Edit");
+        jMenu2.setText("Server");
         jMenuBar1.add(jMenu2);
 
         jMenu3.setText("Tools");
+
+        jMenuItem2.setText("Manage Properties");
+        jMenu3.add(jMenuItem2);
+
         jMenuBar1.add(jMenu3);
 
         setJMenuBar(jMenuBar1);
@@ -517,6 +548,14 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     private void doQuitAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doQuitAction
       System.exit(0);
     }//GEN-LAST:event_doQuitAction
+
+    private void doDeleteUserConfirmAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doDeleteUserConfirmAction
+        if(selectedUser.equals("")){
+            
+        } else {
+            
+        }
+    }//GEN-LAST:event_doDeleteUserConfirmAction
 
     /**
      * @param args the command line arguments
@@ -555,6 +594,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -565,6 +605,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
