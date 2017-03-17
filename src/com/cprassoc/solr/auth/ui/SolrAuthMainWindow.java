@@ -11,11 +11,13 @@ import com.cprassoc.solr.auth.SolrAuthManager;
 import com.cprassoc.solr.auth.forms.AddUserDialog;
 import com.cprassoc.solr.auth.forms.AddUserDialog.SolrManagerAction;
 import com.cprassoc.solr.auth.forms.OKFormWithMessage;
+import com.cprassoc.solr.auth.forms.OkCancelDialog;
 import com.cprassoc.solr.auth.forms.resources.Resources;
 import com.cprassoc.solr.auth.model.Authentication;
 import com.cprassoc.solr.auth.model.Authorization;
 import com.cprassoc.solr.auth.model.SecurityJson;
 import com.cprassoc.solr.auth.util.JsonHelper;
+import com.cprassoc.solr.auth.util.Log;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -218,13 +220,21 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 break;
                 
             case delete_user:
+                Log.log(getClass(), "Delete User: "+selectedUser);
                 break;
         }
     }
     
-    private void showMessageDialog(String message, Resources.Resource resc) {
+    private void showOKOnlyMessageDialog(String message, Resources.Resource resc) {
        
         OKFormWithMessage dialog = new OKFormWithMessage(this, true, message, resc);
+        dialog.setVisible(true);
+        dialog.requestFocus();
+    }
+    
+       private void showOKCancelMessageDialog(String message, SolrManagerAction resc) {
+       
+        OkCancelDialog dialog = new OkCancelDialog(this, true, message, resc);
         dialog.setVisible(true);
         dialog.requestFocus();
     }
@@ -373,6 +383,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         });
         jToolBar2.add(jButton1);
 
+        jButton2.setBackground(new java.awt.Color(0, 51, 102));
+        jButton2.setForeground(new java.awt.Color(255, 255, 255));
         jButton2.setText("Delete");
         jButton2.setFocusable(false);
         jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -551,9 +563,9 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
 
     private void doDeleteUserConfirmAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doDeleteUserConfirmAction
         if(selectedUser.equals("")){
-            
+            showOKOnlyMessageDialog("No user selected", Resources.Resource.warn);
         } else {
-            
+            showOKCancelMessageDialog("Are you sure you want to delete "+selectedUser+"? \n This action cannot be undone. ", SolrManagerAction.delete_user);
         }
     }//GEN-LAST:event_doDeleteUserConfirmAction
 

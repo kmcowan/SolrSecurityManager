@@ -16,7 +16,7 @@ import java.util.LinkedHashMap;
  *
  * @author kevin
  */
-public class AddUserDialog extends javax.swing.JDialog {
+public class AddUserDialog extends BaseDialog {
 
     private static String ALLOWED_CHARS = "abcdefghijklmnopqrstuvwxyz1234567890";
     private Frameable frame = null;
@@ -30,6 +30,7 @@ public class AddUserDialog extends javax.swing.JDialog {
         super(parent.getFrame(), modal);
         initComponents();
         this.frame = parent;
+        center();
     }
 
     private boolean onlyHasAllowedChars() {

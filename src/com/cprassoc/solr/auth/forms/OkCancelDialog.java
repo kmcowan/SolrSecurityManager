@@ -8,6 +8,8 @@ package com.cprassoc.solr.auth.forms;
 import com.cprassoc.solr.auth.Frameable;
 import com.cprassoc.solr.auth.forms.AddUserDialog.SolrManagerAction;
 import com.cprassoc.solr.auth.ui.SolrAuthMainWindow;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.LinkedHashMap;
@@ -21,7 +23,7 @@ import javax.swing.KeyStroke;
  *
  * @author kevin
  */
-public class OkCancelDialog extends javax.swing.JDialog {
+public class OkCancelDialog extends BaseDialog {
 
     /**
      * A return status code - returned if Cancel button has been pressed
@@ -43,6 +45,9 @@ public class OkCancelDialog extends javax.swing.JDialog {
         this.frame = parent;
         this.callbackAction = callback;
         initComponents();
+        center();
+        
+        
 
         // Close the dialog when Esc is pressed
         String cancelName = "cancel";
@@ -54,8 +59,13 @@ public class OkCancelDialog extends javax.swing.JDialog {
                 doClose(RET_CANCEL);
             }
         });
+        
+        if(message != null){
+            messageArea.setText(message);
+        }
     }
 
+ 
     /**
      * @return the return status of this dialog - one of RET_OK or RET_CANCEL
      */
@@ -76,7 +86,8 @@ public class OkCancelDialog extends javax.swing.JDialog {
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        messageArea = new javax.swing.JTextArea();
+        jLabel1 = new javax.swing.JLabel();
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -100,26 +111,33 @@ public class OkCancelDialog extends javax.swing.JDialog {
             }
         });
 
-        jTextArea1.setBackground(new java.awt.Color(0, 51, 102));
-        jTextArea1.setColumns(20);
-        jTextArea1.setForeground(new java.awt.Color(255, 255, 255));
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        messageArea.setBackground(new java.awt.Color(0, 51, 102));
+        messageArea.setColumns(20);
+        messageArea.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        messageArea.setForeground(new java.awt.Color(255, 255, 255));
+        messageArea.setRows(5);
+        jScrollPane1.setViewportView(messageArea);
+
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/cprassoc/solr/auth/forms/resources/info.png"))); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cancelButton)
-                .addGap(23, 23, 23))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(25, 25, 25)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 349, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(32, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cancelButton)
+                        .addGap(23, 23, 23))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(36, 36, 36)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 395, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(36, Short.MAX_VALUE))))
         );
 
         jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {cancelButton, okButton});
@@ -127,9 +145,14 @@ public class OkCancelDialog extends javax.swing.JDialog {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(25, 25, 25)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 56, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel1))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(34, 34, 34)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cancelButton)
                     .addComponent(okButton))
@@ -171,7 +194,7 @@ public class OkCancelDialog extends javax.swing.JDialog {
         returnStatus = retStatus;
         setVisible(false);
         dispose();
-        if (frame != null && callbackAction != null) {
+        if (returnStatus == RET_OK && frame != null && callbackAction != null) {
             LinkedHashMap<String, String> args = new LinkedHashMap<>();
             args.put("returnStatus", "" + returnStatus);
             frame.fireAction(callbackAction, args);
@@ -222,9 +245,10 @@ public class OkCancelDialog extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTextArea messageArea;
     private javax.swing.JButton okButton;
     // End of variables declaration//GEN-END:variables
 

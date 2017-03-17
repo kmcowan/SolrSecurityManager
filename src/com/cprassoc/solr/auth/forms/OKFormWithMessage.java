@@ -14,7 +14,7 @@ import com.cprassoc.solr.auth.ui.SolrAuthMainWindow;
  *
  * @author kevin
  */
-public class OKFormWithMessage extends javax.swing.JDialog {
+public class OKFormWithMessage extends BaseDialog {
 
         private Frameable frame;
         private SolrManagerAction callbackAction = null;
@@ -25,6 +25,7 @@ public class OKFormWithMessage extends javax.swing.JDialog {
         super(parent.getFrame(), modal);
         initComponents();
         this.frame = parent;
+        center();
     }
 
     public OKFormWithMessage(Frameable parent, boolean modal, String message) {
@@ -32,6 +33,7 @@ public class OKFormWithMessage extends javax.swing.JDialog {
         initComponents();
         this.messageArea.setText(message);
         this.frame = parent;
+        center();
     }
 
     public OKFormWithMessage(Frameable parent, boolean modal, String message, Resources.Resource resc) {
@@ -42,16 +44,18 @@ public class OKFormWithMessage extends javax.swing.JDialog {
             this.imageIcon.setIcon(Resources.getNamedResourceIcon(resc));
         }
         this.frame = parent;
+        center();
     }
     
     public OKFormWithMessage(Frameable parent, boolean modal, String message, Resources.Resource resc, SolrManagerAction callback) {
         super(parent.getFrame(), modal);
         initComponents();
         this.messageArea.setText(message);
-        if (resc == null) {
+        if (resc != null) {
             this.imageIcon.setIcon(Resources.getNamedResourceIcon(resc));
         }
         this.frame = parent;
+        center();
     }
 
     /**
@@ -76,8 +80,9 @@ public class OKFormWithMessage extends javax.swing.JDialog {
         imageIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/cprassoc/solr/auth/forms/resources/info.png"))); // NOI18N
         imageIcon.setText("jLabel1");
 
+        messageArea.setBackground(new java.awt.Color(0, 51, 102));
         messageArea.setColumns(20);
-        messageArea.setForeground(new java.awt.Color(0, 0, 0));
+        messageArea.setForeground(new java.awt.Color(255, 255, 255));
         messageArea.setRows(5);
         jScrollPane1.setViewportView(messageArea);
 
