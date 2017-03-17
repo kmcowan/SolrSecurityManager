@@ -244,7 +244,9 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         jToolBar3 = new javax.swing.JToolBar();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
+        jMenu3 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -473,10 +475,22 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         );
 
         jMenu1.setText("File");
+
+        jMenuItem1.setText("Quit");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doQuitAction(evt);
+            }
+        });
+        jMenu1.add(jMenuItem1);
+
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Edit");
         jMenuBar1.add(jMenu2);
+
+        jMenu3.setText("Tools");
+        jMenuBar1.add(jMenu3);
 
         setJMenuBar(jMenuBar1);
 
@@ -499,6 +513,10 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         dialog.setVisible(true);
         dialog.requestFocus();
     }//GEN-LAST:event_doAddUserAction
+
+    private void doQuitAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doQuitAction
+      System.exit(0);
+    }//GEN-LAST:event_doQuitAction
 
     /**
      * @param args the command line arguments
@@ -544,7 +562,9 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     private javax.swing.JLabel jLabel5;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
