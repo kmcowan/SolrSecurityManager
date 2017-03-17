@@ -14,6 +14,8 @@ import com.cprassoc.solr.auth.model.Authentication;
 import com.cprassoc.solr.auth.model.Authorization;
 import com.cprassoc.solr.auth.model.SecurityJson;
 import com.cprassoc.solr.auth.util.JsonHelper;
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -22,16 +24,18 @@ import java.util.Map;
 import java.util.Properties;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import org.apache.cxf.helpers.IOUtils;
 import org.json.JSONObject;
 
 /**
  *
  * @author kevin
  */
-public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable{
+public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable {
 
     private SecurityJson securityJson = null;
-    private static HashMap<String,Integer> permissionMap = null;
+    private static HashMap<String, Integer> permissionMap = null;
+    private static String SECURITY_JSON_FILE_NAME = "security.json";
 
     /**
      * Creates new form SolrAuthMainWindow
@@ -46,144 +50,164 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable{
         System.out.println("INIT...");
         try {
             boolean online = SolrAuthActionController.SOLR.isOnline();
-            if(online){
-            String authentication = SolrAuthActionController.SOLR.getAuthentication();
-            String authorization = SolrAuthActionController.SOLR.getAuthorization();
+            if (online) {
+                String authentication = SolrAuthActionController.SOLR.getAuthentication();
+                String authorization = SolrAuthActionController.SOLR.getAuthorization();
 
-            System.out.println("Authentication: " + authentication);
-            System.out.println("Authorization: " + authorization);
+                System.out.println("Authentication: " + authentication);
+                System.out.println("Authorization: " + authorization);
 
-            //  JSON.decode(authorization, type);
-            JSONObject authoeJson = new JSONObject(authentication);
-            if (authoeJson.getJSONObject("authentication") != null) {
-                String clsName = authoeJson.getJSONObject("authentication").getString("class");
-                JSONObject authoJson = new JSONObject(authorization);
-                LinkedHashMap authoMap = new LinkedHashMap(JsonHelper.jsonToMap(authoJson));
+                //  JSON.decode(authorization, type);
+                JSONObject authoeJson = new JSONObject(authentication);
+                if (authoeJson.getJSONObject("authentication") != null) {
+                    String clsName = authoeJson.getJSONObject("authentication").getString("class");
+                    JSONObject authoJson = new JSONObject(authorization);
+                    LinkedHashMap authoMap = new LinkedHashMap(JsonHelper.jsonToMap(authoJson));
+                    LinkedHashMap authoeMap = new LinkedHashMap(JsonHelper.jsonToMap(authoeJson));
+                    Map map = new LinkedHashMap<String, Object>();
+                    map.put("authentication", authoeMap);
+                    map.put("authorization", authoMap);
+
+                    System.out.println("Auth Class Name: " + clsName);
+
+                    securityJson = new SecurityJson(map);
+
+                } else {
+                    authoeJson = getDefaultSecurityJson();
+                    LinkedHashMap authoeMap = new LinkedHashMap(JsonHelper.jsonToMap(authoeJson));
+                    securityJson = new SecurityJson(authoeMap);
+                }
+
+            } else {
+                JSONObject authoeJson = getDefaultSecurityJson();
                 LinkedHashMap authoeMap = new LinkedHashMap(JsonHelper.jsonToMap(authoeJson));
-                Map map = new LinkedHashMap<String, Object>();
-                map.put("authentication", authoeMap);
-                map.put("authorization", authoMap);
-
-                System.out.println("Auth Class Name: " + clsName);
-
-                securityJson = new SecurityJson(map);
-                populateAuthorizationTable(securityJson.getAuthorization());
-                populateUserRolesTable(securityJson.getAuthorization());
-                populateAuthenticationTable(securityJson.getAuthentication());
-            } else {
-                securityJson = new SecurityJson();
-            }
-            
-            } else {
-                securityJson = new SecurityJson();
+                securityJson = new SecurityJson(authoeMap);
                 logPane.setText("Solr is offline. ");
             }
-            
-            
+
+            populateAuthorizationTable(securityJson.getAuthorization());
+            populateUserRolesTable(securityJson.getAuthorization());
+            populateAuthenticationTable(securityJson.getAuthentication());
+
             this.usersTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        String selectedData = null;
+                public void valueChanged(ListSelectionEvent e) {
+                    String selectedData = null;
 
-        int[] selectedRow = usersTable.getSelectedRows();
-        int[] selectedColumns = usersTable.getSelectedColumns();
+                    int[] selectedRow = usersTable.getSelectedRows();
+                    int[] selectedColumns = usersTable.getSelectedColumns();
 
-        for (int i = 0; i < selectedRow.length; i++) {
-          for (int j = 0; j < selectedColumns.length; j++) {
-            selectedData = (String) usersTable.getValueAt(selectedRow[i], selectedColumns[j]);
-          }
-        }
-        if(e.getValueIsAdjusting()){
-          System.out.println("Selected: " + selectedData);
-        }
-      }
+                    for (int i = 0; i < selectedRow.length; i++) {
+                        for (int j = 0; j < selectedColumns.length; j++) {
+                            selectedData = (String) usersTable.getValueAt(selectedRow[i], selectedColumns[j]);
+                        }
+                    }
+                    if (e.getValueIsAdjusting()) {
+                        System.out.println("Selected: " + selectedData);
+                    }
+                }
 
-    });
+            });
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
-    
-    private void populateAuthorizationTable(Authorization auth){
+
+    private JSONObject getDefaultSecurityJson() throws Exception {
+        JSONObject obj = null;
+        // check for exported properties. 
+        File secu = new File(SECURITY_JSON_FILE_NAME);
+        String json = "";
+        if (secu.exists()) {
+            json = new String(IOUtils.readBytesFromStream(new FileInputStream(secu)));
+            obj = new JSONObject(json);
+        } else {
+            json = new String(IOUtils.readBytesFromStream(SecurityJson.class.getResourceAsStream(SECURITY_JSON_FILE_NAME)));
+            obj = new JSONObject(json);
+        }
+        return obj;
+    }
+
+    private void populateAuthorizationTable(Authorization auth) {
         ArrayList<LinkedHashMap> list = auth.getPermissions();
         Iterator<String> iter;
         String key, value;
         Integer col;
-        for(int i=0; i<list.size(); i++){
+        for (int i = 0; i < list.size(); i++) {
             iter = list.get(i).keySet().iterator();
-            while(iter.hasNext()){
+            while (iter.hasNext()) {
                 key = iter.next();
                 value = (String) list.get(i).get(key);
                 col = getPermissionItemColumn(key);
-               this.permissionsTable.getModel().setValueAt(value, i, col);
+                this.permissionsTable.getModel().setValueAt(value, i, col);
             }
         }
     }
-    
-    private void populateUserRolesTable(Authorization auth){
-        LinkedHashMap<String,String> map = auth.getUserRoles();
+
+    private void populateUserRolesTable(Authorization auth) {
+        LinkedHashMap<String, String> map = auth.getUserRoles();
         Iterator<String> iter;
         String key, value;
         Integer col;
-        
-            iter = map.keySet().iterator();
-            int row = 0;
-            while(iter.hasNext()){
-                key = iter.next();
-                value = (String) map.get(key);
-               this.rolesTable.getModel().setValueAt(key, row, 0);
-               this.rolesTable.getModel().setValueAt(value, row, 1);
-               row++;
-            }
-        
+
+        iter = map.keySet().iterator();
+        int row = 0;
+        while (iter.hasNext()) {
+            key = iter.next();
+            value = (String) map.get(key);
+            this.rolesTable.getModel().setValueAt(key, row, 0);
+            this.rolesTable.getModel().setValueAt(value, row, 1);
+            row++;
+        }
+
     }
-    
-     private void populateAuthenticationTable(Authentication auth){
-           LinkedHashMap map = auth.getCredentials();
-           int row = 0;
-       if(map != null && map.size() > 0){
+
+    private void populateAuthenticationTable(Authentication auth) {
+        LinkedHashMap map = auth.getCredentials();
+        int row = 0;
+        if (map != null && map.size() > 0) {
             Iterator<String> iter = map.keySet().iterator();
             String key, value;
-           
-            while(iter.hasNext()){
+
+            while (iter.hasNext()) {
                 key = iter.next();
-                value = (String)map.get(key);
+                value = (String) map.get(key);
                 this.usersTable.getModel().setValueAt(key, row, 0);
-                 this.usersTable.getModel().setValueAt(value, row, 1);
+                this.usersTable.getModel().setValueAt(value, row, 1);
                 row++;
             }
         }
     }
-     
-    private static HashMap getPermissionMap(){
-        if(permissionMap == null){
-          permissionMap = new HashMap<>();
-        permissionMap.put("name", 0);
-        permissionMap.put("role", 1);
-        permissionMap.put("index", 2);
-        permissionMap.put("path", 3);
-        permissionMap.put("params", 4);
-        permissionMap.put("collection", 5);
-        permissionMap.put("method", 6);
-        permissionMap.put("before", 7);
+
+    private static HashMap getPermissionMap() {
+        if (permissionMap == null) {
+            permissionMap = new HashMap<>();
+            permissionMap.put("name", 0);
+            permissionMap.put("role", 1);
+            permissionMap.put("index", 2);
+            permissionMap.put("path", 3);
+            permissionMap.put("params", 4);
+            permissionMap.put("collection", 5);
+            permissionMap.put("method", 6);
+            permissionMap.put("before", 7);
         }
-        
+
         return permissionMap;
     }
-    
-    private Integer getPermissionItemColumn(String name){
-       
-        return (Integer)getPermissionMap().get(name);
+
+    private Integer getPermissionItemColumn(String name) {
+
+        return (Integer) getPermissionMap().get(name);
     }
-    
+
     @Override
-    public java.awt.Frame getFrame(){
+    public java.awt.Frame getFrame() {
         return this;
     }
-    
-    public void fireAction(SolrManagerAction action, LinkedHashMap<String,String> args){
-        switch(action){
+
+    public void fireAction(SolrManagerAction action, LinkedHashMap<String, String> args) {
+        switch (action) {
             case create_user:
                 this.securityJson.getAuthentication().getCredentials().put(args.get("user"), args.get("pwd"));
                 populateAuthenticationTable(this.securityJson.getAuthentication());
@@ -471,9 +495,9 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable{
     }// </editor-fold>//GEN-END:initComponents
 
     private void doAddUserAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doAddUserAction
-         AddUserDialog dialog = new AddUserDialog(this, true);
-         dialog.setVisible(true);
-         dialog.requestFocus();
+        AddUserDialog dialog = new AddUserDialog(this, true);
+        dialog.setVisible(true);
+        dialog.requestFocus();
     }//GEN-LAST:event_doAddUserAction
 
     /**

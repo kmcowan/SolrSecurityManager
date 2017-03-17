@@ -85,6 +85,8 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
         zooKeeperPort = new javax.swing.JTextField();
         usingSSL = new javax.swing.JCheckBox();
         jButton1 = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        collectionField = new javax.swing.JTextField();
 
         jPanel1.setBackground(new java.awt.Color(0, 51, 204));
 
@@ -94,7 +96,7 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
 
         jLabel3.setText("Solr Host:Port");
 
-        jLabel4.setText("ZooKeeper Port: ");
+        jLabel4.setText("ZooKeeper Host/Port: ");
 
         saveButton.setText("Save");
         saveButton.addActionListener(new java.awt.event.ActionListener() {
@@ -114,7 +116,7 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
 
         solrHostPort.setText("localhost:8983");
 
-        zooKeeperPort.setText("9983");
+        zooKeeperPort.setText("localhost:9993");
 
         usingSSL.setText("Using SSL?");
 
@@ -124,6 +126,10 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
                 doBrowseForSolrInstallDir(evt);
             }
         });
+
+        jLabel5.setText("Default Collection:");
+
+        collectionField.setText("localhost:9993");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -146,21 +152,25 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
                             .addComponent(usingSSL, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabel4)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(zooKeeperPort, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                         .addComponent(jLabel3)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGap(58, 58, 58)
                                         .addComponent(solrHostPort, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                         .addComponent(jLabel2)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(solrInstallDirPath, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel4)
+                                            .addComponent(jLabel5))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(solrInstallDirPath, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(collectionField, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(zooKeeperPort, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE))))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButton1)))))
-                .addContainerGap(52, Short.MAX_VALUE))
+                .addContainerGap(31, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -180,9 +190,13 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(zooKeeperPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(37, 37, 37)
+                .addGap(13, 13, 13)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(collectionField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addComponent(usingSSL)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 3, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(saveButton)
                     .addComponent(cancelButton))
@@ -207,6 +221,7 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
         props.setProperty(SolrAuthPropertyKey.solrInstallPath.getKey(), this.solrInstallDirPath.getText());
          props.setProperty(SolrAuthPropertyKey.solrHostPort.getKey(), this.solrHostPort.getText());
           props.setProperty(SolrAuthPropertyKey.zookeeperPort.getKey(), this.zooKeeperPort.getText());
+            props.setProperty(SolrAuthPropertyKey.defaultCollection.getKey(), this.collectionField.getText());
           String sslEnabled = "false";
           if(this.usingSSL.isSelected()){
               sslEnabled = "true";
@@ -241,11 +256,13 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
+    private javax.swing.JTextField collectionField;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JButton saveButton;
     private javax.swing.JTextField solrHostPort;
@@ -272,7 +289,8 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
         solrHostPort("solr.host.port"),
         solrInstallPath("solr.install.path"),
         isUsingSSL("solr.ssl.enabled"),
-        zookeeperPort("solr.zookeeper.port");
+        zookeeperPort("solr.zookeeper.port"),
+        defaultCollection("solr.default.collection");
          private String key = "";
          
          private SolrAuthPropertyKey(String key){

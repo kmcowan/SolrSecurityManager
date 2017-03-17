@@ -5,6 +5,7 @@
  */
 package com.cprassoc.solr.auth;
 
+import com.cprassoc.solr.auth.util.Log;
 import com.cprassoc.solr.auth.util.Utils;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -67,7 +68,8 @@ public class SolrHttpHandler {
                 .setDefaultCredentialsProvider(provider)
                 .build();
 
-        cloudClient = new CloudSolrClient(solrBaseUrl, client);
+        cloudClient = new CloudSolrClient(props.getProperty("solr.zookeeper.port"), client);
+        cloudClient.setDefaultCollection(props.getProperty("solr.default.collection"));
 
         System.out.println("Solr Base URL: " + solrBaseUrl);
     }
@@ -139,11 +141,15 @@ public class SolrHttpHandler {
         try{
           SolrPingResponse resp =  cloudClient.ping();
           if(resp == null){
+              Log.log(getClass(), "Ping Response was NULL");
               result = false;
-          } else if(resp.getStatus() != 200){
+          } else if(resp.getStatus() != 0){
               result = false;
+                Log.log(getClass(), "Ping Response was STATUS was: "+resp.getStatus());
           }
         }catch(Exception e){
+            e.printStackTrace();
+              Log.log(getClass(), "Ping Response returned EXCEPTION");
             result = false;
         }
         return result;
