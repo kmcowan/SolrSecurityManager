@@ -6,6 +6,7 @@
 package com.cprassoc.solr.auth.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
@@ -37,6 +38,12 @@ public class Authorization {
             while (iter.hasNext()) {
                 key = iter.next();
                 value = userRoles.get(key);
+                if(value instanceof String[]){
+                    value = Arrays.toString((String[])value);
+                } else if(value instanceof ArrayList){
+                    ArrayList temp = (ArrayList)value;
+                    value = temp.toString();
+                }
                 System.out.println("user: " + key + " role: " + value);
             }
         } else {

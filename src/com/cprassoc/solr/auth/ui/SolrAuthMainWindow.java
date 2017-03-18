@@ -208,16 +208,19 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     }
 
     private void populateUserRolesTable(Authorization auth) {
-        LinkedHashMap<String, String> map = auth.getUserRoles();
+        LinkedHashMap<String, Object> map = auth.getUserRoles();
         Iterator<String> iter;
-        String key, value;
-        Integer col;
-
+        String key;
+        Object value;
         iter = map.keySet().iterator();
         int row = 0;
         while (iter.hasNext()) {
             key = iter.next();
             value = (String) map.get(key);
+            if(value instanceof ArrayList){
+                ArrayList temp = (ArrayList)value;
+                value = temp.toString();
+            }
             this.rolesTable.getModel().setValueAt(key, row, 0);
             this.rolesTable.getModel().setValueAt(value, row, 1);
             row++;
@@ -297,7 +300,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 break;
                 
             case add_role:
-                
+                Log.log(getClass(), "FIRE Add Role...");
+               // SolrAuthActionController.addRole(result, roles);
                 break;
         }
     }
@@ -311,7 +315,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         }
     }
     
-    private void showOKOnlyMessageDialog(String message, Resources.Resource resc) {
+    public void showOKOnlyMessageDialog(String message, Resources.Resource resc) {
        
         OKFormWithMessage dialog = new OKFormWithMessage(this, true, message, resc);
         dialog.setVisible(true);
@@ -541,6 +545,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
 
         jToolBar3.setRollover(true);
 
+        jButton3.setForeground(new java.awt.Color(255, 255, 255));
         jButton3.setText("Add");
         jButton3.setFocusable(false);
         jButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -552,6 +557,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         });
         jToolBar3.add(jButton3);
 
+        jButton4.setForeground(new java.awt.Color(255, 255, 255));
         jButton4.setText("Revoke");
         jButton4.setFocusable(false);
         jButton4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);

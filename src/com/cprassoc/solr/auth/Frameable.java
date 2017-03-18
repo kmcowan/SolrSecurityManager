@@ -6,6 +6,7 @@
 package com.cprassoc.solr.auth;
 
 import com.cprassoc.solr.auth.SolrAuthActionController.SolrManagerAction;
+import com.cprassoc.solr.auth.forms.resources.Resources;
 import java.util.LinkedHashMap;
 
 /**
@@ -16,4 +17,5 @@ public interface Frameable {
     
     public java.awt.Frame getFrame();
     public void fireAction(SolrManagerAction action, LinkedHashMap<String,String> args);
+    public void showOKOnlyMessageDialog(String message, Resources.Resource resc);
 }
