@@ -5,12 +5,13 @@
  */
 package com.cprassoc.solr.auth;
 
-import com.cprassoc.solr.auth.model.SecurityJson;
 import com.cprassoc.solr.auth.ui.SolrAuthMainWindow;
 import com.cprassoc.solr.auth.ui.SolrSecurityPropertyManagerFrame;
+import com.cprassoc.solr.auth.util.Log;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.FileReader;
+import java.util.Iterator;
 import java.util.Properties;
 
 /**
@@ -42,6 +43,15 @@ public class SolrAuthManager {
                 System.out.println("Properties File exists...");
                 properties = new Properties();
                 properties.load(new FileReader(props));
+                Iterator<Object> iter = properties.keySet().iterator();
+                Object key;
+                String value;
+                while(iter.hasNext()){
+                    key = iter.next();
+                    value = properties.getProperty(key.toString());
+                    Log.log("property "+key.toString()+" value: "+value);
+                }
+                
                 SolrAuthMainWindow.main(args);
             } else {
                 System.out.println("NO Properties File found...");

@@ -12,6 +12,7 @@ import com.cprassoc.solr.auth.util.Log;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Properties;
 import org.json.JSONObject;
@@ -59,16 +60,16 @@ public class SolrAuthActionController {
         return pwhash;
     }
     
-    public static String addRole(String user, String[] roles){
+    public static String addRole(String user, ArrayList roles){
         String result = "";
         String data = "";
         try{
          String path = SOLR.getSolrBaseUrl() + SolrHttpHandler.AUTHORIZATION_URL_PART;
-         if(roles.length > 1){
-           data = "{ \"set-user-role\": {\"" + user + "\" : \"" + JsonHelper.objToString(roles) + "\" }}";
+         if(roles.size() > 1){
+           data = "{ \"set-user-role\": {\"" + user + "\" : \"" + roles.toString() + "\" }}";
          } else {
              // added to handle case for single or null role
-              data = "{ \"set-user-role\": {\"" + user + "\" : \"" + roles[0] + "\" }}";
+              data = "{ \"set-user-role\": {\"" + user + "\" : \"" + roles.get(0) + "\" }}";
          }
         /*
         curl --user solr:SolrRocks http://localhost:8983/solr/admin/authorization -H 'Content-type:application/json' -d '{ 

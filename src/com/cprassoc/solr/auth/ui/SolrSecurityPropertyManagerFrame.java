@@ -21,14 +21,34 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
      * Creates new form SolrSecurityPropertyManager
      */
 
-    
+    Properties loadedProperties = null;
     public SolrSecurityPropertyManagerFrame() {
+        initComponents();
+        init();
+    }
+    
+     public SolrSecurityPropertyManagerFrame(Properties p) {
+        this.loadedProperties = p;
         initComponents();
         init();
     }
     
     private void init(){
         this.setSize(700, 400);
+        if(this.loadedProperties != null){
+            this.solrInstallDirPath.setText(loadedProperties.getProperty(SolrAuthPropertyKey.solrInstallPath.getKey()));
+            this.solrHostPort.setText(loadedProperties.getProperty(SolrAuthPropertyKey.solrHostPort.getKey()));
+            this.collectionField.setText(loadedProperties.getProperty(SolrAuthPropertyKey.defaultCollection.getKey()));
+            this.zooKeeperPort.setText(loadedProperties.getProperty(SolrAuthPropertyKey.zookeeperPort.getKey()));
+            if(loadedProperties.getProperty(SolrAuthPropertyKey.isUsingSSL.getKey()) != null && 
+                    loadedProperties.getProperty(SolrAuthPropertyKey.isUsingSSL.getKey()).equalsIgnoreCase("true")){
+                this.usingSSL.setSelected(true);
+            } else {
+                this.usingSSL.setSelected(false);
+            }
+            
+            
+        }
     }
     
     public static void main(String args[]) {
@@ -88,15 +108,19 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         collectionField = new javax.swing.JTextField();
 
-        jPanel1.setBackground(new java.awt.Color(0, 51, 153));
+        jPanel1.setBackground(new java.awt.Color(0, 51, 102));
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Property Manager");
 
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Path to Solr Install:");
 
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Solr Host:Port");
 
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("ZooKeeper Host/Port: ");
 
         saveButton.setText("Save");
@@ -119,7 +143,8 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
 
         zooKeeperPort.setText("localhost:9993");
 
-        usingSSL.setBackground(new java.awt.Color(0, 51, 153));
+        usingSSL.setBackground(new java.awt.Color(0, 51, 102));
+        usingSSL.setForeground(new java.awt.Color(255, 255, 255));
         usingSSL.setText("Using SSL?");
 
         jButton1.setText("Browse");
@@ -129,6 +154,7 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
             }
         });
 
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("Default Collection:");
 
         collectionField.setText("NAME-OF-YOUR-DEFAULT-COLLECTION");
@@ -137,12 +163,6 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(cancelButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(saveButton)
-                .addGap(25, 25, 25))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(25, 25, 25)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -169,6 +189,12 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
                         .addComponent(jButton1))
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(31, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(saveButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(cancelButton)
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -307,5 +333,14 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
             props.setProperty(SolrAuthPropertyKey.values()[i].getKey(), "");
         }
         return props;
+    }
+    
+    public void  loadSolrAuthProperties(Properties props){
+         
+        SolrAuthPropertyKey p;
+        for(int i=0; i<SolrAuthPropertyKey.values().length; i++){
+            props.setProperty(SolrAuthPropertyKey.values()[i].getKey(), "");
+        }
+      
     }
 }
