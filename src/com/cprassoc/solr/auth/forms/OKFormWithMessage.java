@@ -6,7 +6,7 @@
 package com.cprassoc.solr.auth.forms;
 
 import com.cprassoc.solr.auth.Frameable;
-import com.cprassoc.solr.auth.forms.AddUserDialog.SolrManagerAction;
+import com.cprassoc.solr.auth.SolrAuthActionController.SolrManagerAction;
 import com.cprassoc.solr.auth.forms.resources.Resources;
 import com.cprassoc.solr.auth.ui.SolrAuthMainWindow;
 

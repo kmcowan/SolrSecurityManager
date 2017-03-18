@@ -8,8 +8,9 @@ package com.cprassoc.solr.auth.ui;
 import com.cprassoc.solr.auth.Frameable;
 import com.cprassoc.solr.auth.SolrAuthActionController;
 import com.cprassoc.solr.auth.SolrAuthManager;
+import com.cprassoc.solr.auth.forms.AddRoleForm;
 import com.cprassoc.solr.auth.forms.AddUserDialog;
-import com.cprassoc.solr.auth.forms.AddUserDialog.SolrManagerAction;
+import com.cprassoc.solr.auth.SolrAuthActionController.SolrManagerAction;
 import com.cprassoc.solr.auth.forms.OKFormWithMessage;
 import com.cprassoc.solr.auth.forms.OkCancelDialog;
 import com.cprassoc.solr.auth.forms.resources.Resources;
@@ -43,6 +44,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     private static HashMap<String, Integer> permissionMap = null;
     private static String SECURITY_JSON_FILE_NAME = "security.json";
     private String selectedUser = "";
+    private String selectedRole = "";
+    private String selectedPermission = "";
 
     /**
      * Creates new form SolrAuthMainWindow
@@ -64,8 +67,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 String authentication = SolrAuthActionController.SOLR.getAuthentication();
                 String authorization = SolrAuthActionController.SOLR.getAuthorization();
 
-                System.out.println("Authentication: " + authentication);
-                System.out.println("Authorization: " + authorization);
+                Log.log("Authentication: " + authentication);
+                Log.log("Authorization: " + authorization);
 
                 //  JSON.decode(authorization, type);
                 JSONObject authoeJson = new JSONObject(authentication);
@@ -78,7 +81,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                     map.put("authentication", authoeMap);
                     map.put("authorization", authoMap);
 
-                    System.out.println("Auth Class Name: " + clsName);
+                 //   System.out.println("Auth Class Name: " + clsName);
 
                     securityJson = new SecurityJson(map);
 
@@ -101,7 +104,10 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
             populateUserRolesTable(securityJson.getAuthorization());
             populateAuthenticationTable(securityJson.getAuthentication());
 
-            this.usersTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            // add table listeners
+            
+            // Users Table listener
+            usersTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
                 public void valueChanged(ListSelectionEvent e) {
                     String selectedData = null;
 
@@ -114,8 +120,51 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                         }
                     }
                     if (e.getValueIsAdjusting()) {
-                        System.out.println("Selected: " + selectedData);
+                        System.out.println("Selected User: " + selectedData);
                         selectedUser = selectedData;
+                    }
+                }
+
+            });
+            
+            
+            // roles table listener
+            rolesTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+                public void valueChanged(ListSelectionEvent e) {
+                    String selectedData = null;
+
+                    int[] selectedRow = rolesTable.getSelectedRows();
+                    int[] selectedColumns = rolesTable.getSelectedColumns();
+
+                    for (int i = 0; i < selectedRow.length; i++) {
+                        for (int j = 0; j < selectedColumns.length; j++) {
+                            selectedData = (String) rolesTable.getValueAt(selectedRow[i], selectedColumns[j]);
+                        }
+                    }
+                    if (e.getValueIsAdjusting()) {
+                        System.out.println("Selected Role: " + selectedData);
+                        selectedRole = selectedData;
+                    }
+                }
+
+            });
+            
+            // permissions table listener
+            permissionsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+                public void valueChanged(ListSelectionEvent e) {
+                    String selectedData = null;
+
+                    int[] selectedRow = permissionsTable.getSelectedRows();
+                    int[] selectedColumns = permissionsTable.getSelectedColumns();
+
+                    for (int i = 0; i < selectedRow.length; i++) {
+                        for (int j = 0; j < selectedColumns.length; j++) {
+                            selectedData = (String) permissionsTable.getValueAt(selectedRow[i], selectedColumns[j]);
+                        }
+                    }
+                    if (e.getValueIsAdjusting()) {
+                        System.out.println("Selected Permission: " + selectedData);
+                        selectedPermission = selectedData;
                     }
                 }
 
@@ -246,6 +295,10 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 }
                 
                 break;
+                
+            case add_role:
+                
+                break;
         }
     }
     
@@ -300,6 +353,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         jScrollPane4 = new javax.swing.JScrollPane();
         rolesTable = new javax.swing.JTable();
         jToolBar3 = new javax.swing.JToolBar();
+        jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
         serverStatusButton = new javax.swing.JToggleButton();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -463,6 +518,11 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 {null, null},
                 {null, null},
                 {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
                 {null, null}
             },
             new String [] {
@@ -480,6 +540,23 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         jScrollPane4.setViewportView(rolesTable);
 
         jToolBar3.setRollover(true);
+
+        jButton3.setText("Add");
+        jButton3.setFocusable(false);
+        jButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doAddRoleAction(evt);
+            }
+        });
+        jToolBar3.add(jButton3);
+
+        jButton4.setText("Revoke");
+        jButton4.setFocusable(false);
+        jButton4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton4.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar3.add(jButton4);
 
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("Solr Staus: ");
@@ -625,6 +702,11 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         }
     }//GEN-LAST:event_doDeleteUserConfirmAction
 
+    private void doAddRoleAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doAddRoleAction
+       AddRoleForm form = new AddRoleForm(this, true, securityJson.getAuthentication().getCredentials(), securityJson.getAuthorization().getUserRoles());
+       form.setVisible(true);
+    }//GEN-LAST:event_doAddRoleAction
+
     /**
      * @param args the command line arguments
      */
@@ -663,6 +745,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

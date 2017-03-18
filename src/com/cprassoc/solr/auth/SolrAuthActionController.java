@@ -58,6 +58,32 @@ public class SolrAuthActionController {
         Log.log(SolrAuthActionController.class, "New User hash: " + pwhash);
         return pwhash;
     }
+    
+    public static String addRole(String user, String[] roles){
+        String result = "";
+        String data = "";
+        try{
+         String path = SOLR.getSolrBaseUrl() + SolrHttpHandler.AUTHORIZATION_URL_PART;
+         if(roles.length > 1){
+           data = "{ \"set-user-role\": {\"" + user + "\" : \"" + JsonHelper.objToString(roles) + "\" }}";
+         } else {
+             // added to handle case for single or null role
+              data = "{ \"set-user-role\": {\"" + user + "\" : \"" + roles[0] + "\" }}";
+         }
+        /*
+        curl --user solr:SolrRocks http://localhost:8983/solr/admin/authorization -H 'Content-type:application/json' -d '{ 
+  "set-user-role": {"tom":["admin","dev"},
+  "set-user-role": {"harry":null}
+}'
+        */
+        
+        result = SOLR.post(path, data);
+        
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return result;
+    }
 
     public static String deleteUser(String uname) {
         String result = "";
@@ -73,5 +99,16 @@ public class SolrAuthActionController {
         result = SOLR.post(path, data);
 
         return result;
+    }
+    
+        public static enum SolrManagerAction {
+        create_user,
+        delete_user,
+        add_role,
+        delete_role,
+        update_role,
+        add_permission,
+        edit_permission,
+        delete_permission
     }
 }

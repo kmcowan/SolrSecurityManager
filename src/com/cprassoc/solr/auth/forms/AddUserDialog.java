@@ -11,6 +11,7 @@ import com.cprassoc.solr.auth.forms.resources.Resources;
 import com.cprassoc.solr.auth.ui.SolrAuthMainWindow;
 import com.cprassoc.solr.auth.util.Log;
 import java.util.LinkedHashMap;
+import com.cprassoc.solr.auth.SolrAuthActionController.SolrManagerAction;
 
 /**
  *
@@ -244,7 +245,7 @@ public class AddUserDialog extends BaseDialog {
         dialog.requestFocus();
     }
     
-    public static enum SolrManagerAction {
+ /*   public static enum SolrManagerAction {
         create_user,
         delete_user,
         add_role,
@@ -253,7 +254,7 @@ public class AddUserDialog extends BaseDialog {
         add_permission,
         edit_permission,
         delete_permission
-    }
+    }*/
 
     /**
      * @param args the command line arguments

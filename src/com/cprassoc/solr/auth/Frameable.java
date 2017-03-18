@@ -5,7 +5,7 @@
  */
 package com.cprassoc.solr.auth;
 
-import com.cprassoc.solr.auth.forms.AddUserDialog.SolrManagerAction;
+import com.cprassoc.solr.auth.SolrAuthActionController.SolrManagerAction;
 import java.util.LinkedHashMap;
 
 /**

@@ -6,10 +6,8 @@
 package com.cprassoc.solr.auth.forms;
 
 import com.cprassoc.solr.auth.Frameable;
-import com.cprassoc.solr.auth.forms.AddUserDialog.SolrManagerAction;
+import com.cprassoc.solr.auth.SolrAuthActionController.SolrManagerAction;
 import com.cprassoc.solr.auth.ui.SolrAuthMainWindow;
-import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.LinkedHashMap;
