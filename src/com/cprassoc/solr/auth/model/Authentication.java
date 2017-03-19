@@ -7,6 +7,7 @@ package com.cprassoc.solr.auth.model;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import net.arnx.jsonic.JSON;
 
 /**
  *
@@ -66,5 +67,14 @@ public class Authentication {
      */
     public LinkedHashMap<String,String> getCredentials() {
         return credentials;
+    }
+    
+    public String toJson(){
+        String result = "";
+        result += "  { ";
+        result += "\"class\":\"solr.BasicAuthPlugin\",";
+        result += "\"credentials\":"+ JSON.encode(credentials);//, true){"solr":"IV0EHq1OnNrj6gvRCwvFwTrZ1+z1oBbnQdiVC3otuq0= Ndd7LKvVBAaZIF0QAVi1ekCfAJXr1GGfLtRUXhgrF8c="}
+        result += "}";//"
+        return result;
     }
 }

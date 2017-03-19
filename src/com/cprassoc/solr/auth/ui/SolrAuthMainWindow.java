@@ -19,15 +19,18 @@ import com.cprassoc.solr.auth.model.Authorization;
 import com.cprassoc.solr.auth.model.SecurityJson;
 import com.cprassoc.solr.auth.util.JsonHelper;
 import com.cprassoc.solr.auth.util.Log;
+import com.cprassoc.solr.auth.util.Utils;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
+import javax.swing.JFileChooser;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableModel;
@@ -46,6 +49,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     private String selectedUser = "";
     private String selectedRole = "";
     private String selectedPermission = "";
+    public static int OK_RESPONSE = 0;
 
     /**
      * Creates new form SolrAuthMainWindow
@@ -83,8 +87,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                     map.put("authentication", authoeMap);
                     map.put("authorization", authoMap);
 
-                 //   System.out.println("Auth Class Name: " + clsName);
-
+                    //   System.out.println("Auth Class Name: " + clsName);
                     securityJson = new SecurityJson(map);
 
                 } else {
@@ -94,10 +97,10 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 }
 
             } else {
-                 this.serverStatusButton.setText("OFFLINE");
+                this.serverStatusButton.setText("OFFLINE");
                 this.serverStatusButton.setBackground(Color.red);
                 JSONObject authoeJson = getDefaultSecurityJson();
-                LinkedHashMap authoeMap = new LinkedHashMap(JsonHelper.jsonToMap(authoeJson));
+                LinkedHashMap<String, Object> authoeMap = new LinkedHashMap(JsonHelper.jsonToMap(authoeJson));
                 securityJson = new SecurityJson(authoeMap);
                 logPane.setText("Solr is offline. ");
             }
@@ -107,7 +110,6 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
             populateAuthenticationTable(securityJson.getAuthentication());
 
             // add table listeners
-            
             // Users Table listener
             usersTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
                 public void valueChanged(ListSelectionEvent e) {
@@ -128,8 +130,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 }
 
             });
-            
-            
+
             // roles table listener
             rolesTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
                 public void valueChanged(ListSelectionEvent e) {
@@ -150,7 +151,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 }
 
             });
-            
+
             // permissions table listener
             permissionsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
                 public void valueChanged(ListSelectionEvent e) {
@@ -218,10 +219,12 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         int row = 0;
         while (iter.hasNext()) {
             key = iter.next();
-            value = (String) map.get(key);
-            if(value instanceof ArrayList){
-                ArrayList temp = (ArrayList)value;
+            value = map.get(key);
+            if (value instanceof ArrayList) {
+                ArrayList temp = (ArrayList) value;
                 value = temp.toString();
+            } else if(value instanceof String){
+                  value = (String) map.get(key);
             }
             this.rolesTable.getModel().setValueAt(key, row, 0);
             this.rolesTable.getModel().setValueAt(value, row, 1);
@@ -274,14 +277,16 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     }
 
     public void fireAction(SolrManagerAction action, LinkedHashMap<String, String> args) {
+        JSONObject resp = null;
+        
         switch (action) {
             case create_user:
                 this.securityJson.getAuthentication().getCredentials().put(args.get("user"), args.get("pwd"));
                 populateAuthenticationTable(this.securityJson.getAuthentication());
                 break;
-                
+
             case delete_user:
-                Log.log(getClass(), "Delete User: "+selectedUser);
+                Log.log(getClass(), "Delete User: " + selectedUser);
                 String result = SolrAuthActionController.deleteUser(selectedUser);
                 Log.log(result);
                 /*
@@ -289,51 +294,79 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
   "responseHeader":{
     "status":0,
     "QTime":12}}
-                */
-                JSONObject resp = new JSONObject(result);
-                if(resp.getJSONObject("responseHeader").getInt("status") == 0){
+                 */
+                 resp = new JSONObject(result);
+                if (resp.getJSONObject("responseHeader").getInt("status") == 0) {
                     Log.log(getClass(), "User Deleted OK");
-                    showOKOnlyMessageDialog("User "+selectedUser+" deleted successfully", null);
+                    showOKOnlyMessageDialog("User " + selectedUser + " deleted successfully", null);
                     securityJson.getAuthentication().removeCredentials(selectedUser);
                     clearTable(this.usersTable.getModel());
-                     populateAuthenticationTable(securityJson.getAuthentication());
+                    populateAuthenticationTable(securityJson.getAuthentication());
                 }
-                
+
                 break;
-                
+
             case add_role:
                 Log.log(getClass(), "FIRE Add Role...");
                 ArrayList<String> roles = new ArrayList<>();
-                String user = "";
+                String user = getUserFromRoleArgs(args);
+                String key;
                 Iterator<String> iter = args.keySet().iterator();
-                while(iter.hasNext()){
-                    user = iter.next();
-                    roles.add(args.get(user));
+                while (iter.hasNext()) {
+                    key = iter.next();
+                    // we have pass a user in with the args, so filter it out here. 
+                    if(!key.equals(AddRoleForm.ROLE_USER_KEY)){
+                      roles.add(args.get(key));
+                    }
                 }
-                  result = SolrAuthActionController.addRole(user, roles);
-                  Log.log(getClass(), result);
+                result = SolrAuthActionController.addRole(user, roles);
+                  resp = new JSONObject(result);
+                  if(getResponseStatus(resp) == OK_RESPONSE){
+                      securityJson.getAuthorization().updateAddUserRoles(user, roles);
+                      clearTable(this.rolesTable.getModel());
+                      populateUserRolesTable(securityJson.getAuthorization());
+                  }
+                Log.log(getClass(), result);
+                
                 break;
         }
     }
     
-    private void clearTable(TableModel model){
-        
-        for(int i=0; i<model.getRowCount(); i++){
-            for(int j=0; j<model.getColumnCount(); j++){
+    private int getResponseStatus(JSONObject resp){
+        return resp.getJSONObject("responseHeader").getInt("status");
+    }
+    
+    private String getUserFromRoleArgs(LinkedHashMap<String,String> args){
+    
+        Iterator<String> iter = args.keySet().iterator();
+        String key;
+        while(iter.hasNext()){
+            key = iter.next();
+            if(key.equals(AddRoleForm.ROLE_USER_KEY)){
+                return args.get(key);
+            }
+        }
+        return "";
+    }
+
+    private void clearTable(TableModel model) {
+
+        for (int i = 0; i < model.getRowCount(); i++) {
+            for (int j = 0; j < model.getColumnCount(); j++) {
                 model.setValueAt("", i, j);
             }
         }
     }
-    
+
     public void showOKOnlyMessageDialog(String message, Resources.Resource resc) {
-       
+
         OKFormWithMessage dialog = new OKFormWithMessage(this, true, message, resc);
         dialog.setVisible(true);
         dialog.requestFocus();
     }
-    
-       private void showOKCancelMessageDialog(String message, SolrManagerAction resc) {
-       
+
+    private void showOKCancelMessageDialog(String message, SolrManagerAction resc) {
+
         OkCancelDialog dialog = new OkCancelDialog(this, true, message, resc);
         dialog.setVisible(true);
         dialog.requestFocus();
@@ -374,10 +407,13 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         loggingEnabledCheckbox = new javax.swing.JCheckBox();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
+        jMenuItem5 = new javax.swing.JMenuItem();
+        jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenu3 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
+        jMenuItem3 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -568,6 +604,11 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         jButton4.setFocusable(false);
         jButton4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton4.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doRevokeRoleAction(evt);
+            }
+        });
         jToolBar3.add(jButton4);
 
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
@@ -682,6 +723,22 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
 
         jMenu1.setText("File");
 
+        jMenuItem5.setText("Load Config");
+        jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doLoadConfigAction(evt);
+            }
+        });
+        jMenu1.add(jMenuItem5);
+
+        jMenuItem4.setText("Save as...");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doSaveConfigAsAction(evt);
+            }
+        });
+        jMenu1.add(jMenuItem4);
+
         jMenuItem1.setText("Quit");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -705,6 +762,14 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         });
         jMenu3.add(jMenuItem2);
 
+        jMenuItem3.setText("Export Current Config");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doExportSecurityAction(evt);
+            }
+        });
+        jMenu3.add(jMenuItem3);
+
         jMenuBar1.add(jMenu3);
 
         setJMenuBar(jMenuBar1);
@@ -724,7 +789,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     }// </editor-fold>//GEN-END:initComponents
 
     private void doQuitAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doQuitAction
-      System.exit(0);
+        System.exit(0);
     }//GEN-LAST:event_doQuitAction
 
     private void doAddRoleAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doAddRoleAction
@@ -733,10 +798,10 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     }//GEN-LAST:event_doAddRoleAction
 
     private void doDeleteUserConfirmAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doDeleteUserConfirmAction
-        if(selectedUser == null || selectedUser.equals("")){
+        if (selectedUser == null || selectedUser.equals("")) {
             showOKOnlyMessageDialog("No user selected", Resources.Resource.warn);
         } else {
-            showOKCancelMessageDialog("Are you sure you want to delete "+selectedUser+"? \n This action cannot be undone. ", SolrManagerAction.delete_user);
+            showOKCancelMessageDialog("Are you sure you want to delete " + selectedUser + "? \n This action cannot be undone. ", SolrManagerAction.delete_user);
         }
     }//GEN-LAST:event_doDeleteUserConfirmAction
 
@@ -747,7 +812,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     }//GEN-LAST:event_doAddUserAction
 
     private void doToggleLoggingEnabled(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doToggleLoggingEnabled
-        if(this.loggingEnabledCheckbox.isSelected()){
+        if (this.loggingEnabledCheckbox.isSelected()) {
             Log.setLoggingEnabled(true);
         } else {
             Log.setLoggingEnabled(false);
@@ -755,9 +820,66 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     }//GEN-LAST:event_doToggleLoggingEnabled
 
     private void doManagePropertiesAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doManagePropertiesAction
-         SolrSecurityPropertyManagerFrame secframe = new SolrSecurityPropertyManagerFrame(SolrAuthManager.getProperties());
-         secframe.setVisible(true);
+        SolrSecurityPropertyManagerFrame secframe = new SolrSecurityPropertyManagerFrame(SolrAuthManager.getProperties());
+        secframe.setVisible(true);
     }//GEN-LAST:event_doManagePropertiesAction
+
+    private void doExportSecurityAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doExportSecurityAction
+        String json = securityJson.export();//JSON.encode(securityJson);
+        File exportDir = new File("export");
+        if (!exportDir.exists()) {
+            exportDir.mkdirs();
+        }
+        String exportFilePath = exportDir.getAbsolutePath() + File.separator + "security_json_" + new Date().toString() + ".json";
+        Utils.writeBytesToFile(exportFilePath, json);
+        File file = new File(exportFilePath);
+        if (file.exists()) {
+            showOKOnlyMessageDialog("File exported successfully", null);
+        }
+        Log.log(json);
+    }//GEN-LAST:event_doExportSecurityAction
+
+    private void doSaveConfigAsAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doSaveConfigAsAction
+        try {
+            JFileChooser fc = new JFileChooser();
+            int retval = fc.showSaveDialog(this);
+            if (retval == JFileChooser.APPROVE_OPTION) {
+                String filePath = fc.getSelectedFile().getAbsolutePath();
+                String content = securityJson.export();
+                Utils.writeBytesToFile(filePath, content);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_doSaveConfigAsAction
+
+    private void doLoadConfigAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doLoadConfigAction
+        JFileChooser fc = new JFileChooser(new File(System.getProperty("user.dir")));
+        int retval = fc.showDialog(this, "Open Config");
+        if (retval == JFileChooser.APPROVE_OPTION) {
+            try {
+                File fileToOpen = fc.getSelectedFile();
+                if (fileToOpen.exists()) {
+                    String content = new String(IOUtils.readBytesFromStream(new FileInputStream(fileToOpen)));
+                    LinkedHashMap<String, Object> map = new LinkedHashMap(JsonHelper.jsonToMap(new JSONObject(content)));
+                    securityJson = new SecurityJson(map);
+                    populateAuthorizationTable(securityJson.getAuthorization());
+                    populateUserRolesTable(securityJson.getAuthorization());
+                    populateAuthenticationTable(securityJson.getAuthentication());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }//GEN-LAST:event_doLoadConfigAction
+
+    private void doRevokeRoleAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doRevokeRoleAction
+       if(this.rolesTable.getSelectedRow() > 0){
+           Log.log(getClass(), "Revoke: "+selectedRole);
+           this.rolesTable.getModel().setValueAt("null", this.rolesTable.getSelectedRow(), 1);
+       }
+    }//GEN-LAST:event_doRevokeRoleAction
 
     /**
      * @param args the command line arguments
@@ -811,6 +933,9 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

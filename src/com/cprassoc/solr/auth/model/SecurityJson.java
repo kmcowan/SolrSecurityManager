@@ -9,7 +9,9 @@ import com.cprassoc.solr.auth.util.JsonHelper;
 import com.cprassoc.solr.auth.util.Log;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import net.arnx.jsonic.JSON;
 import org.apache.cxf.helpers.IOUtils;
+import org.json.simple.parser.JSONParser;
 
 /**
  *
@@ -20,6 +22,7 @@ public class SecurityJson {
     private Authorization authorization = null;
     private Authentication authentication = null;
     private Map map = null;
+    private final JSONParser parser = new JSONParser(); 
 
     public SecurityJson() {
 
@@ -52,6 +55,29 @@ public class SecurityJson {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    public String export(){
+        String json = "";
+        try{
+          //  LinkedHashMap<String,Object> map = new LinkedHashMap();
+         //   map.put("authorization", authorization.toJson());
+         //   map.put("authentication", authentication.toJson());
+         json += "{";
+         json += "\"authorization\":"+authorization.toJson();
+         json += ",";
+         json += "\"authentication\":"+authentication.toJson();
+         json += "}";
+          //  json = JSON.encode(map);
+      //  JSONObject obj = (JSONObject)parser.parse(new String(Utils.streamToString(this.getClass().getResourceAsStream("security.json"))));
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return json;
+    }
+    
+    public void load(String config){
+        
     }
 
     /**

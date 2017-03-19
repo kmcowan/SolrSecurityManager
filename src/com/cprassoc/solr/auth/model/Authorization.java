@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import net.arnx.jsonic.JSON;
 
 /**
  *
@@ -20,7 +21,7 @@ public class Authorization {
 
     private String className = "";
     private ArrayList<LinkedHashMap> permissions = null;
-    private LinkedHashMap userRoles = null;
+    private LinkedHashMap<String,Object> userRoles = null;
 
     public Authorization(LinkedHashMap map) {
         LinkedHashMap authMap = (LinkedHashMap) map.get("authorization");
@@ -118,4 +119,24 @@ public class Authorization {
     public LinkedHashMap getUserRoles() {
         return userRoles;
     }
+    
+    public void  updateAddUserRoles(String user, ArrayList roles){
+        if(roles.size() == 1){
+            userRoles.put(user, roles.get(0));
+        } else {
+            userRoles.put(user, roles);
+        }
+    }
+    
+    public String toJson(){
+        String result = "";
+        result += "{\n" +
+"   \"class\":\"solr.RuleBasedAuthorizationPlugin\",\n" +
+"   \"permissions\":"+JSON.encode(permissions)+",\n" +
+"   \"user-role\":"+JSON.encode(userRoles)+"\n" +
+"}";
+        return result;
+    }
+    
+    
 }

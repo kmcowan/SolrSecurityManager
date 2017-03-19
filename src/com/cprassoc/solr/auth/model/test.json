@@ -1,0 +1,35 @@
+{
+	"authorization":{
+		"class": "solr.RuleBasedAuthorizationPlugin",
+		"permissions": [
+			[{
+				"role": "*",
+				"name": "read"
+			}, {
+				"role": "*",
+				"name": "collection-admin-read"
+			}, {
+				"role": "*",
+				"name": "core-admin-read"
+			}, {
+				"path": "/select",
+				"role": "admin",
+				"before": "collection-admin-read",
+				"name": "secure-collection1-permission",
+				"collection": "securecollection"
+			}]
+		],
+		"user-role": {
+			"solr": "admin",
+			"foobrole": "foobar",
+			"devuser": "dev"
+		}
+	}, "authentication": {
+		"class": "solr.BasicAuthPlugin",
+		"credentials": {
+			"foobar": "1dbSVQRqmDh7OBN1zC+CSXjBJ7HmX+aG9IYWdT7K+cI= bSKboUpc7RfbO4X/rdXeEE3YQaarrEON2g0Buzdc8ZY=",
+			"solr": "IV0EHq1OnNrj6gvRCwvFwTrZ1+z1oBbnQdiVC3otuq0= Ndd7LKvVBAaZIF0QAVi1ekCfAJXr1GGfLtRUXhgrF8c=",
+			"devuser": "IV0EHq1OnNrj6gvRCwvFwTrZ1+z1oBbnQdiVC3otuq0= Ndd7LKvVBAaZIF0QAVi1ekCfAJXr1GGfLtRUXhgrF8c="
+		}
+	}
+}

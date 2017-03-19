@@ -5,6 +5,8 @@
  */
 package com.cprassoc.solr.auth.util;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.StringWriter;
 import org.apache.commons.io.IOUtils;
@@ -25,5 +27,23 @@ public class Utils {
             e.printStackTrace();
         }
         return result;
+    }
+
+    public static String writeBytesToFile(String filePath, String content) {
+        String path = "";
+        try {
+            File file = new File(filePath);
+            FileWriter fw = new FileWriter(file);
+            Log.log(Utils.class, "write file: "+filePath);
+            fw.write(content);
+          //  IOUtils.write(content, fw);
+          //  IOUtils.write
+            path = file.getAbsolutePath();
+            fw.close();
+
+        } catch (Exception e) {
+               e.printStackTrace();
+        }
+        return path;
     }
 }

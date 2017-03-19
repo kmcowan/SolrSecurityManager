@@ -11,6 +11,7 @@ import com.cprassoc.solr.auth.forms.resources.Resources;
 import com.cprassoc.solr.auth.ui.SolrAuthMainWindow;
 import com.cprassoc.solr.auth.util.Log;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import javax.swing.ComboBoxModel;
@@ -30,6 +31,8 @@ public class AddRoleForm extends javax.swing.JDialog {
     private LinkedHashMap<String, LinkedHashMap<String, String>> roleMap = null;
     private Frameable frame = null;
 
+    public static String ROLE_USER_KEY = "args-role-user-key-from-solr-auth-manager-application";
+
     /**
      * Creates new form AddRoleForm
      */
@@ -40,6 +43,7 @@ public class AddRoleForm extends javax.swing.JDialog {
         this.frame = parent;
         newRoles = new LinkedHashMap<>();
         roleMap = new LinkedHashMap<>();
+
         initComponents();
     }
 
@@ -58,28 +62,59 @@ public class AddRoleForm extends javax.swing.JDialog {
     private ComboBoxModel getRolesComboBoxModel() {
         DefaultComboBoxModel model = new DefaultComboBoxModel();
         Iterator<String> iter = roles.keySet().iterator();
+        HashMap<String, String> temp = new HashMap<>();
         model.addElement("");
         String key;
         Object value;
         while (iter.hasNext()) {
             key = iter.next();
             value = roles.get(key);
+            Log.log(getClass(), "Loading Role: " + value);
             if (value instanceof String[]) {
                 String[] r = (String[]) value;
                 for (int i = 0; i < r.length; i++) {
-                    model.addElement(r[i]);
+                    if (temp.get(r[i]) == null) {
+                        model.addElement(r[i]);
+                        temp.put(r[i], r[i]);
+                    }
                 }
             } else if (value instanceof ArrayList) {
                 ArrayList rs = (ArrayList) value;
                 for (int i = 0; i < rs.size(); i++) {
-                    model.addElement(rs.get(i));
+                    if (temp.get(rs.get(i)) == null) {
+                        model.addElement(rs.get(i));
+                        temp.put((String) rs.get(i), (String) rs.get(i));
+                    }
                 }
+            } else if (value instanceof String) {
+                String v = (String) value;
+                if (v.startsWith("[")) {
+                    Log.log(getClass(), "parse roles from array: " + v);
+                    String[] r = getRolesFromStringArray(v);
+                    if (r.length > 0) {
+                        for (int i = 0; i < r.length; i++) {
+                            if (temp.get(r[i].trim()) == null) {
+                                model.addElement(r[i].trim());
+                                temp.put(r[i].trim(), r[i]);
+                            }
+                        }
+                    }
 
+                } else if (temp.get(v) == null) {
+                    model.addElement(v);
+                    temp.put(v, v);
+                }
             } else {
-                model.addElement(value);
+                model.addElement(value.toString());
             }
         }
         return model;
+    }
+
+    private String[] getRolesFromStringArray(String r) {
+        r = r.replaceAll("\\[", "");
+        r = r.replaceAll("\\]", "");
+        return r.split(",");
     }
 
     private ListModel getRolesListModel() {
@@ -88,7 +123,16 @@ public class AddRoleForm extends javax.swing.JDialog {
         String key;
         while (iter.hasNext()) {
             key = iter.next();
-            model.addElement(key);
+            if (key.startsWith("[")) {
+                String[] r = getRolesFromStringArray(key);
+                if (r.length > 0) {
+                    for (int i = 0; i < r.length; i++) {
+                        model.addElement(r[i].trim());
+                    }
+                }
+            } else {
+                model.addElement(key);
+            }
         }
         return model;
     }
@@ -119,6 +163,7 @@ public class AddRoleForm extends javax.swing.JDialog {
         rolesComboBox = new javax.swing.JComboBox<>();
         jButton3 = new javax.swing.JButton();
         addRoleField = new javax.swing.JTextField();
+        jButton4 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -180,6 +225,15 @@ public class AddRoleForm extends javax.swing.JDialog {
             }
         });
 
+        jButton4.setBackground(new java.awt.Color(0, 51, 153));
+        jButton4.setForeground(new java.awt.Color(255, 255, 255));
+        jButton4.setText("Remove");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doRemoveRole(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -203,16 +257,21 @@ public class AddRoleForm extends javax.swing.JDialog {
                                 .addComponent(usersComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(18, 18, 18)
                         .addComponent(addRoleField, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
-                        .addComponent(jButton3))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap(101, Short.MAX_VALUE)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2)))
-                .addGap(43, 43, 43))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jButton1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton2))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jButton3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton4)))))
+                .addGap(28, 28, 28))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -223,22 +282,23 @@ public class AddRoleForm extends javax.swing.JDialog {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(usersComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(rolesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(addRoleField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(38, 38, 38)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(161, 161, 161)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton3)
+                            .addComponent(jButton4))
+                        .addGap(63, 63, 63)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton1)
                             .addComponent(jButton2)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel3)
-                            .addComponent(rolesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton3)
-                            .addComponent(addRoleField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(38, 38, 38)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(28, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(29, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -261,7 +321,16 @@ public class AddRoleForm extends javax.swing.JDialog {
     }//GEN-LAST:event_doCancelAction
 
     private void doSaveAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doSaveAction
-        frame.fireAction(SolrAuthActionController.SolrManagerAction.add_role, newRoles);
+        LinkedHashMap<String, String> args = new LinkedHashMap<>();
+        String user = (String) this.usersComboBox.getSelectedItem();
+        int roleCount = this.rolesList.getModel().getSize();
+        String role;
+        for (int i = 0; i < roleCount; i++) {
+            role = (String) this.rolesList.getModel().getElementAt(i);
+            args.put(role, role);
+        }
+        args.put(ROLE_USER_KEY, user);
+        frame.fireAction(SolrAuthActionController.SolrManagerAction.add_role, args);
         this.setVisible(false);
         this.dispose();
     }//GEN-LAST:event_doSaveAction
@@ -299,6 +368,14 @@ public class AddRoleForm extends javax.swing.JDialog {
         Log.log(getClass(), "User Selected: " + this.usersComboBox.getSelectedItem());
         loadRolesForUser();
     }//GEN-LAST:event_doUserSelectedAction
+
+    private void doRemoveRole(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doRemoveRole
+        if (this.rolesList.getSelectedValue() != null) {
+            this.rolesList.remove(rolesList.getSelectedIndex());
+        } else {
+            this.frame.showOKOnlyMessageDialog("No role selected. ", Resources.Resource.warn);
+        }
+    }//GEN-LAST:event_doRemoveRole
 
     private void loadRolesForUser() {
         Log.log(getClass(), "Loading roles for user...");
@@ -387,6 +464,7 @@ public class AddRoleForm extends javax.swing.JDialog {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

@@ -20,44 +20,43 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
     /**
      * Creates new form SolrSecurityPropertyManager
      */
-
     Properties loadedProperties = null;
+
     public SolrSecurityPropertyManagerFrame() {
         initComponents();
         init();
     }
-    
-     public SolrSecurityPropertyManagerFrame(Properties p) {
+
+    public SolrSecurityPropertyManagerFrame(Properties p) {
         this.loadedProperties = p;
         initComponents();
         init();
     }
-    
-    private void init(){
+
+    private void init() {
         this.setSize(700, 400);
-        if(this.loadedProperties != null){
+        if (this.loadedProperties != null) {
             this.solrInstallDirPath.setText(loadedProperties.getProperty(SolrAuthPropertyKey.solrInstallPath.getKey()));
             this.solrHostPort.setText(loadedProperties.getProperty(SolrAuthPropertyKey.solrHostPort.getKey()));
             this.collectionField.setText(loadedProperties.getProperty(SolrAuthPropertyKey.defaultCollection.getKey()));
             this.zooKeeperPort.setText(loadedProperties.getProperty(SolrAuthPropertyKey.zookeeperPort.getKey()));
-            if(loadedProperties.getProperty(SolrAuthPropertyKey.isUsingSSL.getKey()) != null && 
-                    loadedProperties.getProperty(SolrAuthPropertyKey.isUsingSSL.getKey()).equalsIgnoreCase("true")){
+            if (loadedProperties.getProperty(SolrAuthPropertyKey.isUsingSSL.getKey()) != null
+                    && loadedProperties.getProperty(SolrAuthPropertyKey.isUsingSSL.getKey()).equalsIgnoreCase("true")) {
                 this.usingSSL.setSelected(true);
             } else {
                 this.usingSSL.setSelected(false);
             }
-            
-            
+
         }
     }
-    
+
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
-      
+
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -107,6 +106,7 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
         collectionField = new javax.swing.JTextField();
+        jButton2 = new javax.swing.JButton();
 
         jPanel1.setBackground(new java.awt.Color(0, 51, 102));
 
@@ -159,6 +159,13 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
 
         collectionField.setText("NAME-OF-YOUR-DEFAULT-COLLECTION");
 
+        jButton2.setText("Load From File");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doLoadFromFile(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -167,27 +174,31 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
                 .addGap(25, 25, 25)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(usingSSL, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addGap(58, 58, 58)
-                                .addComponent(solrHostPort, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(solrInstallDirPath, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jLabel5))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(collectionField, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(zooKeeperPort, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1))
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton2))
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                    .addComponent(jLabel3)
+                                    .addGap(58, 58, 58)
+                                    .addComponent(solrHostPort, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                    .addComponent(jLabel2)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(solrInstallDirPath, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel4)
+                                        .addComponent(jLabel5))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(collectionField, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(zooKeeperPort, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jButton1))))
                 .addContainerGap(31, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -200,8 +211,10 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton2))
+                .addGap(29, 29, 29)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(solrInstallDirPath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -243,16 +256,16 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
         System.out.println("Saving...");
         Properties props = SolrAuthManager.getProperties();
         props.setProperty(SolrAuthPropertyKey.solrInstallPath.getKey(), this.solrInstallDirPath.getText());
-         props.setProperty(SolrAuthPropertyKey.solrHostPort.getKey(), this.solrHostPort.getText());
-          props.setProperty(SolrAuthPropertyKey.zookeeperPort.getKey(), this.zooKeeperPort.getText());
-            props.setProperty(SolrAuthPropertyKey.defaultCollection.getKey(), this.collectionField.getText());
-          String sslEnabled = "false";
-          if(this.usingSSL.isSelected()){
-              sslEnabled = "true";
-          }
-           props.setProperty(SolrAuthPropertyKey.isUsingSSL.getKey(), sslEnabled);
-           SolrAuthActionController.doSavePropertiesAction(props);
-        
+        props.setProperty(SolrAuthPropertyKey.solrHostPort.getKey(), this.solrHostPort.getText());
+        props.setProperty(SolrAuthPropertyKey.zookeeperPort.getKey(), this.zooKeeperPort.getText());
+        props.setProperty(SolrAuthPropertyKey.defaultCollection.getKey(), this.collectionField.getText());
+        String sslEnabled = "false";
+        if (this.usingSSL.isSelected()) {
+            sslEnabled = "true";
+        }
+        props.setProperty(SolrAuthPropertyKey.isUsingSSL.getKey(), sslEnabled);
+        SolrAuthActionController.doSavePropertiesAction(props);
+
     }//GEN-LAST:event_doSaveAction
 
     private void doCancelAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doCancelAction
@@ -266,22 +279,27 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
         final JFileChooser fc = new JFileChooser();
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int returnVal = fc.showOpenDialog(SolrSecurityPropertyManagerFrame.this);
- 
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                File file = fc.getSelectedFile();
-                //This is where a real application would open the file.
-              System.out.println("Opening: " + file.getName() + "." );
-              this.solrInstallDirPath.setText(file.getAbsolutePath());
-            } else {
-                System.out.println("Open command cancelled by user." );
-            }
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = fc.getSelectedFile();
+            //This is where a real application would open the file.
+            System.out.println("Opening: " + file.getName() + ".");
+            this.solrInstallDirPath.setText(file.getAbsolutePath());
+        } else {
+            System.out.println("Open command cancelled by user.");
+        }
     }//GEN-LAST:event_doBrowseForSolrInstallDir
+
+    private void doLoadFromFile(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doLoadFromFile
+        // TODO add your handling code here:
+    }//GEN-LAST:event_doLoadFromFile
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
     private javax.swing.JTextField collectionField;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -308,39 +326,39 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
     public javax.swing.JButton getSaveButton() {
         return saveButton;
     }
-    
+
     public enum SolrAuthPropertyKey {
         solrHostPort("solr.host.port"),
         solrInstallPath("solr.install.path"),
         isUsingSSL("solr.ssl.enabled"),
         zookeeperPort("solr.zookeeper.port"),
         defaultCollection("solr.default.collection");
-         private String key = "";
-         
-         private SolrAuthPropertyKey(String key){
+        private String key = "";
+
+        private SolrAuthPropertyKey(String key) {
             this.key = key;
-         }
-         
-         public String getKey(){
-             return key;
-         }
+        }
+
+        public String getKey() {
+            return key;
+        }
     }
-    
-    public static Properties getSolrAuthProperties(){
+
+    public static Properties getSolrAuthProperties() {
         Properties props = new Properties();
         SolrAuthPropertyKey p;
-        for(int i=0; i<SolrAuthPropertyKey.values().length; i++){
+        for (int i = 0; i < SolrAuthPropertyKey.values().length; i++) {
             props.setProperty(SolrAuthPropertyKey.values()[i].getKey(), "");
         }
         return props;
     }
-    
-    public void  loadSolrAuthProperties(Properties props){
-         
+
+    public void loadSolrAuthProperties(Properties props) {
+
         SolrAuthPropertyKey p;
-        for(int i=0; i<SolrAuthPropertyKey.values().length; i++){
+        for (int i = 0; i < SolrAuthPropertyKey.values().length; i++) {
             props.setProperty(SolrAuthPropertyKey.values()[i].getKey(), "");
         }
-      
+
     }
 }
