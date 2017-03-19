@@ -106,6 +106,20 @@ public class SolrAuthActionController {
         return result;
     }
     
+    public static JSONObject getCollections(){
+        JSONObject obj = null;
+        try{
+            String url = SOLR.getSolrBaseUrl() + SolrHttpHandler.COLLECTION_LIST_URL_PART;
+            String result = SOLR.get(url);
+            obj = new JSONObject(result);
+            // http://localhost:8983/solr/admin/collections?action=LIST&wt=json
+            
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return obj;
+    }
+    
         public static enum SolrManagerAction {
         create_user,
         delete_user,

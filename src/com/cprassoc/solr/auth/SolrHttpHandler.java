@@ -39,6 +39,7 @@ public class SolrHttpHandler {
 
     public final static String AUTHORIZATION_URL_PART = "/solr/admin/authorization";
     public final static String AUTHENTICATION_URL_PART = "/solr/admin/authentication";
+    public final static String COLLECTION_LIST_URL_PART = "/solr/admin/collections?action=LIST&wt=json";
     private HttpClient client = null;
     private Properties props = null;
     private CloudSolrClient cloudClient = null;

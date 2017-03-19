@@ -11,6 +11,7 @@ import com.cprassoc.solr.auth.SolrAuthManager;
 import com.cprassoc.solr.auth.forms.AddRoleForm;
 import com.cprassoc.solr.auth.forms.AddUserDialog;
 import com.cprassoc.solr.auth.SolrAuthActionController.SolrManagerAction;
+import com.cprassoc.solr.auth.forms.ManagePermissionForm;
 import com.cprassoc.solr.auth.forms.OKFormWithMessage;
 import com.cprassoc.solr.auth.forms.OkCancelDialog;
 import com.cprassoc.solr.auth.forms.resources.Resources;
@@ -395,6 +396,9 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         usersTable = new javax.swing.JTable();
         jLabel2 = new javax.swing.JLabel();
         jToolBar1 = new javax.swing.JToolBar();
+        jButton5 = new javax.swing.JButton();
+        jButton6 = new javax.swing.JButton();
+        jButton7 = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         permissionsTable = new javax.swing.JTable();
         jLabel3 = new javax.swing.JLabel();
@@ -470,6 +474,35 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
 
         jToolBar1.setRollover(true);
 
+        jButton5.setBackground(new java.awt.Color(0, 51, 153));
+        jButton5.setForeground(new java.awt.Color(255, 255, 255));
+        jButton5.setText("Add");
+        jButton5.setFocusable(false);
+        jButton5.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton5.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doAddPermissionAction(evt);
+            }
+        });
+        jToolBar1.add(jButton5);
+
+        jButton6.setBackground(new java.awt.Color(0, 51, 153));
+        jButton6.setForeground(new java.awt.Color(255, 255, 255));
+        jButton6.setText("Edit");
+        jButton6.setFocusable(false);
+        jButton6.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton6.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(jButton6);
+
+        jButton7.setBackground(new java.awt.Color(0, 51, 153));
+        jButton7.setForeground(new java.awt.Color(255, 255, 255));
+        jButton7.setText("Delete");
+        jButton7.setFocusable(false);
+        jButton7.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton7.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(jButton7);
+
         permissionsTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null, null},
@@ -519,7 +552,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
 
         jToolBar2.setRollover(true);
 
-        jButton1.setBackground(new java.awt.Color(0, 51, 102));
+        jButton1.setBackground(new java.awt.Color(0, 51, 153));
         jButton1.setForeground(new java.awt.Color(255, 255, 255));
         jButton1.setText("Add");
         jButton1.setFocusable(false);
@@ -532,7 +565,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         });
         jToolBar2.add(jButton1);
 
-        jButton2.setBackground(new java.awt.Color(0, 51, 102));
+        jButton2.setBackground(new java.awt.Color(0, 51, 153));
         jButton2.setForeground(new java.awt.Color(255, 255, 255));
         jButton2.setText("Delete");
         jButton2.setFocusable(false);
@@ -595,6 +628,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
 
         jToolBar3.setRollover(true);
 
+        jButton3.setBackground(new java.awt.Color(0, 51, 153));
         jButton3.setForeground(new java.awt.Color(255, 255, 255));
         jButton3.setText("Add");
         jButton3.setFocusable(false);
@@ -607,6 +641,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         });
         jToolBar3.add(jButton3);
 
+        jButton4.setBackground(new java.awt.Color(0, 51, 153));
         jButton4.setForeground(new java.awt.Color(255, 255, 255));
         jButton4.setText("Revoke");
         jButton4.setFocusable(false);
@@ -655,20 +690,23 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)
-                                    .addComponent(jScrollPane2)
-                                    .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.LEADING))
-                                .addGap(22, 22, 22)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jToolBar1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jToolBar2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel6)
-                                .addGap(4, 4, 4)
-                                .addComponent(serverStatusButton)
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                            .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 537, Short.MAX_VALUE)
+                                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jScrollPane1))
+                                        .addGap(18, 18, 18)
+                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addComponent(jLabel2)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jLabel6)
+                                        .addGap(4, 4, 4)
+                                        .addComponent(serverStatusButton)))
                                 .addGap(38, 38, 38)))
                         .addGap(20, 20, 20))
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -699,13 +737,10 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel6)
                             .addComponent(serverStatusButton))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
-                        .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(29, 29, 29)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -903,6 +938,11 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
        }
     }//GEN-LAST:event_doRevokeRoleAction
 
+    private void doAddPermissionAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doAddPermissionAction
+        ManagePermissionForm form = new ManagePermissionForm(this, true, securityJson, null);
+        form.setVisible(true);
+    }//GEN-LAST:event_doAddPermissionAction
+
     /**
      * @param args the command line arguments
      */
@@ -943,6 +983,9 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButton7;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

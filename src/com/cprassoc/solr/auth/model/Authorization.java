@@ -116,7 +116,7 @@ public class Authorization {
     /**
      * @return the userRoles
      */
-    public LinkedHashMap getUserRoles() {
+    public LinkedHashMap<String,Object> getUserRoles() {
         return userRoles;
     }
     

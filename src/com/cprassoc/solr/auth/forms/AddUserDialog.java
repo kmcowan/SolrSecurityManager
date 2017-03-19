@@ -31,7 +31,7 @@ public class AddUserDialog extends BaseDialog {
         super(parent.getFrame(), modal);
         initComponents();
         this.frame = parent;
-        center();
+        super.center();
     }
 
     private boolean onlyHasAllowedChars() {

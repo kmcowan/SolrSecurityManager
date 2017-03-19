@@ -23,7 +23,7 @@ import javax.swing.ListModel;
  *
  * @author kevin
  */
-public class AddRoleForm extends javax.swing.JDialog {
+public class AddRoleForm extends BaseDialog {
 
     private LinkedHashMap<String, String> users = null;
     private LinkedHashMap<String, Object> roles = null;
@@ -45,6 +45,7 @@ public class AddRoleForm extends javax.swing.JDialog {
         roleMap = new LinkedHashMap<>();
 
         initComponents();
+        super.center();
     }
 
     private ComboBoxModel getUsersComboBoxModel() {
