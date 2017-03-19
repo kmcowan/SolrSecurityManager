@@ -128,6 +128,20 @@ public class Authorization {
         }
     }
     
+    public LinkedHashMap<String,String> getEmptyPermissionMap(){
+        LinkedHashMap<String,String> map = new LinkedHashMap<>();
+        map.put("name", "");
+        map.put("role", "");
+        map.put("path", "");
+        map.put("params", "");
+        map.put("collection", "");
+        map.put("method", "");
+        map.put("before", "");
+        
+        
+        return map;
+    }
+    
     public String toJson(){
         String result = "";
         result += "{\n" +

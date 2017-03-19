@@ -19,6 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
@@ -26,23 +27,24 @@ import org.json.JSONArray;
  *
  * @author kevin
  */
-public class ManagePermissionForm extends BaseDialog {
+public class ManagePermissionFrame extends BaseDialog {
 
     private SecurityJson securityJson = null;
     private LinkedHashMap<String, String> permission = null;
     private final static String[] REGISTERED_PATHS = "/admin/mbeans,/browse,/update/json/docs,/admin/luke,/export,/get,/admin/properties,/elevate,/update/json,/admin/threads,/query,/analysis/field,/analysis/document,/spell,/update/csv,/sql,/graph,/tvrh,/select,/admin/segments,/admin/system,/replication,/config,/stream,/schema,/admin/plugins,/admin/logging,/admin/ping,/update,/admin/file,/terms,/debug/dump,/update/extract".split(",");
     private Frameable frame = null;
+
     /**
      * Creates new form ManagePermissionForm
      */
-    public ManagePermissionForm(Frameable frame, boolean modal, SecurityJson sc, LinkedHashMap<String, String> permission) {
+    public ManagePermissionFrame(Frameable frame, boolean modal, SecurityJson sc, LinkedHashMap<String, String> permission) {
         super(frame.getFrame(), modal);
         this.securityJson = sc;
         this.frame = frame;
         if (permission != null) {
             this.permission = permission;
         }
-        super.center();
+        //  super.center();
         initComponents();
         init();
     }
@@ -106,7 +108,7 @@ public class ManagePermissionForm extends BaseDialog {
     private ComboBoxModel getRoleComboBoxModel() {
         DefaultComboBoxModel model = new DefaultComboBoxModel();
         HashMap<String, String> permmap = new HashMap<String, String>();
-
+        model.addElement("*");
         if (securityJson != null) {
             LinkedHashMap<String, Object> map = securityJson.getAuthorization().getUserRoles();
             Iterator<String> iter = map.keySet().iterator();
@@ -136,11 +138,11 @@ public class ManagePermissionForm extends BaseDialog {
         return model;
 
     }
-    
-    private ArrayList<String> validatePermission(){
-       ArrayList<String> results = new ArrayList<>();
-       
-       return results;
+
+    private ArrayList<String> validatePermission() {
+        ArrayList<String> results = new ArrayList<>();
+
+        return results;
     }
 
     /**
@@ -158,7 +160,7 @@ public class ManagePermissionForm extends BaseDialog {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
-        nameField = new javax.swing.JTextField();
+        roleNameField = new javax.swing.JTextField();
         nameComboBox = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -208,6 +210,11 @@ public class ManagePermissionForm extends BaseDialog {
         jLabel2.setText("Name: ");
 
         nameComboBox.setModel(getNameComboBoxModel());
+        nameComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doLoadRoleNameAction(evt);
+            }
+        });
 
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Role:");
@@ -277,7 +284,7 @@ public class ManagePermissionForm extends BaseDialog {
                                         .addGap(25, 25, 25))
                                     .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(nameField)
+                                            .addComponent(roleNameField)
                                             .addComponent(nameComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                             .addComponent(roleComboBox, 0, 250, Short.MAX_VALUE))
                                         .addGap(0, 0, Short.MAX_VALUE)))))
@@ -296,7 +303,7 @@ public class ManagePermissionForm extends BaseDialog {
                     .addComponent(jLabel2)
                     .addComponent(nameComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(nameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(roleNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(15, 15, 15)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
@@ -344,18 +351,33 @@ public class ManagePermissionForm extends BaseDialog {
 
     private void doSaveAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doSaveAction
         ArrayList<String> valid = validatePermission();
-        if(valid.size() == 0){
-            
+        if (valid.size() == 0) {
+
         } else {
-            String message = "Permission Validation Failed for the Following Reasons: \n "+valid.toString();
+            String message = "Permission Validation Failed for the Following Reasons: \n " + valid.toString();
             frame.showOKOnlyMessageDialog(message, Resources.Resource.warn);
         }
     }//GEN-LAST:event_doSaveAction
 
     private void doCancelAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doCancelAction
-         this.setVisible(false);
-         this.dispose();
+        this.setVisible(false);
+        this.dispose();
     }//GEN-LAST:event_doCancelAction
+
+    private void doLoadRoleNameAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doLoadRoleNameAction
+        String permName = (String) this.nameComboBox.getSelectedItem();
+
+        if (!securityJson.hasPermission(permName)) {
+            this.roleNameField.setText(permName);
+        } else {
+            int response;
+
+            response = JOptionPane.showConfirmDialog(null, "Selecting '" + permName + "' will override the existing Permission with the same name.  Are you sure you want to do this?");
+            if (response == JOptionPane.YES_OPTION) {
+                roleNameField.setText(permName);
+            }
+        }
+    }//GEN-LAST:event_doLoadRoleNameAction
 
     /**
      * @param args the command line arguments
@@ -374,20 +396,21 @@ public class ManagePermissionForm extends BaseDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ManagePermissionForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ManagePermissionFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ManagePermissionForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ManagePermissionFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ManagePermissionForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ManagePermissionFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ManagePermissionForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ManagePermissionFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ManagePermissionForm(new SolrAuthMainWindow(), true, null, null).setVisible(true);
+                new ManagePermissionFrame(new SolrAuthMainWindow(), true, null, null).setVisible(true);
             }
         });
     }
@@ -408,10 +431,10 @@ public class ManagePermissionForm extends BaseDialog {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JComboBox<String> methodComboBox;
     private javax.swing.JComboBox<String> nameComboBox;
-    private javax.swing.JTextField nameField;
     private javax.swing.JTextField paramsField;
     private javax.swing.JComboBox<String> pathComboBox;
     private javax.swing.JLabel permissionDisplayLabel;
     private javax.swing.JComboBox<String> roleComboBox;
+    private javax.swing.JTextField roleNameField;
     // End of variables declaration//GEN-END:variables
 }

@@ -11,7 +11,7 @@ import com.cprassoc.solr.auth.SolrAuthManager;
 import com.cprassoc.solr.auth.forms.AddRoleForm;
 import com.cprassoc.solr.auth.forms.AddUserDialog;
 import com.cprassoc.solr.auth.SolrAuthActionController.SolrManagerAction;
-import com.cprassoc.solr.auth.forms.ManagePermissionForm;
+import com.cprassoc.solr.auth.forms.ManagePermissionFrame;
 import com.cprassoc.solr.auth.forms.OKFormWithMessage;
 import com.cprassoc.solr.auth.forms.OkCancelDialog;
 import com.cprassoc.solr.auth.forms.resources.Resources;
@@ -939,7 +939,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     }//GEN-LAST:event_doRevokeRoleAction
 
     private void doAddPermissionAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doAddPermissionAction
-        ManagePermissionForm form = new ManagePermissionForm(this, true, securityJson, null);
+        ManagePermissionFrame form = new ManagePermissionFrame(this, true, securityJson, null);
         form.setVisible(true);
     }//GEN-LAST:event_doAddPermissionAction
 
