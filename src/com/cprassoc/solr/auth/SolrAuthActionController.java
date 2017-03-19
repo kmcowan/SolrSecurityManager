@@ -60,15 +60,19 @@ public class SolrAuthActionController {
         return pwhash;
     }
     
-    public static String addRole(String user, ArrayList roles){
+    public static String addRole(String user, ArrayList<String> roles){
         String result = "";
         String data = "";
         try{
          String path = SOLR.getSolrBaseUrl() + SolrHttpHandler.AUTHORIZATION_URL_PART;
-         if(roles.size() > 1){
+         if(roles.size() > 1){ 
+           // case for multiple roles
            data = "{ \"set-user-role\": {\"" + user + "\" : \"" + roles.toString() + "\" }}";
+         } else if(roles.size() == 1 && roles.get(0).trim().equals("null")){
+             // case for null role
+             data = "{ \"set-user-role\": {\"" + user + "\" : " + roles.get(0) + " }}";
          } else {
-             // added to handle case for single or null role
+             // case for single role
               data = "{ \"set-user-role\": {\"" + user + "\" : \"" + roles.get(0) + "\" }}";
          }
         /*

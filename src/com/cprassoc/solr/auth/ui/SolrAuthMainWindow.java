@@ -48,6 +48,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     private static String SECURITY_JSON_FILE_NAME = "security.json";
     private String selectedUser = "";
     private String selectedRole = "";
+    private String selectedRoleUser = "";
     private String selectedPermission = "";
     public static int OK_RESPONSE = 0;
 
@@ -136,17 +137,20 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 public void valueChanged(ListSelectionEvent e) {
                     String selectedData = null;
 
-                    int[] selectedRow = rolesTable.getSelectedRows();
+                /*    int[] selectedRow = rolesTable.getSelectedRows();
                     int[] selectedColumns = rolesTable.getSelectedColumns();
 
                     for (int i = 0; i < selectedRow.length; i++) {
                         for (int j = 0; j < selectedColumns.length; j++) {
                             selectedData = (String) rolesTable.getValueAt(selectedRow[i], selectedColumns[j]);
                         }
-                    }
+                    }*/
                     if (e.getValueIsAdjusting()) {
-                        System.out.println("Selected Role: " + selectedData);
-                        selectedRole = selectedData;
+                       // Log.log(getClass(), "Selected Role: " + selectedData);
+                        selectedRole = (String)rolesTable.getValueAt(rolesTable.getSelectedRow(), 1);//selectedData;
+                        selectedRoleUser = (String)rolesTable.getValueAt(rolesTable.getSelectedRow(), 0);
+                        
+                         Log.log(SolrAuthMainWindow.class, "Selected Role: " + selectedRole+"  role user: "+selectedRoleUser);
                     }
                 }
 
@@ -334,6 +338,10 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     
     private int getResponseStatus(JSONObject resp){
         return resp.getJSONObject("responseHeader").getInt("status");
+    }
+    
+    private JSONObject getResponse(String resp){
+        return new JSONObject(resp);
     }
     
     private String getUserFromRoleArgs(LinkedHashMap<String,String> args){
@@ -875,9 +883,23 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     }//GEN-LAST:event_doLoadConfigAction
 
     private void doRevokeRoleAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doRevokeRoleAction
-       if(this.rolesTable.getSelectedRow() > 0){
+       if(this.rolesTable.getSelectedRow() > -1){
            Log.log(getClass(), "Revoke: "+selectedRole);
-           this.rolesTable.getModel().setValueAt("null", this.rolesTable.getSelectedRow(), 1);
+          
+           ArrayList<String> roles = new ArrayList();
+           roles.add("null");
+           String resp = SolrAuthActionController.addRole(selectedRoleUser, roles);
+           
+            if(getResponseStatus(getResponse(resp)) == OK_RESPONSE){
+                 this.rolesTable.getModel().setValueAt("null", this.rolesTable.getSelectedRow(), 1);
+                 securityJson.getAuthorization().getUserRoles().remove(selectedRoleUser);
+                 clearTable(rolesTable.getModel());
+                 populateUserRolesTable(securityJson.getAuthorization());
+            }
+           //
+       } else {
+           Log.log(getClass(), "NOT Revoling.  No row selected: "+this.rolesTable.getSelectedRow());
+           this.showOKOnlyMessageDialog("No Role Selected", Resources.Resource.warn);
        }
     }//GEN-LAST:event_doRevokeRoleAction
 

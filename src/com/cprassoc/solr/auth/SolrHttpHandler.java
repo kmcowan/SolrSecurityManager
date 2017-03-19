@@ -122,12 +122,12 @@ public class SolrHttpHandler {
         }
         return result;
     }
-    
-       public String delete(String path, String data) {
+
+    public String delete(String path, String data) {
         String result = "";
         try {
             HttpDelete request = new HttpDelete(path);
- 
+
             HttpResponse response = client.execute(request);
             result = Utils.streamToString(response.getEntity().getContent());
         } catch (Exception e) {
@@ -135,21 +135,21 @@ public class SolrHttpHandler {
         }
         return result;
     }
-       
-    public  boolean isOnline(){
+
+    public boolean isOnline() {
         boolean result = true;
-        try{
-          SolrPingResponse resp =  cloudClient.ping();
-          if(resp == null){
-              Log.log(getClass(), "Ping Response was NULL");
-              result = false;
-          } else if(resp.getStatus() != 0){
-              result = false;
-                Log.log(getClass(), "Ping Response was STATUS was: "+resp.getStatus());
-          }
-        }catch(Exception e){
+        try {
+            SolrPingResponse resp = cloudClient.ping();
+            if (resp == null) {
+                Log.log(getClass(), "Ping Response was NULL");
+                result = false;
+            } else if (resp.getStatus() != 0) {
+                result = false;
+                Log.log(getClass(), "Ping Response was STATUS was: " + resp.getStatus());
+            }
+        } catch (Exception e) {
             e.printStackTrace();
-              Log.log(getClass(), "Ping Response returned EXCEPTION");
+            Log.log(getClass(), "Ping Response returned EXCEPTION");
             result = false;
         }
         return result;
@@ -166,8 +166,6 @@ public class SolrHttpHandler {
         String path = solrBaseUrl + AUTHENTICATION_URL_PART;
         return get(path);
     }
-
-
 
     private String cURLRequest(String url, String data, Method method) {
         String result = "";
@@ -253,4 +251,31 @@ public class SolrHttpHandler {
         GET,
         DELETE
     }
+
+    public enum ErrorCode {
+        BAD_REQUEST(400),
+        UNAUTHORIZED(401),
+        FORBIDDEN(403),
+        NOT_FOUND(404),
+        CONFLICT(409),
+        UNSUPPORTED_MEDIA_TYPE(415),
+        SERVER_ERROR(500),
+        SERVICE_UNAVAILABLE(503),
+        INVALID_STATE(510),
+        UNKNOWN(0);
+        public final int code;
+
+        private ErrorCode(int c) {
+            code = c;
+        }
+
+        public static ErrorCode getErrorCode(int c) {
+            for (ErrorCode err : values()) {
+                if (err.code == c) {
+                    return err;
+                }
+            }
+            return UNKNOWN;
+        }
+    };
 }
