@@ -35,6 +35,10 @@ public class SecurityJson {
         this.map = map;
         init();
     }
+    
+    public SecurityJson(JSONObject jsonObj){
+        load(jsonObj);
+    }
 
     private void init() {
 
@@ -76,6 +80,12 @@ public class SecurityJson {
             e.printStackTrace();
         }
         return json;
+    }
+    
+    public void load(JSONObject json){
+           map = new LinkedHashMap(JsonHelper.jsonToMap(json));
+           init();
+           
     }
 
     public boolean hasPermission(String permissionName) {

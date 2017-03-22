@@ -11,12 +11,15 @@ import com.cprassoc.solr.auth.SolrAuthManager;
 import com.cprassoc.solr.auth.forms.AddRoleForm;
 import com.cprassoc.solr.auth.forms.AddUserDialog;
 import com.cprassoc.solr.auth.SolrAuthActionController.SolrManagerAction;
+import com.cprassoc.solr.auth.forms.AddVersionForm;
+import com.cprassoc.solr.auth.forms.HistoryViewerDialog;
 import com.cprassoc.solr.auth.forms.ManagePermissionFrame;
 import com.cprassoc.solr.auth.forms.OKFormWithMessage;
 import com.cprassoc.solr.auth.forms.OkCancelDialog;
 import com.cprassoc.solr.auth.forms.resources.Resources;
 import com.cprassoc.solr.auth.model.Authentication;
 import com.cprassoc.solr.auth.model.Authorization;
+import com.cprassoc.solr.auth.model.HistoryVersion;
 import com.cprassoc.solr.auth.model.SecurityJson;
 import com.cprassoc.solr.auth.util.JsonHelper;
 import com.cprassoc.solr.auth.util.Log;
@@ -54,6 +57,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     private String selectedRoleUser = "";
     private String selectedPermission = "";
     public static int OK_RESPONSE = 0;
+    private static final HistoryVersion versions = new HistoryVersion();
 
     /**
      * Creates new form SolrAuthMainWindow
@@ -392,6 +396,17 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
 
             case delete_permission:
                 break;
+                
+            case add_a_version:
+                String title = args.get("title");
+                String desc = args.get("description");
+                 result = versions.saveVersion(title, desc, securityJson);
+                 if(result == null){
+                     this.showOKOnlyMessageDialog("An error occurred saving the json. ", Resources.Resource.warn);
+                 } else {
+                     this.showOKOnlyMessageDialog("Version saved successfully. ", Resources.Resource.info);
+                 }
+                break;
         }
     }
 
@@ -485,6 +500,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenuItem6 = new javax.swing.JMenuItem();
+        jMenuItem7 = new javax.swing.JMenuItem();
+        jMenuItem8 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -888,6 +905,22 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         });
         jMenu3.add(jMenuItem6);
 
+        jMenuItem7.setText("Save a Version");
+        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doSaveAVersion(evt);
+            }
+        });
+        jMenu3.add(jMenuItem7);
+
+        jMenuItem8.setText("View Saved Versions");
+        jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doViewSavedVersions(evt);
+            }
+        });
+        jMenu3.add(jMenuItem8);
+
         jMenuBar1.add(jMenu3);
 
         setJMenuBar(jMenuBar1);
@@ -1070,6 +1103,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                             this.clearTable(this.permissionsTable.getModel());
                             securityJson.setAuthorization(auth);
                             this.populateAuthorizationTable(auth);
+                            this.selectedPermission = "";
+                            this.permissionsTable.changeSelection(0, 0, false, false);
                         }
                     }
                 }
@@ -1080,6 +1115,16 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
             this.showOKOnlyMessageDialog("No permission selectd. ", Resources.Resource.warn);
         }
     }//GEN-LAST:event_doDeletePermission
+
+    private void doSaveAVersion(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doSaveAVersion
+       AddVersionForm form = new AddVersionForm(this, true);
+       form.setVisible(true);
+    }//GEN-LAST:event_doSaveAVersion
+
+    private void doViewSavedVersions(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doViewSavedVersions
+        HistoryViewerDialog viewer = new HistoryViewerDialog(this, true, versions);
+        viewer.setVisible(true);
+    }//GEN-LAST:event_doViewSavedVersions
 
     /**
      * @param args the command line arguments
@@ -1140,6 +1185,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
+    private javax.swing.JMenuItem jMenuItem7;
+    private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

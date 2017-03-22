@@ -54,9 +54,15 @@ public class Utils {
         String result = "";
         int row = 0;
         String key,value;
+        Object obj;
         while(iter.hasNext()){
             key = iter.next();
+            obj = map.get(key);
+            if(obj instanceof String){
             value = (String)map.get(key);
+            } else {
+                value = obj.toString();
+            }
             if(row > 0){
                 result += ",";
             }

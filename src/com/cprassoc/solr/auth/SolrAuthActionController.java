@@ -199,6 +199,7 @@ public class SolrAuthActionController {
         update_role,
         add_permission,
         edit_permission,
-        delete_permission
+        delete_permission,
+        add_a_version
     }
 }

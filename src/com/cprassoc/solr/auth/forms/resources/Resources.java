@@ -45,7 +45,8 @@ public class Resources {
         plus,
         save,
         user,
-        warn
+        warn,
+        XC_security_icon_small
         
        
         
