@@ -195,7 +195,7 @@ public class OkCancelDialog extends BaseDialog {
         if (returnStatus == RET_OK && frame != null && callbackAction != null) {
             LinkedHashMap<String, String> args = new LinkedHashMap<>();
             args.put("returnStatus", "" + returnStatus);
-            frame.fireAction(callbackAction, args);
+            frame.fireAction(callbackAction, args, null);
         }
     }
 

@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.Iterator;
+import java.util.Map;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -45,5 +47,56 @@ public class Utils {
                e.printStackTrace();
         }
         return path;
+    }
+    
+    public static String mapKeysToString(Map map){
+        Iterator<String> iter = map.keySet().iterator();
+        String result = "";
+        int row = 0;
+        String key,value;
+        while(iter.hasNext()){
+            key = iter.next();
+            value = (String)map.get(key);
+            if(row > 0){
+                result += ",";
+            }
+            result += key;
+            row++;
+        }
+        return result;
+    }
+    
+        public static String mapValuesToString(Map map){
+        Iterator<String> iter = map.keySet().iterator();
+        String result = "";
+        int row = 0;
+        String key,value;
+        while(iter.hasNext()){
+            key = iter.next();
+            value = (String)map.get(key);
+            if(row > 0){
+                result += ",";
+            }
+            result += value;
+            row++;
+        }
+        return result;
+    }
+    
+    public static String mapKeysAndValuesToString(Map map){
+          Iterator<String> iter = map.keySet().iterator();
+        String result = "";
+        int row = 0;
+        String key,value;
+        while(iter.hasNext()){
+            key = iter.next();
+            value = (String)map.get(key);
+            if(row > 0){
+                result += ",";
+            }
+            result += key+":"+value;
+            row++;
+        }
+        return result;
     }
 }

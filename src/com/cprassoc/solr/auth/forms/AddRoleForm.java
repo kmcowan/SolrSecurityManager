@@ -331,7 +331,7 @@ public class AddRoleForm extends BaseDialog {
             args.put(role, role);
         }
         args.put(ROLE_USER_KEY, user);
-        frame.fireAction(SolrAuthActionController.SolrManagerAction.add_role, args);
+        frame.fireAction(SolrAuthActionController.SolrManagerAction.add_role, args, null);
         this.setVisible(false);
         this.dispose();
     }//GEN-LAST:event_doSaveAction

@@ -20,7 +20,7 @@ import net.arnx.jsonic.JSON;
 public class Authorization {
 
     private String className = "";
-    private ArrayList<LinkedHashMap> permissions = null;
+    private ArrayList<LinkedHashMap<String,Object>> permissions = null;
     private LinkedHashMap<String,Object> userRoles = null;
 
     public Authorization(LinkedHashMap map) {
@@ -109,7 +109,7 @@ public class Authorization {
     /**
      * @return the permissions
      */
-    public ArrayList<LinkedHashMap> getPermissions() {
+    public ArrayList<LinkedHashMap<String,Object>> getPermissions() {
         return permissions;
     }
 
@@ -128,12 +128,26 @@ public class Authorization {
         }
     }
     
-    public LinkedHashMap<String,String> getEmptyPermissionMap(){
-        LinkedHashMap<String,String> map = new LinkedHashMap<>();
+    public void updateOrAddPermission(LinkedHashMap<String,Object> permission){
+        boolean isUpdate = false;
+        for(int i=0; i<permissions.size(); i++){
+           if(permissions.get(i).get("name").equals(permission.get("name"))){
+               permissions.set(i, permission);
+               isUpdate = true;
+           }
+       }
+        
+        if(!isUpdate){
+            permissions.add(permission);
+        }
+    }
+    
+    public LinkedHashMap<String,Object> getEmptyPermissionMap(){
+        LinkedHashMap<String,Object> map = new LinkedHashMap<>();
         map.put("name", "");
         map.put("role", "");
         map.put("path", "");
-        map.put("params", "");
+        map.put("params", new LinkedHashMap<String,ArrayList<String>>());
         map.put("collection", "");
         map.put("method", "");
         map.put("before", "");

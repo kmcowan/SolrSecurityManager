@@ -7,6 +7,7 @@ package com.cprassoc.solr.auth;
 
 import static com.cprassoc.solr.auth.SolrHttpHandler.AUTHENTICATION_URL_PART;
 import com.cprassoc.solr.auth.model.Authentication;
+import com.cprassoc.solr.auth.model.Authorization;
 import com.cprassoc.solr.auth.util.JsonHelper;
 import com.cprassoc.solr.auth.util.Log;
 import java.io.File;
@@ -84,6 +85,76 @@ public class SolrAuthActionController {
         
         result = SOLR.post(path, data);
         
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return result;
+    }
+    
+    public static String addOrEditPermission(LinkedHashMap<String,Object> permission, boolean isEditing){
+               String result = "";
+        String data = "";
+        String actionKey = "set-permission";
+        if(isEditing){
+            actionKey = "update-permission";
+        }
+        try{
+         String path = SOLR.getSolrBaseUrl() + SolrHttpHandler.AUTHORIZATION_URL_PART;
+          data = "{ \""+actionKey+"\": "+JsonHelper.objToString(permission)+"}";
+         /*
+         curl --user solr:SolrRocks http://localhost:8983/solr/admin/authorization -H 'Content-type:application/json'-d '{ 
+  "set-permission": { "name":"a-custom-permission-name",
+                      "collection":"gettingstarted",
+                      "path":"/handler-name",
+                      "before": "name-of-another-permission",
+                      "role": "dev"
+   }
+         */
+         
+          result = SOLR.post(path, data);
+        
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return result;
+    }
+    
+    public static String deletePermission(String name, int index){
+        String result = "";
+        String data = "";
+        
+        try{
+              String path = SOLR.getSolrBaseUrl() + SolrHttpHandler.AUTHORIZATION_URL_PART;
+              if(index != -1){ // if we have a current index, use that. 
+                    data = "{ \"delete-permission\": "+index+"}";
+              } else {// otherwise, get the index from the api
+                   String authorization = SolrAuthActionController.SOLR.getAuthorization();
+                  JSONObject authoJson = new JSONObject(authorization);
+                    LinkedHashMap authoMap = new LinkedHashMap(JsonHelper.jsonToMap(authoJson));
+                    Authorization auth = new Authorization(authoMap);
+                    String key;
+                    Object value;
+                    for(int i=0; i<auth.getPermissions().size(); i++){
+                        value =  auth.getPermissions().get(i).get("index");
+                        key = (String)auth.getPermissions().get(i).get("name");
+                        if(value instanceof Integer){
+                            index = (Integer)value;
+                            break;
+                        } else if(key.equals(name)){
+                            index = i;
+                            break;
+                        }
+                    }
+                  
+                  data = "{ \"delete-permission\": "+index+"}";      
+              }
+           
+              if(index > -1){
+              result = SOLR.post(path, data);
+              } else {
+                  result = "";
+              }
+              
         }catch(Exception e){
             e.printStackTrace();
         }

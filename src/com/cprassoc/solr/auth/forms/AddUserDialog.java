@@ -214,7 +214,7 @@ public class AddUserDialog extends BaseDialog {
                        LinkedHashMap<String,String> results = new LinkedHashMap<>();
                        results.put("user", userName);
                        results.put("pwd", result);
-                       this.frame.fireAction(SolrManagerAction.create_user, results);
+                       this.frame.fireAction(SolrManagerAction.create_user, results, null);
                    }
             } else {
                 String message = "";

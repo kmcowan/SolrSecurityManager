@@ -14,6 +14,8 @@ import java.io.FileReader;
 import java.util.Iterator;
 import java.util.Properties;
 
+
+
 /**
  *
  * @author kevin
@@ -39,6 +41,7 @@ public class SolrAuthManager {
         }
         try {
             File props = new File(SOLR_AUTH_PROPERTIES);
+            
             if (props.exists()) {
                 System.out.println("Properties File exists...");
                 properties = new Properties();

@@ -265,6 +265,8 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
         }
         props.setProperty(SolrAuthPropertyKey.isUsingSSL.getKey(), sslEnabled);
         SolrAuthActionController.doSavePropertiesAction(props);
+        this.setVisible(false);
+        this.dispose();
 
     }//GEN-LAST:event_doSaveAction
 

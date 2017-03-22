@@ -5,12 +5,14 @@
  */
 package com.cprassoc.solr.auth.model;
 
+import com.cprassoc.solr.auth.SolrAuthActionController;
 import com.cprassoc.solr.auth.util.JsonHelper;
 import com.cprassoc.solr.auth.util.Log;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import net.arnx.jsonic.JSON;
 import org.apache.cxf.helpers.IOUtils;
+import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 /**
@@ -86,7 +88,7 @@ public class SecurityJson {
         return false;
     }
 
-    public LinkedHashMap<String, String> getPermission(String permissionName) {
+    public LinkedHashMap<String, Object> getPermission(String permissionName) {
         LinkedHashMap<String, Object> perm;
         for (int i = 0; i < getAuthorization().getPermissions().size(); i++) {
             if (getAuthorization().getPermissions().get(i).get("name").equals(permissionName)) {
@@ -96,8 +98,8 @@ public class SecurityJson {
         return null;
     }
 
-    public void addUpdatePermission(LinkedHashMap<String, String> permission) {
-        if (hasPermission(permission.get("name"))) {
+    public void addUpdatePermission(LinkedHashMap<String, Object> permission) {
+        if (hasPermission((String)permission.get("name"))) {
             for (int i = 0; i < getAuthorization().getPermissions().size(); i++) {
                 if (getAuthorization().getPermissions().get(i).get("name").equals(permission.get("name"))) {
                     getAuthorization().getPermissions().set(i, permission);
@@ -107,6 +109,22 @@ public class SecurityJson {
         } else {
             getAuthorization().getPermissions().add(permission);
         }
+    }
+    
+    public void reloadAuthorization(){
+            String authstr = SolrAuthActionController.SOLR.getAuthorization();
+                            JSONObject authoJson = new JSONObject(authstr);
+                            LinkedHashMap authoMap = new LinkedHashMap(JsonHelper.jsonToMap(authoJson));
+                            Authorization auth = new Authorization(authoMap);
+                           authorization = auth;
+    }
+    
+    public void reloadAuthentication(){
+        String authstr = SolrAuthActionController.SOLR.getAuthentication();
+                            JSONObject authoJson = new JSONObject(authstr);
+                            LinkedHashMap authoMap = new LinkedHashMap(JsonHelper.jsonToMap(authoJson));
+                            Authentication auth = new Authentication(authoMap);
+                            authentication = auth;
     }
 
     public void load(String config) {

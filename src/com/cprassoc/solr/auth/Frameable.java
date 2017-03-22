@@ -16,6 +16,6 @@ import java.util.LinkedHashMap;
 public interface Frameable {
     
     public java.awt.Frame getFrame();
-    public void fireAction(SolrManagerAction action, LinkedHashMap<String,String> args);
+    public void fireAction(SolrManagerAction action, LinkedHashMap<String,String> args, Object optional);
     public void showOKOnlyMessageDialog(String message, Resources.Resource resc);
 }
