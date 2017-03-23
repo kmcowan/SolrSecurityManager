@@ -24,7 +24,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
  *
  * @author kevin
  */
-public class HistoryViewerDialog extends javax.swing.JDialog {
+public class HistoryViewerDialog extends BaseDialog {
     
     private HistoryVersion versions = null;
     private HashMap<String, String> treeHash = null;

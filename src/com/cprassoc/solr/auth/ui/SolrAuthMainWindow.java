@@ -16,6 +16,7 @@ import com.cprassoc.solr.auth.forms.HistoryViewerDialog;
 import com.cprassoc.solr.auth.forms.ManagePermissionFrame;
 import com.cprassoc.solr.auth.forms.OKFormWithMessage;
 import com.cprassoc.solr.auth.forms.OkCancelDialog;
+import com.cprassoc.solr.auth.forms.ServerStatusDialog;
 import com.cprassoc.solr.auth.forms.resources.Resources;
 import com.cprassoc.solr.auth.model.Authentication;
 import com.cprassoc.solr.auth.model.Authorization;
@@ -506,6 +507,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
+        jMenuItem9 = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
@@ -887,6 +889,15 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Server");
+
+        jMenuItem9.setText("Server Status");
+        jMenuItem9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doViewServerStatus(evt);
+            }
+        });
+        jMenu2.add(jMenuItem9);
+
         jMenuBar1.add(jMenu2);
 
         jMenu3.setText("Tools");
@@ -1126,6 +1137,11 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         viewer.setVisible(true);
     }//GEN-LAST:event_doViewSavedVersions
 
+    private void doViewServerStatus(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doViewServerStatus
+         ServerStatusDialog dialog = new ServerStatusDialog(this, true);
+         dialog.setVisible(true);
+    }//GEN-LAST:event_doViewServerStatus
+
     /**
      * @param args the command line arguments
      */
@@ -1187,6 +1203,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem8;
+    private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

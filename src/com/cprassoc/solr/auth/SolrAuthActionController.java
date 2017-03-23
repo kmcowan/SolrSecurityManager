@@ -192,6 +192,19 @@ public class SolrAuthActionController {
         }
         return obj;
     }
+    
+    public static JSONObject getServerStatus() {
+        JSONObject obj = null;
+        try {
+            String url = SOLR.getSolrBaseUrl() + SolrHttpHandler.STATUS_URL_PART;
+            String result = SOLR.get(url);
+            obj = new JSONObject(result);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return obj;
+    }
 
     public static String doPushConfigToSolrAction(SecurityJson json) {
         String result = "";
