@@ -8,6 +8,7 @@ package com.cprassoc.solr.auth.util;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.Map;
@@ -30,6 +31,8 @@ public class Utils {
         }
         return result;
     }
+    
+  
 
     public static String writeBytesToFile(String filePath, String content) {
         String path = "";

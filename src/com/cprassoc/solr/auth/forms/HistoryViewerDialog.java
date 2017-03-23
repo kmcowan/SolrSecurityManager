@@ -5,9 +5,12 @@
  */
 package com.cprassoc.solr.auth.forms;
 
+import com.cprassoc.solr.auth.Frameable;
+import com.cprassoc.solr.auth.SolrAuthActionController;
 import com.cprassoc.solr.auth.forms.resources.Resources;
 import com.cprassoc.solr.auth.model.HistoryVersion;
 import com.cprassoc.solr.auth.model.SavedVersion;
+import com.cprassoc.solr.auth.ui.SolrAuthMainWindow;
 import com.cprassoc.solr.auth.util.Log;
 import com.cprassoc.solr.auth.util.Utils;
 import java.awt.Color;
@@ -25,13 +28,15 @@ public class HistoryViewerDialog extends javax.swing.JDialog {
     
     private HistoryVersion versions = null;
     private HashMap<String, String> treeHash = null;
-
+    private Frameable frame = null;
+    private String selectedKey = "";
     /**
      * Creates new form HistoryViewer
      */
-    public HistoryViewerDialog(java.awt.Frame parent, boolean modal, HistoryVersion versions) {
-        super(parent, modal);
+    public HistoryViewerDialog(Frameable parent, boolean modal, HistoryVersion versions) {
+        super(parent.getFrame(), modal);
         this.versions = versions;
+        this.frame = parent;
         initComponents();
     }
     
@@ -61,7 +66,7 @@ public class HistoryViewerDialog extends javax.swing.JDialog {
           DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
         renderer.setLeafIcon(Resources.getNamedResourceIcon(Resources.Resource.XC_security_icon_small));
         renderer.setForeground(Color.white);
-        renderer.setTextNonSelectionColor(Color.yellow);
+        renderer.setTextSelectionColor(Color.yellow);
         renderer.setTextNonSelectionColor(Color.white);
         this.versionTree.setCellRenderer(renderer);
     }
@@ -260,6 +265,7 @@ public class HistoryViewerDialog extends javax.swing.JDialog {
             this.permissionPane.setText(Utils.mapKeysToString(version.getSeucrityJson().getAuthorization().getPermissions().get(0)));
             this.rolesPane.setText(Utils.mapValuesToString(version.getSeucrityJson().getAuthorization().getUserRoles()));
             this.descPanel.setText(version.getDescription());
+            this.selectedKey = key;
         }        
     }//GEN-LAST:event_doTreeNodeSelectedAction
 
@@ -269,6 +275,8 @@ public class HistoryViewerDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_doCancelAction
 
     private void doLoadSelectedAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doLoadSelectedAction
+        
+        frame.fireAction(SolrAuthActionController.SolrManagerAction.push_a_version, null, selectedKey);
         this.setVisible(false);
         this.dispose();
     }//GEN-LAST:event_doLoadSelectedAction
@@ -304,7 +312,7 @@ public class HistoryViewerDialog extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                HistoryViewerDialog dialog = new HistoryViewerDialog(new javax.swing.JFrame(), true, null);
+                HistoryViewerDialog dialog = new HistoryViewerDialog(new SolrAuthMainWindow(), true, null);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {

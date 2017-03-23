@@ -20,6 +20,7 @@ import com.cprassoc.solr.auth.forms.resources.Resources;
 import com.cprassoc.solr.auth.model.Authentication;
 import com.cprassoc.solr.auth.model.Authorization;
 import com.cprassoc.solr.auth.model.HistoryVersion;
+import com.cprassoc.solr.auth.model.SavedVersion;
 import com.cprassoc.solr.auth.model.SecurityJson;
 import com.cprassoc.solr.auth.util.JsonHelper;
 import com.cprassoc.solr.auth.util.Log;
@@ -57,7 +58,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     private String selectedRoleUser = "";
     private String selectedPermission = "";
     public static int OK_RESPONSE = 0;
-    private static final HistoryVersion versions = new HistoryVersion();
+    private static final HistoryVersion VERSIONS = new HistoryVersion();
 
     /**
      * Creates new form SolrAuthMainWindow
@@ -400,12 +401,21 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
             case add_a_version:
                 String title = args.get("title");
                 String desc = args.get("description");
-                 result = versions.saveVersion(title, desc, securityJson);
+                 result = VERSIONS.saveVersion(title, desc, securityJson);
                  if(result == null){
                      this.showOKOnlyMessageDialog("An error occurred saving the json. ", Resources.Resource.warn);
                  } else {
                      this.showOKOnlyMessageDialog("Version saved successfully. ", Resources.Resource.info);
                  }
+                break;
+                
+            case push_a_version:
+                String skey = (String)optional;
+                SavedVersion version = VERSIONS.getHistory().get(skey);
+                if(version != null){
+                  Log.log(getClass(), "PUSH version: "+version.getTitle());
+                }
+                
                 break;
         }
     }
@@ -1060,18 +1070,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     }//GEN-LAST:event_doEditPermissionAction
 
     private void doPushConfigToSolrAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doPushConfigToSolrAction
-        try {
-            String pathToScript = System.getProperty("user.dir") + File.separator + "solrAuth.sh";
-            ProcessBuilder pb = new ProcessBuilder("bash " + pathToScript);
 
-            Log.log("Run PUSH command");
-
-            Process process = pb.start();
-            Log.log(Utils.streamToString(process.getInputStream()));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+       String result = SolrAuthActionController.doPushConfigToSolrAction(securityJson);
     }//GEN-LAST:event_doPushConfigToSolrAction
 
     private void doDeletePermission(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doDeletePermission
@@ -1122,7 +1122,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     }//GEN-LAST:event_doSaveAVersion
 
     private void doViewSavedVersions(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doViewSavedVersions
-        HistoryViewerDialog viewer = new HistoryViewerDialog(this, true, versions);
+        HistoryViewerDialog viewer = new HistoryViewerDialog(this, true, VERSIONS);
         viewer.setVisible(true);
     }//GEN-LAST:event_doViewSavedVersions
 

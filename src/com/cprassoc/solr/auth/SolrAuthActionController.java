@@ -8,8 +8,10 @@ package com.cprassoc.solr.auth;
 import static com.cprassoc.solr.auth.SolrHttpHandler.AUTHENTICATION_URL_PART;
 import com.cprassoc.solr.auth.model.Authentication;
 import com.cprassoc.solr.auth.model.Authorization;
+import com.cprassoc.solr.auth.model.SecurityJson;
 import com.cprassoc.solr.auth.util.JsonHelper;
 import com.cprassoc.solr.auth.util.Log;
+import com.cprassoc.solr.auth.util.Utils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -60,48 +62,48 @@ public class SolrAuthActionController {
         Log.log(SolrAuthActionController.class, "New User hash: " + pwhash);
         return pwhash;
     }
-    
-    public static String addRole(String user, ArrayList<String> roles){
+
+    public static String addRole(String user, ArrayList<String> roles) {
         String result = "";
         String data = "";
-        try{
-         String path = SOLR.getSolrBaseUrl() + SolrHttpHandler.AUTHORIZATION_URL_PART;
-         if(roles.size() > 1){ 
-           // case for multiple roles
-           data = "{ \"set-user-role\": {\"" + user + "\" : \"" + roles.toString() + "\" }}";
-         } else if(roles.size() == 1 && roles.get(0).trim().equals("null")){
-             // case for null role
-             data = "{ \"set-user-role\": {\"" + user + "\" : " + roles.get(0) + " }}";
-         } else {
-             // case for single role
-              data = "{ \"set-user-role\": {\"" + user + "\" : \"" + roles.get(0) + "\" }}";
-         }
-        /*
+        try {
+            String path = SOLR.getSolrBaseUrl() + SolrHttpHandler.AUTHORIZATION_URL_PART;
+            if (roles.size() > 1) {
+                // case for multiple roles
+                data = "{ \"set-user-role\": {\"" + user + "\" : \"" + roles.toString() + "\" }}";
+            } else if (roles.size() == 1 && roles.get(0).trim().equals("null")) {
+                // case for null role
+                data = "{ \"set-user-role\": {\"" + user + "\" : " + roles.get(0) + " }}";
+            } else {
+                // case for single role
+                data = "{ \"set-user-role\": {\"" + user + "\" : \"" + roles.get(0) + "\" }}";
+            }
+            /*
         curl --user solr:SolrRocks http://localhost:8983/solr/admin/authorization -H 'Content-type:application/json' -d '{ 
   "set-user-role": {"tom":["admin","dev"},
   "set-user-role": {"harry":null}
 }'
-        */
-        
-        result = SOLR.post(path, data);
-        
-        }catch(Exception e){
+             */
+
+            result = SOLR.post(path, data);
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return result;
     }
-    
-    public static String addOrEditPermission(LinkedHashMap<String,Object> permission, boolean isEditing){
-               String result = "";
+
+    public static String addOrEditPermission(LinkedHashMap<String, Object> permission, boolean isEditing) {
+        String result = "";
         String data = "";
         String actionKey = "set-permission";
-        if(isEditing){
+        if (isEditing) {
             actionKey = "update-permission";
         }
-        try{
-         String path = SOLR.getSolrBaseUrl() + SolrHttpHandler.AUTHORIZATION_URL_PART;
-          data = "{ \""+actionKey+"\": "+JsonHelper.objToString(permission)+"}";
-         /*
+        try {
+            String path = SOLR.getSolrBaseUrl() + SolrHttpHandler.AUTHORIZATION_URL_PART;
+            data = "{ \"" + actionKey + "\": " + JsonHelper.objToString(permission) + "}";
+            /*
          curl --user solr:SolrRocks http://localhost:8983/solr/admin/authorization -H 'Content-type:application/json'-d '{ 
   "set-permission": { "name":"a-custom-permission-name",
                       "collection":"gettingstarted",
@@ -109,53 +111,53 @@ public class SolrAuthActionController {
                       "before": "name-of-another-permission",
                       "role": "dev"
    }
-         */
-         
-          result = SOLR.post(path, data);
-        
-        }catch(Exception e){
+             */
+
+            result = SOLR.post(path, data);
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return result;
     }
-    
-    public static String deletePermission(String name, int index){
+
+    public static String deletePermission(String name, int index) {
         String result = "";
         String data = "";
-        
-        try{
-              String path = SOLR.getSolrBaseUrl() + SolrHttpHandler.AUTHORIZATION_URL_PART;
-              if(index != -1){ // if we have a current index, use that. 
-                    data = "{ \"delete-permission\": "+index+"}";
-              } else {// otherwise, get the index from the api
-                   String authorization = SolrAuthActionController.SOLR.getAuthorization();
-                  JSONObject authoJson = new JSONObject(authorization);
-                    LinkedHashMap authoMap = new LinkedHashMap(JsonHelper.jsonToMap(authoJson));
-                    Authorization auth = new Authorization(authoMap);
-                    String key;
-                    Object value;
-                    for(int i=0; i<auth.getPermissions().size(); i++){
-                        value =  auth.getPermissions().get(i).get("index");
-                        key = (String)auth.getPermissions().get(i).get("name");
-                        if(value instanceof Integer){
-                            index = (Integer)value;
-                            break;
-                        } else if(key.equals(name)){
-                            index = i;
-                            break;
-                        }
+
+        try {
+            String path = SOLR.getSolrBaseUrl() + SolrHttpHandler.AUTHORIZATION_URL_PART;
+            if (index != -1) { // if we have a current index, use that. 
+                data = "{ \"delete-permission\": " + index + "}";
+            } else {// otherwise, get the index from the api
+                String authorization = SolrAuthActionController.SOLR.getAuthorization();
+                JSONObject authoJson = new JSONObject(authorization);
+                LinkedHashMap authoMap = new LinkedHashMap(JsonHelper.jsonToMap(authoJson));
+                Authorization auth = new Authorization(authoMap);
+                String key;
+                Object value;
+                for (int i = 0; i < auth.getPermissions().size(); i++) {
+                    value = auth.getPermissions().get(i).get("index");
+                    key = (String) auth.getPermissions().get(i).get("name");
+                    if (value instanceof Integer) {
+                        index = (Integer) value;
+                        break;
+                    } else if (key.equals(name)) {
+                        index = i;
+                        break;
                     }
-                  
-                  data = "{ \"delete-permission\": "+index+"}";      
-              }
-           
-              if(index > -1){
-              result = SOLR.post(path, data);
-              } else {
-                  result = "";
-              }
-              
-        }catch(Exception e){
+                }
+
+                data = "{ \"delete-permission\": " + index + "}";
+            }
+
+            if (index > -1) {
+                result = SOLR.post(path, data);
+            } else {
+                result = "";
+            }
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return result;
@@ -176,22 +178,46 @@ public class SolrAuthActionController {
 
         return result;
     }
-    
-    public static JSONObject getCollections(){
+
+    public static JSONObject getCollections() {
         JSONObject obj = null;
-        try{
+        try {
             String url = SOLR.getSolrBaseUrl() + SolrHttpHandler.COLLECTION_LIST_URL_PART;
             String result = SOLR.get(url);
             obj = new JSONObject(result);
             // http://localhost:8983/solr/admin/collections?action=LIST&wt=json
-            
-        }catch(Exception e){
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return obj;
     }
-    
-        public static enum SolrManagerAction {
+
+    public static String doPushConfigToSolrAction(SecurityJson json) {
+        String result = "";
+        try {
+            String pathToScript = System.getProperty("user.dir") + File.separator + "solrAuth.sh";
+            ProcessBuilder pb = new ProcessBuilder("bash " + pathToScript);
+
+            Log.log("Run PUSH command");
+
+            Process process = pb.start();
+            if (process.waitFor() == 0) {
+                result = "";
+            } else {
+                result = Utils.streamToString(process.getErrorStream());
+                result += "\n" + Utils.streamToString(process.getInputStream());
+                Log.log(result);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    public static enum SolrManagerAction {
         create_user,
         delete_user,
         add_role,
@@ -200,6 +226,35 @@ public class SolrAuthActionController {
         add_permission,
         edit_permission,
         delete_permission,
-        add_a_version
+        add_a_version,
+        push_a_version
+    }
+
+    public static enum SystemErrors {
+        EX_OK(0),
+        EX__BASE(64),
+        EX_USAGE(64),
+        EX_DATAERR(65),
+        EX_NOINPUT(66),
+        EX_NOUSER(67),
+        EX_NOHOST(68),
+        EX_UNAVAILABLE(69),
+        EX_SOFTWARE(70),
+        EX_OSERR(71),
+        EX_OSFILE(72),
+        EX_CANTCREAT(73),
+        EX_IOERR(74),
+        EX_TEMPFAIL(75),
+        EX_PROTOCOL(76),
+        EX_NOPERM(77),
+        EX_CONFIG(78),
+        EX__MAX(78);
+        
+            private int errorValue = -1;
+
+        SystemErrors(int value) {
+            this.errorValue = value;
+        }
+
     }
 }
