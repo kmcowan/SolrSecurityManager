@@ -212,17 +212,23 @@ public class SolrAuthActionController {
         try {
             String pathToScript = System.getProperty("user.dir") + File.separator + "solrAuth.sh";
             String jsonstr = json.export();
-            String filePath = SolrAuthManager.getProperties().getProperty("solr.install.dir") + File.separator + "security.json";
-
+            String filePath = SolrAuthManager.getProperties().getProperty("solr.install.path") + File.separator + "security.json";
+            File backup = new File("backup");
+            if(!backup.exists()){
+                backup.mkdirs();
+            }
+            
             File file = new File(filePath);
             if(file.exists()){
-                 String newFilePath = SolrAuthManager.getProperties().getProperty("solr.install.dir") + File.separator + System.currentTimeMillis() + "_security.json";
-                 File newFile = new File(newFilePath);
-                 file.renameTo(newFile);
+                // String newFilePath = SolrAuthManager.getProperties().getProperty("solr.install.path") + File.separator + System.currentTimeMillis() + "_security.json";
+                // File newFile = new File(newFilePath);
+                // file.renameTo(newFile);
+                 FileUtils.copyFileToDirectory(file, backup);
             }
             FileUtils.writeByteArrayToFile(file, jsonstr.getBytes());
             Thread.sleep(500);
-            ProcessBuilder pb = new ProcessBuilder("bash " + pathToScript);
+            ProcessBuilder pb = new ProcessBuilder(pathToScript);
+          
 
             Log.log("Run PUSH command");
 
@@ -253,7 +259,8 @@ public class SolrAuthActionController {
         edit_permission,
         delete_permission,
         add_a_version,
-        push_a_version
+        push_a_version,
+        load_a_version
     }
 
     public static enum SystemErrors {

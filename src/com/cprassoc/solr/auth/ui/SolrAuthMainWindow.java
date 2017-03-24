@@ -238,8 +238,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                     value = "" + (Integer) list.get(i).get(key);
                 } else if (tempVal instanceof ArrayList) { // for params
                     value = list.get(i).get(key).toString();
-                } else if(tempVal instanceof LinkedHashMap){
-                    value = Utils.mapValuesToString((LinkedHashMap)tempVal);
+                } else if (tempVal instanceof LinkedHashMap) {
+                    value = Utils.mapValuesToString((LinkedHashMap) tempVal);
                 } else {
                     value = (String) list.get(i).get(key);
                 }
@@ -375,8 +375,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 result = SolrAuthActionController.addOrEditPermission(map, false);
                 resp = new JSONObject(result);
                 if (getResponseStatus(resp) == OK_RESPONSE) {
-                   // securityJson.getAuthorization().updateOrAddPermission(map);
-                   securityJson.reloadAuthorization();
+                    // securityJson.getAuthorization().updateOrAddPermission(map);
+                    securityJson.reloadAuthorization();
                     clearTable(this.rolesTable.getModel());
                     populateAuthorizationTable(securityJson.getAuthorization());
                 }
@@ -388,8 +388,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 result = SolrAuthActionController.addOrEditPermission(map, true);
                 resp = new JSONObject(result);
                 if (getResponseStatus(resp) == OK_RESPONSE) {
-                     // securityJson.getAuthorization().updateOrAddPermission(map);
-                   securityJson.reloadAuthorization();
+                    // securityJson.getAuthorization().updateOrAddPermission(map);
+                    securityJson.reloadAuthorization();
                     clearTable(this.rolesTable.getModel());
                     populateAuthorizationTable(securityJson.getAuthorization());
                 }
@@ -398,26 +398,52 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
 
             case delete_permission:
                 break;
-                
+
             case add_a_version:
                 String title = args.get("title");
                 String desc = args.get("description");
-                 result = VERSIONS.saveVersion(title, desc, securityJson);
-                 if(result == null){
-                     this.showOKOnlyMessageDialog("An error occurred saving the json. ", Resources.Resource.warn);
-                 } else {
-                     this.showOKOnlyMessageDialog("Version saved successfully. ", Resources.Resource.info);
-                 }
+                result = VERSIONS.saveVersion(title, desc, securityJson);
+                if (result == null) {
+                    this.showOKOnlyMessageDialog("An error occurred saving the json. ", Resources.Resource.warn);
+                } else {
+                    this.showOKOnlyMessageDialog("Version saved successfully. ", Resources.Resource.info);
+                }
                 break;
-                
+
             case push_a_version:
-                String skey = (String)optional;
+                String skey = (String) optional;
                 SavedVersion version = VERSIONS.getHistory().get(skey);
-                if(version != null){
-                  Log.log(getClass(), "PUSH version: "+version.getTitle());
+                if (version != null) {
+                    Log.log(getClass(), "PUSH version: " + version.getTitle());
+                    pushToSolr(version.getSeucrityJson());
                 }
                 
+
                 break;
+
+            case load_a_version:
+
+                skey = (String) optional;
+                version = VERSIONS.getHistory().get(skey);
+                if (version != null) {
+                    Log.log(getClass(), "LOAD version: " + version.getTitle());
+                    securityJson = version.getSeucrityJson();
+                    clearTables();
+                    populateAuthorizationTable(securityJson.getAuthorization());
+                    populateUserRolesTable(securityJson.getAuthorization());
+                    populateAuthenticationTable(securityJson.getAuthentication());
+                }
+
+                break;
+        }
+    }
+    
+    private void pushToSolr(SecurityJson secu){
+         String result = SolrAuthActionController.doPushConfigToSolrAction(secu);
+        if (result.equals("")) {
+            this.showOKOnlyMessageDialog("Pushed config to Solr OK...", Resources.Resource.info);
+        } else {
+            this.showOKOnlyMessageDialog("An Error Occured Pushing Security: " + result, Resources.Resource.warn);
         }
     }
 
@@ -449,6 +475,22 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 model.setValueAt("", i, j);
             }
         }
+    }
+    
+     private void clearTables() {
+        TableModel[] models = new TableModel[3];
+        models[0] = this.usersTable.getModel();
+        models[1] = this.rolesTable.getModel();
+        models[2] = this.permissionsTable.getModel();
+        
+        TableModel model;
+        for(int m=0; m<models.length; m++){
+            model = models[m];
+        for (int i = 0; i < model.getRowCount(); i++) {
+            for (int j = 0; j < model.getColumnCount(); j++) {
+                model.setValueAt("", i, j);
+            }
+        }}
     }
 
     public void showOKOnlyMessageDialog(String message, Resources.Resource resc) {
@@ -1033,8 +1075,17 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
             try {
                 File fileToOpen = fc.getSelectedFile();
                 if (fileToOpen.exists()) {
+                    JSONObject obj = null;
+
                     String content = new String(IOUtils.readBytesFromStream(new FileInputStream(fileToOpen)));
-                    LinkedHashMap<String, Object> map = new LinkedHashMap(JsonHelper.jsonToMap(new JSONObject(content)));
+                    JSONObject secu = new JSONObject(content);
+                    if (secu.has("data")) {
+                        obj = new JSONObject(secu.getString("data"));
+                    } else {
+                        obj = secu;
+                    }
+                    LinkedHashMap<String, Object> map = new LinkedHashMap(JsonHelper.jsonToMap(obj));
+                    Log.log(content);
                     securityJson = new SecurityJson(map);
                     populateAuthorizationTable(securityJson.getAuthorization());
                     populateUserRolesTable(securityJson.getAuthorization());
@@ -1082,12 +1133,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
 
     private void doPushConfigToSolrAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doPushConfigToSolrAction
 
-       String result = SolrAuthActionController.doPushConfigToSolrAction(securityJson);
-       if(result.equals("")){
-           this.showOKOnlyMessageDialog("Pushed config to Solr OK...", Resources.Resource.info);
-       } else {
-           this.showOKOnlyMessageDialog("An Error Occured Pushing Security: "+result, Resources.Resource.warn);
-       }
+       pushToSolr(securityJson);
     }//GEN-LAST:event_doPushConfigToSolrAction
 
     private void doDeletePermission(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doDeletePermission
@@ -1133,8 +1179,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     }//GEN-LAST:event_doDeletePermission
 
     private void doSaveAVersion(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doSaveAVersion
-       AddVersionForm form = new AddVersionForm(this, true);
-       form.setVisible(true);
+        AddVersionForm form = new AddVersionForm(this, true);
+        form.setVisible(true);
     }//GEN-LAST:event_doSaveAVersion
 
     private void doViewSavedVersions(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doViewSavedVersions
@@ -1143,8 +1189,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     }//GEN-LAST:event_doViewSavedVersions
 
     private void doViewServerStatus(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doViewServerStatus
-         ServerStatusDialog dialog = new ServerStatusDialog(this, true);
-         dialog.setVisible(true);
+        ServerStatusDialog dialog = new ServerStatusDialog(this, true);
+        dialog.setVisible(true);
     }//GEN-LAST:event_doViewServerStatus
 
     /**

@@ -1,1 +1,2 @@
-{PATH_TO_SOLR}server/scripts/cloud-scripts/zkcli.sh -zkhost localhost:9983 -cmd putfile {PATH_TO_SOLR_AUTH}security.json security.json
+cd {PATH_TO_SOLR}
+server/scripts/cloud-scripts/zkcli.sh -zkhost localhost:9983 -cmd putfile /security.json security.json
