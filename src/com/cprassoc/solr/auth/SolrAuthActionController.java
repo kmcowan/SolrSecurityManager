@@ -18,6 +18,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Properties;
+import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 
 /**
@@ -210,6 +211,17 @@ public class SolrAuthActionController {
         String result = "";
         try {
             String pathToScript = System.getProperty("user.dir") + File.separator + "solrAuth.sh";
+            String jsonstr = json.export();
+            String filePath = SolrAuthManager.getProperties().getProperty("solr.install.dir") + File.separator + "security.json";
+
+            File file = new File(filePath);
+            if(file.exists()){
+                 String newFilePath = SolrAuthManager.getProperties().getProperty("solr.install.dir") + File.separator + System.currentTimeMillis() + "_security.json";
+                 File newFile = new File(newFilePath);
+                 file.renameTo(newFile);
+            }
+            FileUtils.writeByteArrayToFile(file, jsonstr.getBytes());
+            Thread.sleep(500);
             ProcessBuilder pb = new ProcessBuilder("bash " + pathToScript);
 
             Log.log("Run PUSH command");
@@ -225,6 +237,7 @@ public class SolrAuthActionController {
 
         } catch (Exception e) {
             e.printStackTrace();
+            result = e.getLocalizedMessage();
         }
 
         return result;

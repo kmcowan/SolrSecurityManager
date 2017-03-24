@@ -1083,6 +1083,11 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     private void doPushConfigToSolrAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doPushConfigToSolrAction
 
        String result = SolrAuthActionController.doPushConfigToSolrAction(securityJson);
+       if(result.equals("")){
+           this.showOKOnlyMessageDialog("Pushed config to Solr OK...", Resources.Resource.info);
+       } else {
+           this.showOKOnlyMessageDialog("An Error Occured Pushing Security: "+result, Resources.Resource.warn);
+       }
     }//GEN-LAST:event_doPushConfigToSolrAction
 
     private void doDeletePermission(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doDeletePermission
