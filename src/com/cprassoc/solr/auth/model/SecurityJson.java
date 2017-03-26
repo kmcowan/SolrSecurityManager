@@ -8,6 +8,7 @@ package com.cprassoc.solr.auth.model;
 import com.cprassoc.solr.auth.SolrAuthActionController;
 import com.cprassoc.solr.auth.util.JsonHelper;
 import com.cprassoc.solr.auth.util.Log;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import net.arnx.jsonic.JSON;
@@ -96,6 +97,20 @@ public class SecurityJson {
             }
         }
         return false;
+    }
+    
+    public synchronized void reIndexPermissions(){
+        ArrayList<LinkedHashMap<String,Object>> list = getAuthorization().getPermissions();
+        ArrayList<LinkedHashMap<String,Object>> newlist = new ArrayList<>();
+        int index = 1;
+        for(LinkedHashMap map: list){
+            map.put("index", ""+index);
+            index++;
+            SolrAuthActionController.addOrEditPermission(map, true);
+            newlist.add(map);
+        }
+        
+         getAuthorization().setPermissions(newlist);
     }
 
     public LinkedHashMap<String, Object> getPermission(String permissionName) {

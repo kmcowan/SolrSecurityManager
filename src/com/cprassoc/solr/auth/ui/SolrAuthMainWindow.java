@@ -1202,6 +1202,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                             Authorization auth = new Authorization(authoMap);
                             this.clearTable(this.permissionsTable.getModel());
                             securityJson.setAuthorization(auth);
+                            securityJson.reIndexPermissions();
                             this.populateAuthorizationTable(auth);
                             this.selectedPermission = "";
                             this.permissionsTable.changeSelection(0, 0, false, false);
@@ -1245,7 +1246,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
 
     private void doReindexPermissions(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doReindexPermissions
         
-        ArrayList<LinkedHashMap<String,Object>> list = securityJson.getAuthorization().getPermissions();
+      /*  ArrayList<LinkedHashMap<String,Object>> list = securityJson.getAuthorization().getPermissions();
         ArrayList<LinkedHashMap<String,Object>> newlist = new ArrayList<>();
         int index = 1;
         for(LinkedHashMap map: list){
@@ -1256,6 +1257,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         }
         
         securityJson.getAuthorization().setPermissions(newlist);
+        */
+        securityJson.reIndexPermissions();
         clearTable(this.permissionsTable.getModel());
         populateAuthorizationTable(securityJson.getAuthorization());
        
