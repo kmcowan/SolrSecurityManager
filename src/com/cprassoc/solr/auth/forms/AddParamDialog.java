@@ -88,8 +88,10 @@ public class AddParamDialog extends BaseDialog implements Frameable {
         jPanel1.setBackground(new java.awt.Color(0, 51, 102));
 
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Add Parameter to Permission");
 
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Key: ");
 
         jCheckBox1.setBackground(new java.awt.Color(0, 51, 102));
@@ -119,8 +121,10 @@ public class AddParamDialog extends BaseDialog implements Frameable {
             }
         });
 
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Type:");
 
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("Value");
 
         jTextArea1.setEditable(false);
