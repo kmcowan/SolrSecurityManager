@@ -1,0 +1,10 @@
+{"help": {
+        "add_param": {
+            "title": "Adding Parameters",
+            "template": "add_param.html"
+        },
+        "manage_permissions": {
+            "title": "Managing Permissions",
+            "template": "manage_permissions.html"
+        }
+}}

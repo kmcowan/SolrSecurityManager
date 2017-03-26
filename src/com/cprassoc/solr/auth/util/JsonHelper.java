@@ -5,12 +5,12 @@
  */
 package com.cprassoc.solr.auth.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import net.arnx.jsonic.JSON;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,14 +20,14 @@ import org.json.JSONObject;
  * @author kevin
  */
 public class JsonHelper {
-    public static ObjectMapper mapper = new ObjectMapper();
+  //  public static ObjectMapper mapper = new ObjectMapper();
     
     public static Map parse(String json) throws Exception{
-        return mapper.readValue(json, Map.class);
+        return jsonToMap(new JSONObject(json));//mapper.readValue(json, Map.class);
     }
     
     public static String objToString(Object obj)throws Exception{
-        return mapper.writeValueAsString(obj);
+        return JSON.encode(obj);//mapper.writeValueAsString(obj); 
     }
     
     public static Map<String, Object> jsonToMap(JSONObject json) throws JSONException {

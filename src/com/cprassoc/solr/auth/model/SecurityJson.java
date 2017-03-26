@@ -168,4 +168,15 @@ public class SecurityJson {
     public void setAuthentication(Authentication authentication) {
         this.authentication = authentication;
     }
+    
+    public static enum PermissionAttributes {
+        name,
+        role,
+        path,
+        params,
+        collection,
+        method,
+        index,
+        before;
+    }
 }

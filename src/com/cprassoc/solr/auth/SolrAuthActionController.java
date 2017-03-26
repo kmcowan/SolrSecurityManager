@@ -260,7 +260,8 @@ public class SolrAuthActionController {
         delete_permission,
         add_a_version,
         push_a_version,
-        load_a_version
+        load_a_version,
+        add_permissions_to_permissions
     }
 
     public static enum SystemErrors {

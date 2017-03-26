@@ -147,7 +147,7 @@ public class Authorization {
         map.put("name", "");
         map.put("role", "");
         map.put("path", "");
-        map.put("params", new LinkedHashMap<String,ArrayList<String>>());
+        map.put("params", new LinkedHashMap<String,LinkedHashMap<String, Object>>());
         map.put("collection", "");
         map.put("method", "");
         map.put("before", "");

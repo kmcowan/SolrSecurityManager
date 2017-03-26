@@ -468,7 +468,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         return "";
     }
 
-    private void clearTable(TableModel model) {
+    private synchronized void clearTable(TableModel model) {
 
         for (int i = 0; i < model.getRowCount(); i++) {
             for (int j = 0; j < model.getColumnCount(); j++) {
@@ -477,7 +477,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         }
     }
     
-     private void clearTables() {
+     private synchronized void clearTables() {
         TableModel[] models = new TableModel[3];
         models[0] = this.usersTable.getModel();
         models[1] = this.rolesTable.getModel();
@@ -486,11 +486,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         TableModel model;
         for(int m=0; m<models.length; m++){
             model = models[m];
-        for (int i = 0; i < model.getRowCount(); i++) {
-            for (int j = 0; j < model.getColumnCount(); j++) {
-                model.setValueAt("", i, j);
-            }
-        }}
+          clearTable(model);
+        }
     }
 
     public void showOKOnlyMessageDialog(String message, Resources.Resource resc) {

@@ -5,6 +5,7 @@
  */
 package com.cprassoc.solr.auth;
 
+import com.cprassoc.solr.auth.model.ContextualHelp;
 import com.cprassoc.solr.auth.ui.SolrAuthMainWindow;
 import com.cprassoc.solr.auth.ui.SolrSecurityPropertyManagerFrame;
 import com.cprassoc.solr.auth.util.Log;
@@ -25,6 +26,7 @@ public class SolrAuthManager {
     private static Properties properties = null;
     private static final Desktop desktop = Desktop.getDesktop();
     private static String[] originalArgs = null;
+    private static final ContextualHelp help = ContextualHelp.getInstance();
 
     public final static String SOLR_AUTH_PROPERTIES = "solr-security.properties";
 

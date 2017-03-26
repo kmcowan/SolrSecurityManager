@@ -14,6 +14,8 @@ import com.cprassoc.solr.auth.security.PermissionNameProvider.Name;
 import com.cprassoc.solr.auth.ui.SolrAuthMainWindow;
 import com.cprassoc.solr.auth.util.Log;
 import com.cprassoc.solr.auth.util.Utils;
+import com.cprassoc.solr.auth.security.Permission;
+import java.awt.Frame;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,14 +31,14 @@ import org.json.JSONArray;
  *
  * @author kevin
  */
-public class ManagePermissionFrame extends BaseDialog {
+public class ManagePermissionFrame extends BaseDialog implements Frameable {
 
     private SecurityJson securityJson = null;
     private LinkedHashMap<String, Object> permission = null;
     private final static String[] REGISTERED_PATHS = "/admin/mbeans,/browse,/update/json/docs,/admin/luke,/export,/get,/admin/properties,/elevate,/update/json,/admin/threads,/query,/analysis/field,/analysis/document,/spell,/update/csv,/sql,/graph,/tvrh,/select,/admin/segments,/admin/system,/replication,/config,/stream,/schema,/admin/plugins,/admin/logging,/admin/ping,/update,/admin/file,/terms,/debug/dump,/update/extract".split(",");
     private Frameable frame = null;
     private boolean isEditing = false;
-    private LinkedHashMap<String,String> params = new LinkedHashMap<>();
+    private LinkedHashMap<String, String> params = new LinkedHashMap<>();
     private static String ALLOWED_CHARS = "abcdefghijklmnopqrstuvwxyz-_";
 
     /**
@@ -60,11 +62,49 @@ public class ManagePermissionFrame extends BaseDialog {
     }
 
     private void init() {
+
         if (permission != null && isEditing) {
-            if (permission.get("path") != null) {
-                this.pathComboBox.setSelectedItem(permission.get("path"));
+            if (permission.get(SecurityJson.PermissionAttributes.path.name()) != null) {
+                this.pathComboBox.setSelectedItem(permission.get(SecurityJson.PermissionAttributes.path.name()));
+            }
+
+            this.roleNameField.setText((String) permission.get(SecurityJson.PermissionAttributes.name.name()));
+
+            if (permission.get(SecurityJson.PermissionAttributes.index.name()) != null) {
+                this.indexLabel.setText("" + (Integer) permission.get(SecurityJson.PermissionAttributes.index.name()));
+            }
+
+            if (permission.get(SecurityJson.PermissionAttributes.role.name()) != null) {
+                this.roleComboBox.setSelectedItem(permission.get(SecurityJson.PermissionAttributes.role.name()));
+            }
+
+            if (permission.get(SecurityJson.PermissionAttributes.collection.name()) != null) {
+                this.roleComboBox.setSelectedItem(permission.get(SecurityJson.PermissionAttributes.collection.name()));
+            }
+
+            if (permission.get(SecurityJson.PermissionAttributes.before.name()) != null) {
+                this.roleComboBox.setSelectedItem(permission.get(SecurityJson.PermissionAttributes.before.name()));
             }
         }
+    }
+
+    public void fireAction(SolrAuthActionController.SolrManagerAction action, LinkedHashMap<String, String> args, Object optional) {
+          
+          switch(action){
+              case add_permissions_to_permissions:
+                  break;
+          }
+    }
+
+    public void showOKOnlyMessageDialog(String message, Resources.Resource resc) {
+        frame.showOKOnlyMessageDialog(message, resc);
+    }
+
+    /**
+     * @return the frame
+     */
+    public Frame getFrame() {
+        return frame.getFrame();
     }
 
     private ComboBoxModel getNameComboBoxModel() {
@@ -112,7 +152,7 @@ public class ManagePermissionFrame extends BaseDialog {
         DefaultComboBoxModel model = new DefaultComboBoxModel();
         model.addElement("");
         if (this.securityJson != null) {
-            ArrayList<LinkedHashMap<String,Object>> perms = securityJson.getAuthorization().getPermissions();
+            ArrayList<LinkedHashMap<String, Object>> perms = securityJson.getAuthorization().getPermissions();
             LinkedHashMap perm;
             for (int i = 0; i < perms.size(); i++) {
                 perm = perms.get(i);
@@ -169,25 +209,49 @@ public class ManagePermissionFrame extends BaseDialog {
 
     private ArrayList<String> validatePermission() {
         ArrayList<String> results = new ArrayList<>();
-        String name = (String)permission.get("name");
-        String role = (String)permission.get("role");
-        
-        if(name.trim().equals("")){
+        String name = (String) permission.get("name");
+        String role = (String) permission.get("role");
+
+        if (name.trim().equals("")) {
             results.add("A permission name is required.");
         }
         char[] chars = name.toCharArray();
-        for(int i=0; i<chars.length; i++){
-            if(!ALLOWED_CHARS.contains(Character.toString(chars[i]))){
-                results.add("'"+chars[i]+"' is not an allowed character.");
+        for (int i = 0; i < chars.length; i++) {
+            if (!ALLOWED_CHARS.contains(Character.toString(chars[i]))) {
+                results.add("'" + chars[i] + "' is not an allowed character.");
             }
         }
-        
-        if(role.equals("")){
+
+        if (role.equals("")) {
             results.add("Role cannot be empty. ");
         }
-        
-        
+
         return results;
+    }
+    
+    private void loadPermission(String name, Object nvalue){
+                int rows = this.paramsTable.getModel().getRowCount();
+        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+        map.put(name, nvalue);
+        String key, value;
+        ArrayList<String> paramlist;
+        for (int i = 0; i < rows; i++) {
+            key = (String) paramsTable.getModel().getValueAt(i, 0);
+            value = (String) paramsTable.getModel().getValueAt(i, 1);
+            paramlist = new ArrayList<>();
+            if (value.contains(",")) {
+                String[] values = value.split(",");
+                for (int j = 0; j < values.length; j++) {
+                    paramlist.add(values[j]);
+                }
+            } else {
+                paramlist.add(value);
+            }
+            map.put(key, paramlist);
+
+        }
+
+        this.permission.put("params", map);
     }
 
     /**
@@ -229,6 +293,11 @@ public class ManagePermissionFrame extends BaseDialog {
         HEADCheckbox = new javax.swing.JCheckBox();
         wildcardCheckBox = new javax.swing.JCheckBox();
         jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        indexLabel = new javax.swing.JLabel();
+        jButton4 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
+        jLabel12 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -372,6 +441,7 @@ public class ManagePermissionFrame extends BaseDialog {
         );
 
         jButton3.setBackground(new java.awt.Color(0, 51, 153));
+        jButton3.setForeground(new java.awt.Color(255, 255, 255));
         jButton3.setText("Set Params");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -438,6 +508,37 @@ public class ManagePermissionFrame extends BaseDialog {
         jLabel10.setForeground(new java.awt.Color(153, 0, 51));
         jLabel10.setText("*");
 
+        jLabel11.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel11.setText("Index: ");
+
+        indexLabel.setForeground(new java.awt.Color(255, 255, 255));
+        indexLabel.setText("0");
+
+        jButton4.setBackground(new java.awt.Color(0, 51, 153));
+        jButton4.setForeground(new java.awt.Color(255, 255, 255));
+        jButton4.setText("Param Builder");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doInvokeParamBuilder(evt);
+            }
+        });
+
+        jButton5.setBackground(new java.awt.Color(0, 51, 153));
+        jButton5.setForeground(new java.awt.Color(255, 255, 255));
+        jButton5.setText("Test");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doTestPermission(evt);
+            }
+        });
+
+        jLabel12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/cprassoc/solr/auth/forms/resources/help_sml.png"))); // NOI18N
+        jLabel12.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                doContextualHelpAction(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -446,6 +547,8 @@ public class ManagePermissionFrame extends BaseDialog {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton5)
+                        .addGap(18, 18, 18)
                         .addComponent(jButton1)
                         .addGap(18, 18, 18)
                         .addComponent(jButton2))
@@ -472,7 +575,9 @@ public class ManagePermissionFrame extends BaseDialog {
                                     .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jButton3))
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jButton3)
+                                            .addComponent(jButton4)))
                                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                         .addGroup(jPanel1Layout.createSequentialGroup()
                                             .addComponent(GETCheckbox)
@@ -486,15 +591,26 @@ public class ManagePermissionFrame extends BaseDialog {
                                             .addComponent(HEADCheckbox))
                                         .addComponent(collectionComboBox, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(beforeComboBox, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                            .addComponent(nameComboBox, javax.swing.GroupLayout.Alignment.LEADING, 0, 280, Short.MAX_VALUE)
-                                            .addComponent(roleNameField, javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(roleComboBox, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(pathComboBox, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                        .addGap(18, 18, 18)
-                                        .addComponent(wildcardCheckBox)))))
-                        .addGap(0, 17, Short.MAX_VALUE)))
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                            .addGap(327, 327, 327)
+                                            .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                                .addComponent(nameComboBox, javax.swing.GroupLayout.Alignment.LEADING, 0, 280, Short.MAX_VALUE)
+                                                .addComponent(roleNameField, javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addComponent(roleComboBox, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(pathComboBox, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                                    .addGap(18, 18, 18)
+                                                    .addComponent(wildcardCheckBox))
+                                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                                    .addGap(30, 30, 30)
+                                                    .addComponent(jLabel11)
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                    .addComponent(indexLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))))))))
+                        .addGap(0, 2, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -503,11 +619,14 @@ public class ManagePermissionFrame extends BaseDialog {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(permissionDisplayLabel))
+                    .addComponent(permissionDisplayLabel)
+                    .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(nameComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(nameComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel11)
+                    .addComponent(indexLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(roleNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -527,8 +646,10 @@ public class ManagePermissionFrame extends BaseDialog {
                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(32, 32, 32)
-                        .addComponent(jButton3)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
+                        .addComponent(jButton3)
+                        .addGap(51, 51, 51)
+                        .addComponent(jButton4)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
                     .addComponent(collectionComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -547,7 +668,8 @@ public class ManagePermissionFrame extends BaseDialog {
                 .addGap(14, 14, 14)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton2)
-                    .addComponent(jButton1))
+                    .addComponent(jButton1)
+                    .addComponent(jButton5))
                 .addContainerGap())
         );
 
@@ -567,23 +689,23 @@ public class ManagePermissionFrame extends BaseDialog {
 
     private void doSaveAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doSaveAction
         cleanPermissionMap();
-         printPermissions();
+        printPermissions();
         ArrayList<String> valid = validatePermission();
-           
+
         if (valid.size() == 0) {
-       
-            if(isEditing){
-               frame.fireAction(SolrAuthActionController.SolrManagerAction.edit_permission, null, permission);
+
+            if (isEditing) {
+                frame.fireAction(SolrAuthActionController.SolrManagerAction.edit_permission, null, permission);
             } else {
-               frame.fireAction(SolrAuthActionController.SolrManagerAction.add_permission, null, permission);
+                frame.fireAction(SolrAuthActionController.SolrManagerAction.add_permission, null, permission);
             }
-              this.setVisible(false);
-        this.dispose();
+            this.setVisible(false);
+            this.dispose();
         } else {
             String message = "Permission Validation Failed for the Following Reasons: \n " + valid.toString();
             frame.showOKOnlyMessageDialog(message, Resources.Resource.warn);
         }
-      
+
     }//GEN-LAST:event_doSaveAction
 
     private void doCancelAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doCancelAction
@@ -612,38 +734,18 @@ public class ManagePermissionFrame extends BaseDialog {
     }//GEN-LAST:event_doLoadRoleNameAction
 
     private void doLoadRoleIntoPermission(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doLoadRoleIntoPermission
-        Log.log(getClass(), "Load role: "+this.roleComboBox.getSelectedItem());
+        Log.log(getClass(), "Load role: " + this.roleComboBox.getSelectedItem());
         this.permission.put("role", (String) this.roleComboBox.getSelectedItem());
     }//GEN-LAST:event_doLoadRoleIntoPermission
 
     private void doLoadPathIntoPermission(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doLoadPathIntoPermission
-       
+
         this.permission.put("path", (String) this.pathComboBox.getSelectedItem());
         this.wildcardCheckBox.setEnabled(true);
     }//GEN-LAST:event_doLoadPathIntoPermission
 
     private void doSetParamsInPermissionAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doSetParamsInPermissionAction
-        int rows = this.paramsTable.getModel().getRowCount();
-        LinkedHashMap<String, ArrayList<String>> map = new LinkedHashMap<>();
-        String key, value;
-        ArrayList<String> paramlist;
-        for (int i = 0; i < rows; i++) {
-            key = (String) paramsTable.getModel().getValueAt(i, 0);
-            value = (String) paramsTable.getModel().getValueAt(i, 1);
-            paramlist = new ArrayList<>();
-            if (value.contains(",")) {
-                String[] values = value.split(",");
-                for (int j = 0; j < values.length; j++) {
-                    paramlist.add(values[j]);
-                }
-            } else {
-                paramlist.add(value);
-            }
-            map.put(key, paramlist);
 
-        }
-        
-        this.permission.put("params", map);
     }//GEN-LAST:event_doSetParamsInPermissionAction
 
     private void doLoadCollectionIntoPermission(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doLoadCollectionIntoPermission
@@ -651,35 +753,35 @@ public class ManagePermissionFrame extends BaseDialog {
     }//GEN-LAST:event_doLoadCollectionIntoPermission
 
     private void doAppendGETMethod(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doAppendGETMethod
-      if(this.GETCheckbox.isSelected()){
-        appendMethodToPermission("GET");
-      } else {
-          removeMethodFromPermission("GET");
-      }
+        if (this.GETCheckbox.isSelected()) {
+            appendMethodToPermission("GET");
+        } else {
+            removeMethodFromPermission("GET");
+        }
     }//GEN-LAST:event_doAppendGETMethod
 
     private void doAppendPUTMethodToPermission(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doAppendPUTMethodToPermission
-        if(this.PUTCheckbox.isSelected()){
-        appendMethodToPermission("PUT");
-      } else {
-          removeMethodFromPermission("PUT");
-      }
+        if (this.PUTCheckbox.isSelected()) {
+            appendMethodToPermission("PUT");
+        } else {
+            removeMethodFromPermission("PUT");
+        }
     }//GEN-LAST:event_doAppendPUTMethodToPermission
 
     private void doAppendPOSTMethodToPermission(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doAppendPOSTMethodToPermission
-        if(this.POSTCheckbox.isSelected()){
-        appendMethodToPermission("POST");
-      } else {
-          removeMethodFromPermission("POST");
-      }
+        if (this.POSTCheckbox.isSelected()) {
+            appendMethodToPermission("POST");
+        } else {
+            removeMethodFromPermission("POST");
+        }
     }//GEN-LAST:event_doAppendPOSTMethodToPermission
 
     private void doAppendDELETEMethodToPermission(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doAppendDELETEMethodToPermission
-        if(this.DELETECheckbox.isSelected()){
-        appendMethodToPermission("DELETE");
-      } else {
-          removeMethodFromPermission("DELETE");
-      }
+        if (this.DELETECheckbox.isSelected()) {
+            appendMethodToPermission("DELETE");
+        } else {
+            removeMethodFromPermission("DELETE");
+        }
     }//GEN-LAST:event_doAppendDELETEMethodToPermission
 
     private void doLoadBeforePermission(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doLoadBeforePermission
@@ -687,73 +789,98 @@ public class ManagePermissionFrame extends BaseDialog {
     }//GEN-LAST:event_doLoadBeforePermission
 
     private void doAppendHEADMethodToPermission(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doAppendHEADMethodToPermission
-        if(this.HEADCheckbox.isSelected()){
-        appendMethodToPermission("HEAD");
-      } else {
-          removeMethodFromPermission("HEAD");
-      }
+        if (this.HEADCheckbox.isSelected()) {
+            appendMethodToPermission("HEAD");
+        } else {
+            removeMethodFromPermission("HEAD");
+        }
     }//GEN-LAST:event_doAppendHEADMethodToPermission
 
     private void doToggleWildcardOnPathAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doToggleWildcardOnPathAction
-        if(!permission.get("path").equals("")){
-             String path = (String)permission.get("path");
-            if(this.wildcardCheckBox.isSelected()){
-                 path = path +"/*";
-            } else if(!this.wildcardCheckBox.isSelected() && path.endsWith("*")){
-                path = path.substring(0, path.length()-2);
+        if (!permission.get("path").equals("")) {
+            String path = (String) permission.get("path");
+            if (this.wildcardCheckBox.isSelected()) {
+                path = path + "/*";
+            } else if (!this.wildcardCheckBox.isSelected() && path.endsWith("*")) {
+                path = path.substring(0, path.length() - 2);
             }
-            
+
             permission.put("path", path);
             this.pathComboBox.getModel().setSelectedItem(path);
         }
-        
-        Log.log(getClass(), "Updated path: "+permission.get("path"));
+
+        Log.log(getClass(), "Updated path: " + permission.get("path"));
     }//GEN-LAST:event_doToggleWildcardOnPathAction
 
-    private synchronized void cleanPermissionMap(){
+    private void doInvokeParamBuilder(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doInvokeParamBuilder
+        AddParamDialog dialog = new AddParamDialog(this, true);
+        dialog.setVisible(true);
+    }//GEN-LAST:event_doInvokeParamBuilder
+
+    private void doTestPermission(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doTestPermission
+        try{
+           Permission test = new Permission();
+           test.load(permission);
+            
+            this.showOKOnlyMessageDialog("Permission Test OK", Resources.Resource.permission_key);
+        }catch(Exception e){
+            e.printStackTrace();
+            this.showOKOnlyMessageDialog("Permission Test FAILED: "+e.getLocalizedMessage(), Resources.Resource.warn);
+        }
+    }//GEN-LAST:event_doTestPermission
+
+    private void doContextualHelpAction(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_doContextualHelpAction
+       ContextualHelpDialog dialog = new ContextualHelpDialog(frame.getFrame(), true, "manage_permissions");
+       dialog.setVisible(true);
+    }//GEN-LAST:event_doContextualHelpAction
+
+    private synchronized void cleanPermissionMap() {
         Iterator<String> iter = permission.keySet().iterator();
-        LinkedHashMap<String,Object> temp = new LinkedHashMap<>();
+        LinkedHashMap<String, Object> temp = new LinkedHashMap<>();
         String key;
         Object value;
-        while(iter.hasNext()){
+        while (iter.hasNext()) {
             key = iter.next();
-            
-            if(permission.get(key) != null){
+
+            if (permission.get(key) != null) {
                 value = permission.get(key);
-                if(value instanceof String){
-                    String test = (String)value;
-                    if(!test.equals("")){
+                if (value instanceof String) {
+                    String test = (String) value;
+                    if (!test.equals("")) {
                         temp.put(key, value);
                     }
                 } else {
-                temp.put(key, value);
+                    temp.put(key, value);
                 }
             }
         }
-        
+
         // check params
-        LinkedHashMap<String,Object> p = (LinkedHashMap)permission.get("params");
-        if(temp.get("name").equals("all") || p.size() == 0){
+        LinkedHashMap<String, Object> p = (LinkedHashMap) permission.get("params");
+        if (temp.get("name").equals("all") || p.size() == 0) {
             temp.remove("params");
         }
-        
+
         this.permission = temp;
     }
-    private void printPermissionParam(String key){
-        Log.log(getClass(), "Key: "+key+" value: "+permission.get(key).toString());
+
+    private void printPermissionParam(String key) {
+        Log.log(getClass(), "Key: " + key + " value: " + permission.get(key).toString());
     }
-    private void printPermissions(){
+
+    private void printPermissions() {
         Iterator<String> iter = permission.keySet().iterator();
         String key;
         Object value;
-        while(iter.hasNext()){
+        while (iter.hasNext()) {
             key = iter.next();
             value = permission.get(key);
-            Log.log(getClass(), "Key: "+key+" value: "+value.toString());
+            Log.log(getClass(), "Key: " + key + " value: " + value.toString());
         }
     }
-    private void appendMethodToPermission(String method){
-      /*  if(permission.get("method").equals("")){
+
+    private void appendMethodToPermission(String method) {
+        /*  if(permission.get("method").equals("")){
             permission.put("method", method);
         } else {
             String ms = (String)permission.get("method");
@@ -762,13 +889,13 @@ public class ManagePermissionFrame extends BaseDialog {
         }*/
         params.put(method, method);
         String out = Utils.mapKeysToString(params);
-        
-        Log.log("Upated METHOD: "+out);
-         permission.put("method", out);
+
+        Log.log("Upated METHOD: " + out);
+        permission.put("method", out);
     }
-    
-    private void removeMethodFromPermission(String method){
-      /*  if(!permission.get("method").equals("")){
+
+    private void removeMethodFromPermission(String method) {
+        /*  if(!permission.get("method").equals("")){
             String methods = (String)permission.get("method");
             if(methods.contains(",")){
                 String temp = "";
@@ -789,12 +916,13 @@ public class ManagePermissionFrame extends BaseDialog {
                 permission.put("method", "");
             }
         }*/
-      params.remove(method);
-       String out = Utils.mapKeysToString(params);
-        
-        Log.log("Upated (Remove) METHOD: "+out);
-         permission.put("method", out);
+        params.remove(method);
+        String out = Utils.mapKeysToString(params);
+
+        Log.log("Upated (Remove) METHOD: " + out);
+        permission.put("method", out);
     }
+
     /**
      * @param args the command line arguments
      */
@@ -839,11 +967,16 @@ public class ManagePermissionFrame extends BaseDialog {
     private javax.swing.JCheckBox PUTCheckbox;
     private javax.swing.JComboBox<String> beforeComboBox;
     private javax.swing.JComboBox<String> collectionComboBox;
+    private javax.swing.JLabel indexLabel;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
