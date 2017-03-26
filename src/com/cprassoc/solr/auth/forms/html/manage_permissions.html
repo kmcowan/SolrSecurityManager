@@ -5,7 +5,29 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
-        <div>Managing Permissions</div>
+        <div><h2>Managing Permissions</h2>
+            <p>Permissions are a rather strange beast in Solr.  Here are some things to keep in mind:</p>
+            <div>
+                <ol>
+ 	<li>Your Solr installation should be secured behind a Firewall.</li>
+ 	<li>The user under which Solr is started should only have write access to the Solr home directory ( by default $SOLR_INSTALL/server/solr )</li>
+ 	<li>Permissions are FIFO (First In, First Out).  That is, they are evaluated in the order in which they are declared.</li>
+ 	<li>There is a 1:1 relationship between roles and permissions. Any given permission (E.g. 'read') is only evaluated once, the first encountered in the list. If you have a second 'read' defined down the line, it will not be honored.</li>
+ 	<li>You can use an asterisk (*) to assign all permissions to all users. { "name": "read", "role": "*"}</li>
+ 	<li>The 'role' attribute takes either a wildcard '*' or single role name string as an argument.  You cannot pass arrays or comma-delimited strings.</li>
+ 	<li>You can use the permission 'all' to assign all permissions to a given role. { "name": "all", "role": "admin"}</li>
+ 	<li>You should err on the side of fewer permissions.  Only use just what you need.  "Less is more."  That said, there is a fine balance between what is required, and otherwise going overboard.</li>
+ 	<li>When <strong>deleting permissions</strong>, you <strong>MUST to use the 'index' integer, rather than the permission name</strong>.</li>
+ 	<li> The wildcard permission is your friend.</li>
+ 	<li>If you assign the generic 'read' role for the console, you need to also assign collection-admin-read and core-admin-read to the same role.  Likewise, for 'update', you'll need to specify the core-admin-edit and collection-admin-edit to the same role.</li>
+ 	<li>When defining a permission, only the 'role' parameter is required.</li>
+ 	<li>Use a library such as SolrJ to communicate with ZooKeeper.</li>
+ 	<li>When using a pre-specified (or 'named') permission, the only allowed attributes are: <strong>name, role, collection, index. </strong></li>
+</ol>
+            </div>
+        
+        </div>
+        
         <div> Further Reading:
         <ul>
             <li><a href="file://add_param">Adding/Modifying Parameters</a></li>
