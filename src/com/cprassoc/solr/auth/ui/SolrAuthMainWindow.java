@@ -12,6 +12,7 @@ import com.cprassoc.solr.auth.forms.AddRoleForm;
 import com.cprassoc.solr.auth.forms.AddUserDialog;
 import com.cprassoc.solr.auth.SolrAuthActionController.SolrManagerAction;
 import com.cprassoc.solr.auth.forms.AddVersionForm;
+import com.cprassoc.solr.auth.forms.ContextualHelpDialog;
 import com.cprassoc.solr.auth.forms.HistoryViewerDialog;
 import com.cprassoc.solr.auth.forms.ManagePermissionFrame;
 import com.cprassoc.solr.auth.forms.OKFormWithMessage;
@@ -540,6 +541,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         jScrollPane5 = new javax.swing.JScrollPane();
         logPane = new javax.swing.JTextPane();
         loggingEnabledCheckbox = new javax.swing.JCheckBox();
+        helpButton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem5 = new javax.swing.JMenuItem();
@@ -553,6 +555,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         jMenuItem6 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
         jMenuItem8 = new javax.swing.JMenuItem();
+        jMenu4 = new javax.swing.JMenu();
+        jMenuItem10 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -814,6 +818,14 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
             }
         });
 
+        helpButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/cprassoc/solr/auth/forms/resources/help_sml.png"))); // NOI18N
+        helpButton.setToolTipText("Get Help on this Topic");
+        helpButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doLoadHelpContext(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -831,8 +843,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                                 .addGap(18, 18, 18)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel2)
@@ -840,7 +852,9 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                                 .addComponent(jLabel6)
                                 .addGap(4, 4, 4)
                                 .addComponent(serverStatusButton)))
-                        .addGap(58, 58, 58))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(helpButton, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(7, 7, 7))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -864,15 +878,17 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
-                        .addComponent(jLabel2))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel6)
-                            .addComponent(serverStatusButton))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addGap(21, 21, 21)
+                            .addComponent(jLabel2))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                            .addContainerGap()
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel6)
+                                .addComponent(serverStatusButton))))
+                    .addComponent(helpButton, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -982,6 +998,18 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         jMenu3.add(jMenuItem8);
 
         jMenuBar1.add(jMenu3);
+
+        jMenu4.setText("Support");
+
+        jMenuItem10.setText("Help");
+        jMenuItem10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doShowAllHelpTopics(evt);
+            }
+        });
+        jMenu4.add(jMenuItem10);
+
+        jMenuBar1.add(jMenu4);
 
         setJMenuBar(jMenuBar1);
 
@@ -1190,6 +1218,16 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         dialog.setVisible(true);
     }//GEN-LAST:event_doViewServerStatus
 
+    private void doLoadHelpContext(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doLoadHelpContext
+        ContextualHelpDialog dialog = new ContextualHelpDialog(this, true, "main_window");
+        dialog.setVisible(true);
+    }//GEN-LAST:event_doLoadHelpContext
+
+    private void doShowAllHelpTopics(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doShowAllHelpTopics
+       ContextualHelpDialog dialog = new ContextualHelpDialog(this, true, null);
+        dialog.setVisible(true);
+    }//GEN-LAST:event_doShowAllHelpTopics
+
     /**
      * @param args the command line arguments
      */
@@ -1226,6 +1264,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton helpButton;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
@@ -1242,8 +1281,10 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenu jMenu4;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem10;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;

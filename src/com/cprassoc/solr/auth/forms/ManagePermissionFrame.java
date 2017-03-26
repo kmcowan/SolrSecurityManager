@@ -40,6 +40,7 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
     private boolean isEditing = false;
     private LinkedHashMap<String, String> params = new LinkedHashMap<>();
     private static String ALLOWED_CHARS = "abcdefghijklmnopqrstuvwxyz-_";
+    private LinkedHashMap<String,String> knownPermissionNames = null;
 
     /**
      * Creates new form ManagePermissionForm
@@ -110,6 +111,7 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
     private ComboBoxModel getNameComboBoxModel() {
         DefaultComboBoxModel model = new DefaultComboBoxModel();
         model.addElement("");
+        this.knownPermissionNames = new LinkedHashMap<>();
         if (securityJson != null) {
             Map<String, Name> perms = PermissionNameProvider.values;
             String key;
@@ -119,6 +121,7 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
                 key = iter.next();
                 name = perms.get(key);
                 model.addElement(name.getPermissionName());
+                knownPermissionNames.put(name.getPermissionName(), key);
             }
 
         }
@@ -225,11 +228,23 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
         if (role.equals("")) {
             results.add("Role cannot be empty. ");
         }
+        
+        if(results.equals("")){
+            // test permission
+           try{
+           Permission test = new Permission();
+           test.load(permission);
+ 
+        }catch(Exception e){
+            e.printStackTrace();
+            results.add("Permission Validation FAILED. Reason: "+e.getLocalizedMessage());
+        }
+        }
 
         return results;
     }
     
-    private void loadPermission(String name, Object nvalue){
+    private void loadParamsIntoPermission(String name, Object nvalue){
                 int rows = this.paramsTable.getModel().getRowCount();
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put(name, nvalue);
@@ -285,7 +300,7 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
         jScrollPane1 = new javax.swing.JScrollPane();
         paramsTable = new javax.swing.JTable();
         jLabel9 = new javax.swing.JLabel();
-        jButton3 = new javax.swing.JButton();
+        paramBuildButton = new javax.swing.JButton();
         GETCheckbox = new javax.swing.JCheckBox();
         PUTCheckbox = new javax.swing.JCheckBox();
         POSTCheckbox = new javax.swing.JCheckBox();
@@ -295,9 +310,8 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         indexLabel = new javax.swing.JLabel();
-        jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
-        jLabel12 = new javax.swing.JLabel();
+        helpButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -332,6 +346,17 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
 
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Name: ");
+
+        roleNameField.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                doCheckNamedPermissionAction(evt);
+            }
+        });
+        roleNameField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                doCheckPermissionNameChangeAction(evt);
+            }
+        });
 
         nameComboBox.setModel(getNameComboBoxModel());
         nameComboBox.addActionListener(new java.awt.event.ActionListener() {
@@ -420,16 +445,26 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
         jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("Use a comma to separate values");
 
+        paramBuildButton.setBackground(new java.awt.Color(0, 51, 153));
+        paramBuildButton.setForeground(new java.awt.Color(255, 255, 255));
+        paramBuildButton.setText("Param Builder");
+        paramBuildButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doInvokeParamBuilder(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel9)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(26, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 277, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(paramBuildButton)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -437,17 +472,10 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
                 .addContainerGap(13, Short.MAX_VALUE)
                 .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(paramBuildButton)))
         );
-
-        jButton3.setBackground(new java.awt.Color(0, 51, 153));
-        jButton3.setForeground(new java.awt.Color(255, 255, 255));
-        jButton3.setText("Set Params");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                doSetParamsInPermissionAction(evt);
-            }
-        });
 
         GETCheckbox.setBackground(new java.awt.Color(0, 51, 102));
         GETCheckbox.setForeground(new java.awt.Color(255, 255, 255));
@@ -504,24 +532,16 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
             }
         });
 
-        jLabel10.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        jLabel10.setForeground(new java.awt.Color(153, 0, 51));
+        jLabel10.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(255, 0, 51));
         jLabel10.setText("*");
+        jLabel10.setToolTipText("This is a required field");
 
         jLabel11.setForeground(new java.awt.Color(255, 255, 255));
         jLabel11.setText("Index: ");
 
         indexLabel.setForeground(new java.awt.Color(255, 255, 255));
         indexLabel.setText("0");
-
-        jButton4.setBackground(new java.awt.Color(0, 51, 153));
-        jButton4.setForeground(new java.awt.Color(255, 255, 255));
-        jButton4.setText("Param Builder");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                doInvokeParamBuilder(evt);
-            }
-        });
 
         jButton5.setBackground(new java.awt.Color(0, 51, 153));
         jButton5.setForeground(new java.awt.Color(255, 255, 255));
@@ -532,10 +552,11 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
             }
         });
 
-        jLabel12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/cprassoc/solr/auth/forms/resources/help_sml.png"))); // NOI18N
-        jLabel12.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                doContextualHelpAction(evt);
+        helpButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/cprassoc/solr/auth/forms/resources/help_sml.png"))); // NOI18N
+        helpButton.setToolTipText("Get Help on this Topic");
+        helpButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doLoadHelpContext(evt);
             }
         });
 
@@ -569,15 +590,10 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
                                     .addComponent(jLabel6)
                                     .addComponent(jLabel7)
                                     .addComponent(jLabel8)
-                                    .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jButton3)
-                                            .addComponent(jButton4)))
+                                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                         .addGroup(jPanel1Layout.createSequentialGroup()
                                             .addComponent(GETCheckbox)
@@ -591,37 +607,38 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
                                             .addComponent(HEADCheckbox))
                                         .addComponent(collectionComboBox, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(beforeComboBox, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addGroup(jPanel1Layout.createSequentialGroup()
-                                            .addGap(327, 327, 327)
-                                            .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                                .addComponent(nameComboBox, javax.swing.GroupLayout.Alignment.LEADING, 0, 280, Short.MAX_VALUE)
-                                                .addComponent(roleNameField, javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(roleComboBox, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addComponent(pathComboBox, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                                    .addGap(18, 18, 18)
-                                                    .addComponent(wildcardCheckBox))
-                                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                                    .addGap(30, 30, 30)
-                                                    .addComponent(jLabel11)
-                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                    .addComponent(indexLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))))))))
-                        .addGap(0, 2, Short.MAX_VALUE)))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                            .addComponent(nameComboBox, javax.swing.GroupLayout.Alignment.LEADING, 0, 280, Short.MAX_VALUE)
+                                            .addComponent(roleNameField, javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(roleComboBox, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(pathComboBox, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addGap(18, 18, 18)
+                                                .addComponent(wildcardCheckBox))
+                                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addGap(30, 30, 30)
+                                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                    .addComponent(helpButton, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                                        .addComponent(jLabel11)
+                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                        .addComponent(indexLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)))))))))
+                        .addGap(0, 10, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(permissionDisplayLabel)
-                    .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(permissionDisplayLabel)))
+                    .addComponent(helpButton, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(30, 30, 30)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(nameComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -643,13 +660,8 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(32, 32, 32)
-                        .addComponent(jButton3)
-                        .addGap(51, 51, 51)
-                        .addComponent(jButton4)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
                     .addComponent(collectionComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -731,8 +743,31 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
                 this.permission.put("name", permName);
             }
         }
+        
+        if(this.knownPermissionNames.get(permName) != null){
+            toggleNonGlobalFields(false);
+        }
     }//GEN-LAST:event_doLoadRoleNameAction
 
+    private void toggleNonGlobalFields(boolean b){
+        Log.log(getClass(), "Toggle fields: "+b);
+        if(!b){
+            this.showOKOnlyMessageDialog("You have selected a predefined (known) permission.  Some attributes will be disabled.  \n You can enable these by providing a custom name for the permission. ", Resources.Resource.disk);
+        }
+        this.pathComboBox.setEditable(b);
+        this.pathComboBox.setEnabled(b);
+        
+        this.paramsTable.setEnabled(b);
+        this.beforeComboBox.setEditable(b);
+        this.beforeComboBox.setEnabled(b);
+        this.GETCheckbox.setEnabled(b);
+        this.POSTCheckbox.setEnabled(b);
+        this.DELETECheckbox.setEnabled(b);
+        this.HEADCheckbox.setEnabled(b);
+       // this.setParamButton.setEnabled(b);
+        this.paramBuildButton.setEnabled(b);
+        this.wildcardCheckBox.setEnabled(b);
+    }
     private void doLoadRoleIntoPermission(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doLoadRoleIntoPermission
         Log.log(getClass(), "Load role: " + this.roleComboBox.getSelectedItem());
         this.permission.put("role", (String) this.roleComboBox.getSelectedItem());
@@ -743,10 +778,6 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
         this.permission.put("path", (String) this.pathComboBox.getSelectedItem());
         this.wildcardCheckBox.setEnabled(true);
     }//GEN-LAST:event_doLoadPathIntoPermission
-
-    private void doSetParamsInPermissionAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doSetParamsInPermissionAction
-
-    }//GEN-LAST:event_doSetParamsInPermissionAction
 
     private void doLoadCollectionIntoPermission(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doLoadCollectionIntoPermission
         this.permission.put("collection", (String) this.collectionComboBox.getSelectedItem());
@@ -829,10 +860,23 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
         }
     }//GEN-LAST:event_doTestPermission
 
-    private void doContextualHelpAction(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_doContextualHelpAction
-       ContextualHelpDialog dialog = new ContextualHelpDialog(frame.getFrame(), true, "manage_permissions");
+    private void doCheckNamedPermissionAction(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_doCheckNamedPermissionAction
+        Log.log(getClass(), "Checking Permission Name..."); 
+        if(this.knownPermissionNames.get(this.roleNameField.getText()) == null){
+            toggleNonGlobalFields(true);
+        }
+    }//GEN-LAST:event_doCheckNamedPermissionAction
+
+    private void doCheckPermissionNameChangeAction(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_doCheckPermissionNameChangeAction
+       if(this.knownPermissionNames.get(this.roleNameField.getText()) == null){
+            toggleNonGlobalFields(true);
+        }
+    }//GEN-LAST:event_doCheckPermissionNameChangeAction
+
+    private void doLoadHelpContext(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doLoadHelpContext
+          ContextualHelpDialog dialog = new ContextualHelpDialog(frame.getFrame(), true, "manage_permissions");
        dialog.setVisible(true);
-    }//GEN-LAST:event_doContextualHelpAction
+    }//GEN-LAST:event_doLoadHelpContext
 
     private synchronized void cleanPermissionMap() {
         Iterator<String> iter = permission.keySet().iterator();
@@ -967,16 +1011,14 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
     private javax.swing.JCheckBox PUTCheckbox;
     private javax.swing.JComboBox<String> beforeComboBox;
     private javax.swing.JComboBox<String> collectionComboBox;
+    private javax.swing.JButton helpButton;
     private javax.swing.JLabel indexLabel;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -989,6 +1031,7 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JComboBox<String> nameComboBox;
+    private javax.swing.JButton paramBuildButton;
     private javax.swing.JTable paramsTable;
     private javax.swing.JComboBox<String> pathComboBox;
     private javax.swing.JLabel permissionDisplayLabel;

@@ -6,5 +6,9 @@
         "manage_permissions": {
             "title": "Managing Permissions",
             "template": "manage_permissions.html"
+        },
+         "main_window": {
+            "title": "Solr Authentication/Authroization Help - Main",
+            "template": "main_window.html"
         }
 }}
