@@ -1172,6 +1172,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
 
                 if (perm.get("index") != null) {
                     Object index = perm.get("index");
+                    Log.log("Removing Permission with index: "+index.toString());
                     int permId = -1;
                     if (index instanceof Integer) {
                         permId = (Integer) index;
@@ -1194,6 +1195,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                             this.permissionsTable.changeSelection(0, 0, false, false);
                         }
                     }
+                } else {
+                     this.showOKOnlyMessageDialog("Failed to delete permission.  No valid index found or provided. ", Resources.Resource.warn);
                 }
 
             }

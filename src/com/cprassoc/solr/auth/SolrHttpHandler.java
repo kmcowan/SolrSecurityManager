@@ -62,6 +62,9 @@ public class SolrHttpHandler {
         //  solr.crawler.cloud.server=localhost:9983
         //admin:password123@
         CredentialsProvider provider = new BasicCredentialsProvider();
+        /**
+         * @todo: This needs to pull from admin from SecurityJson, and SecurityJson needs to enforce the need for an admin
+         */
         UsernamePasswordCredentials credentials
                 = new UsernamePasswordCredentials("solr", "SolrRocks");
         provider.setCredentials(AuthScope.ANY, credentials);

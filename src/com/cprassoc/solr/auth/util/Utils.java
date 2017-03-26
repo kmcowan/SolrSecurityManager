@@ -8,8 +8,8 @@ package com.cprassoc.solr.auth.util;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
@@ -79,14 +79,20 @@ public class Utils {
         Iterator<String> iter = map.keySet().iterator();
         String result = "";
         int row = 0;
-        String key,value;
+        String key;
+        Object value;
         while(iter.hasNext()){
             key = iter.next();
-            value = (String)map.get(key);
+            value =  map.get(key);
             if(row > 0){
                 result += ",";
             }
-            result += value;
+            if(value instanceof String || value instanceof ArrayList){
+                result += value.toString();
+            } else if(value instanceof Map){
+                result += mapValuesToString((Map)value);
+            }
+           // result += value;
             row++;
         }
         return result;

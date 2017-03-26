@@ -9,9 +9,12 @@ import com.cprassoc.solr.auth.Frameable;
 import com.cprassoc.solr.auth.SolrAuthActionController;
 import com.cprassoc.solr.auth.forms.resources.Resources;
 import com.cprassoc.solr.auth.ui.SolrAuthMainWindow;
+import com.cprassoc.solr.auth.util.Log;
 import java.awt.Frame;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.regex.Pattern;
 
 
@@ -238,13 +241,35 @@ public class AddParamDialog extends BaseDialog implements Frameable {
     }//GEN-LAST:event_doCancelAction
 
     private void doSaveAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doSaveAction
-       String result = validateParam();
+      try{
+        String result = validateParam();
         if(result.equals("")){
+            Log.log(getClass(), "Validation passed... saving param...");
             LinkedHashMap<String,Object> args = new LinkedHashMap<>();
-            frame.fireAction(SolrAuthActionController.SolrManagerAction.add_permissions_to_permissions, null,args);
+            String value = this.valueField.getText();
+            if(this.type instanceof Pattern){
+                value = "REGEX:"+value;
+                
+                args.put("value", value);
+            } else if(type instanceof ArrayList){
+                ArrayList<String> list = new ArrayList<>();
+                String[] strings = value.split(",");
+                List<String> stringList = new ArrayList<String>(Arrays.asList(strings));
+                args.put("value", stringList);
+            } else if(type instanceof String){
+                args.put("value", value);
+               
+            }
+            args.put("key", keyField.getText());
+            frame.fireAction(SolrAuthActionController.SolrManagerAction.add_param_to_permission, null,args);
+            this.setVisible(false);
+            this.dispose();
         } else {
             this.showOKOnlyMessageDialog("Validation Failed: "+result, Resources.Resource.disk);
         }
+      }catch(Exception e){
+          e.printStackTrace();
+      }
     }//GEN-LAST:event_doSaveAction
 
     private void doSetArrayAsType(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doSetArrayAsType
@@ -255,7 +280,7 @@ public class AddParamDialog extends BaseDialog implements Frameable {
         type = Pattern.compile("[abc]");
     }//GEN-LAST:event_doSetRegExAsType
 
-    public String validateParam(){
+    public String validateParam() throws Exception {
         String result = "";
         try{
         String value = valueField.getText();

@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
+import javax.swing.table.TableModel;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
@@ -94,6 +95,48 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
           switch(action){
               case add_permissions_to_permissions:
                   break;
+                  
+              case add_param_to_permission:
+                  LinkedHashMap<String,Object> param = (LinkedHashMap)optional;
+                  String key = ""+System.currentTimeMillis();
+                   LinkedHashMap<String,Object> paramsmap  =  null;
+                   
+                  if(permission.get("params") != null){
+                    paramsmap  = (LinkedHashMap)permission.get("params");
+                  } else {
+                      paramsmap = new LinkedHashMap<>();
+                  }
+                  paramsmap.put(key, param);
+                  permission.put("params", paramsmap);
+                  clearParamTable();
+                  populateParamTable();
+                  
+                  break;
+          }
+    }
+    
+    private void clearParamTable(){
+        TableModel model = this.paramsTable.getModel();
+         for (int i = 0; i < model.getRowCount(); i++) {
+            for (int j = 0; j < model.getColumnCount(); j++) {
+                model.setValueAt("", i, j);
+            }
+        }
+    }
+    
+    private void populateParamTable(){
+          TableModel model = this.paramsTable.getModel();
+          LinkedHashMap<String,LinkedHashMap<String,Object>> map = (LinkedHashMap)permission.get("params");
+          Iterator<String> iter = map.keySet().iterator();
+          String key;
+          LinkedHashMap<String,Object> value;
+          int row = 0;
+          while(iter.hasNext()){
+              key = iter.next();
+              value = map.get(key);
+              model.setValueAt(value.get("key"), row, 0);
+              model.setValueAt(value.get("value").toString(), row, 1);
+              row++;
           }
     }
 
@@ -750,7 +793,7 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
     }//GEN-LAST:event_doLoadRoleNameAction
 
     private void toggleNonGlobalFields(boolean b){
-        Log.log(getClass(), "Toggle fields: "+b);
+      //  Log.log(getClass(), "Toggle fields: "+b);
         if(!b){
             this.showOKOnlyMessageDialog("You have selected a predefined (known) permission.  Some attributes will be disabled.  \n You can enable these by providing a custom name for the permission. ", Resources.Resource.disk);
         }
@@ -901,7 +944,15 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
 
         // check params
         LinkedHashMap<String, Object> p = (LinkedHashMap) permission.get("params");
-        if (temp.get("name").equals("all") || p.size() == 0) {
+        if(temp.get("name") == null){
+          temp.put("name", this.roleNameField.getText());
+        }
+        
+        if(temp.get("role") == null){
+            temp.put("role", this.roleComboBox.getSelectedItem());
+        }
+        if (temp.get("name").equals("all") || 
+                ( p!= null &&  p.isEmpty())) {
             temp.remove("params");
         }
 
