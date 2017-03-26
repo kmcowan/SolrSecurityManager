@@ -555,6 +555,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         jMenuItem6 = new javax.swing.JMenuItem();
         jMenuItem7 = new javax.swing.JMenuItem();
         jMenuItem8 = new javax.swing.JMenuItem();
+        jMenuItem11 = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
         jMenuItem10 = new javax.swing.JMenuItem();
 
@@ -604,6 +605,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Authenticated Users:");
 
+        jToolBar1.setBackground(new java.awt.Color(0, 51, 153));
         jToolBar1.setRollover(true);
 
         jButton5.setBackground(new java.awt.Color(0, 51, 153));
@@ -692,6 +694,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Authorized Permissions");
 
+        jToolBar2.setBackground(new java.awt.Color(0, 51, 153));
         jToolBar2.setRollover(true);
 
         jButton1.setBackground(new java.awt.Color(0, 51, 153));
@@ -768,6 +771,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         });
         jScrollPane4.setViewportView(rolesTable);
 
+        jToolBar3.setBackground(new java.awt.Color(0, 51, 153));
         jToolBar3.setRollover(true);
 
         jButton3.setBackground(new java.awt.Color(0, 51, 153));
@@ -996,6 +1000,14 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
             }
         });
         jMenu3.add(jMenuItem8);
+
+        jMenuItem11.setText("Re-Index Permissions");
+        jMenuItem11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doReindexPermissions(evt);
+            }
+        });
+        jMenu3.add(jMenuItem11);
 
         jMenuBar1.add(jMenu3);
 
@@ -1231,6 +1243,24 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         dialog.setVisible(true);
     }//GEN-LAST:event_doShowAllHelpTopics
 
+    private void doReindexPermissions(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doReindexPermissions
+        
+        ArrayList<LinkedHashMap<String,Object>> list = securityJson.getAuthorization().getPermissions();
+        ArrayList<LinkedHashMap<String,Object>> newlist = new ArrayList<>();
+        int index = 1;
+        for(LinkedHashMap map: list){
+            map.put("index", ""+index);
+            index++;
+            SolrAuthActionController.addOrEditPermission(map, true);
+            newlist.add(map);
+        }
+        
+        securityJson.getAuthorization().setPermissions(newlist);
+        clearTable(this.permissionsTable.getModel());
+        populateAuthorizationTable(securityJson.getAuthorization());
+       
+    }//GEN-LAST:event_doReindexPermissions
+
     /**
      * @param args the command line arguments
      */
@@ -1288,6 +1318,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem10;
+    private javax.swing.JMenuItem jMenuItem11;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;

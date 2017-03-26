@@ -95,6 +95,14 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="doViewSavedVersions"/>
               </Events>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem11">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Re-Index Permissions"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="doReindexPermissions"/>
+              </Events>
+            </MenuItem>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="jMenu4">
@@ -332,6 +340,9 @@
         </Component>
         <Container class="javax.swing.JToolBar" name="jToolBar1">
           <Properties>
+            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="99" green="33" red="0" type="rgb"/>
+            </Property>
             <Property name="rollover" type="boolean" value="true"/>
           </Properties>
 
@@ -473,6 +484,9 @@
         </Component>
         <Container class="javax.swing.JToolBar" name="jToolBar2">
           <Properties>
+            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="99" green="33" red="0" type="rgb"/>
+            </Property>
             <Property name="rollover" type="boolean" value="true"/>
           </Properties>
 
@@ -568,6 +582,9 @@
         </Container>
         <Container class="javax.swing.JToolBar" name="jToolBar3">
           <Properties>
+            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="99" green="33" red="0" type="rgb"/>
+            </Property>
             <Property name="rollover" type="boolean" value="true"/>
           </Properties>
 

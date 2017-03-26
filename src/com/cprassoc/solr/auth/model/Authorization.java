@@ -165,6 +165,13 @@ public class Authorization {
 "}";
         return result;
     }
+
+    /**
+     * @param permissions the permissions to set
+     */
+    public void setPermissions(ArrayList<LinkedHashMap<String,Object>> permissions) {
+        this.permissions = permissions;
+    }
     
     
 }
