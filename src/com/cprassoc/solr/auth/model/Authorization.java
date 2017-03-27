@@ -149,7 +149,7 @@ public class Authorization {
         map.put("path", "");
         map.put("params", new LinkedHashMap<String,LinkedHashMap<String, Object>>());
         map.put("collection", "");
-        map.put("method", "");
+        map.put("method", new ArrayList<String>());
         map.put("before", "");
         
         

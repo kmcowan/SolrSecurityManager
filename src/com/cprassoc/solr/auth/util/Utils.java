@@ -31,42 +31,40 @@ public class Utils {
         }
         return result;
     }
-    
-  
 
     public static String writeBytesToFile(String filePath, String content) {
         String path = "";
         try {
             File file = new File(filePath);
             FileWriter fw = new FileWriter(file);
-            Log.log(Utils.class, "write file: "+filePath);
+            Log.log(Utils.class, "write file: " + filePath);
             fw.write(content);
-          //  IOUtils.write(content, fw);
-          //  IOUtils.write
+            //  IOUtils.write(content, fw);
+            //  IOUtils.write
             path = file.getAbsolutePath();
             fw.close();
 
         } catch (Exception e) {
-               e.printStackTrace();
+            e.printStackTrace();
         }
         return path;
     }
-    
-    public static String mapKeysToString(Map map){
+
+    public static String mapKeysToString(Map map) {
         Iterator<String> iter = map.keySet().iterator();
         String result = "";
         int row = 0;
-        String key,value;
+        String key, value;
         Object obj;
-        while(iter.hasNext()){
+        while (iter.hasNext()) {
             key = iter.next();
             obj = map.get(key);
-            if(obj instanceof String){
-            value = (String)map.get(key);
+            if (obj instanceof String) {
+                value = (String) map.get(key);
             } else {
                 value = obj.toString();
             }
-            if(row > 0){
+            if (row > 0) {
                 result += ",";
             }
             result += key;
@@ -74,42 +72,65 @@ public class Utils {
         }
         return result;
     }
-    
-        public static String mapValuesToString(Map map){
+
+    public static String mapValuesToString(Map map) {
         Iterator<String> iter = map.keySet().iterator();
         String result = "";
         int row = 0;
         String key;
         Object value;
-        while(iter.hasNext()){
+        while (iter.hasNext()) {
             key = iter.next();
-            value =  map.get(key);
-            if(row > 0){
+            value = map.get(key);
+            if (row > 0) {
                 result += ",";
             }
-            if(value instanceof String || value instanceof ArrayList){
+            if (value instanceof String || value instanceof ArrayList) {
                 result += value.toString();
-            } else if(value instanceof Map){
-                result += mapValuesToString((Map)value);
+            } else if (value instanceof Map) {
+                result += mapValuesToString((Map) value);
             }
-           // result += value;
+            // result += value;
             row++;
         }
         return result;
     }
     
-    public static String mapKeysAndValuesToString(Map map){
-          Iterator<String> iter = map.keySet().iterator();
+    
+        public static ArrayList<String> mapValuesToList(Map map) {
+        Iterator<String> iter = map.keySet().iterator();
+        ArrayList<String> result = new ArrayList<>();
+     
+        int row = 0;
+        String key;
+        Object value;
+        while (iter.hasNext()) {
+            key = iter.next();
+            value = map.get(key);
+            
+            if (value instanceof String || value instanceof ArrayList) {
+                result.add(value.toString());
+            } else if (value instanceof Map) {
+                result.add(mapValuesToString((Map) value));
+            }
+            // result += value;
+            row++;
+        }
+        return result;
+    }
+
+    public static String mapKeysAndValuesToString(Map map) {
+        Iterator<String> iter = map.keySet().iterator();
         String result = "";
         int row = 0;
-        String key,value;
-        while(iter.hasNext()){
+        String key, value;
+        while (iter.hasNext()) {
             key = iter.next();
-            value = (String)map.get(key);
-            if(row > 0){
+            value = (String) map.get(key);
+            if (row > 0) {
                 result += ",";
             }
-            result += key+":"+value;
+            result += key + ":" + value;
             row++;
         }
         return result;

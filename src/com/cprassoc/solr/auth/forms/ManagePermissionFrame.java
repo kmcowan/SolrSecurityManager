@@ -39,9 +39,10 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
     private final static String[] REGISTERED_PATHS = "/admin/mbeans,/browse,/update/json/docs,/admin/luke,/export,/get,/admin/properties,/elevate,/update/json,/admin/threads,/query,/analysis/field,/analysis/document,/spell,/update/csv,/sql,/graph,/tvrh,/select,/admin/segments,/admin/system,/replication,/config,/stream,/schema,/admin/plugins,/admin/logging,/admin/ping,/update,/admin/file,/terms,/debug/dump,/update/extract".split(",");
     private Frameable frame = null;
     private boolean isEditing = false;
-    private LinkedHashMap<String, String> params = new LinkedHashMap<>();
+    private LinkedHashMap<String, String> methods = new LinkedHashMap<>();
     private static String ALLOWED_CHARS = "abcdefghijklmnopqrstuvwxyz-_";
-    private LinkedHashMap<String,String> knownPermissionNames = null;
+    private LinkedHashMap<String, String> knownPermissionNames = null;
+    private String[] allmethods = {"GET", "PUT", "POST", "DELETE", "HEAD"};
 
     /**
      * Creates new form ManagePermissionForm
@@ -66,6 +67,7 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
     private void init() {
 
         if (permission != null && isEditing) {
+            Log.log("IS EDITING");
             if (permission.get(SecurityJson.PermissionAttributes.path.name()) != null) {
                 this.pathComboBox.setSelectedItem(permission.get(SecurityJson.PermissionAttributes.path.name()));
             }
@@ -81,63 +83,136 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
             }
 
             if (permission.get(SecurityJson.PermissionAttributes.collection.name()) != null) {
-                this.roleComboBox.setSelectedItem(permission.get(SecurityJson.PermissionAttributes.collection.name()));
+                this.collectionComboBox.setSelectedItem(permission.get(SecurityJson.PermissionAttributes.collection.name()));
             }
 
             if (permission.get(SecurityJson.PermissionAttributes.before.name()) != null) {
-                this.roleComboBox.setSelectedItem(permission.get(SecurityJson.PermissionAttributes.before.name()));
+                this.beforeComboBox.setSelectedItem(permission.get(SecurityJson.PermissionAttributes.before.name()));
             }
+
+            if (permission.get(SecurityJson.PermissionAttributes.params.name()) != null) {
+                populateParamTable();
+            }
+
+            if (permission.get(SecurityJson.PermissionAttributes.method.name()) != null) {
+                Object ms = permission.get(SecurityJson.PermissionAttributes.method.name());
+                if (ms instanceof ArrayList) {
+                    ArrayList<String> mlist = (ArrayList) ms;
+                    for (int j = 0; j < mlist.size(); j++) {
+                        String m = mlist.get(j);
+                        if (this.hasMethod(m)) {
+                            enableCheckbox(m);
+                        }
+                    }
+                } else if (ms instanceof String) {
+                    String m = (String) ms;
+                    if (m.contains(",")) {
+                        String[] temp = m.split(",");
+                        for (int j = 0; j < temp.length; j++) {
+                            if (this.hasMethod(temp[j])) {
+                                enableCheckbox(temp[j]);
+                            }
+                        }
+                    } else if (this.hasMethod(m)) {
+                        enableCheckbox(m);
+                    }
+                }
+            }
+
+        }
+    }
+
+    private void enableCheckbox(String m) {
+        Log.log("enable checkbox: " + m);
+        switch (m) {
+            case "GET":
+                this.GETCheckbox.setSelected(true);
+                break;
+
+            case "POST":
+                this.POSTCheckbox.setSelected(true);
+                break;
+
+            case "PUT":
+                this.PUTCheckbox.setSelected(true);
+                break;
+
+            case "DELETE":
+                this.DELETECheckbox.setSelected(true);
+                break;
+
+            case "HEAD":
+                this.HEADCheckbox.setSelected(true);
+                break;
         }
     }
 
     public void fireAction(SolrAuthActionController.SolrManagerAction action, LinkedHashMap<String, String> args, Object optional) {
-          
-          switch(action){
-              case add_permissions_to_permissions:
-                  break;
-                  
-              case add_param_to_permission:
-                  LinkedHashMap<String,Object> param = (LinkedHashMap)optional;
-                  String key = ""+System.currentTimeMillis();
-                   LinkedHashMap<String,Object> paramsmap  =  null;
-                   
-                  if(permission.get("params") != null){
-                    paramsmap  = (LinkedHashMap)permission.get("params");
-                  } else {
-                      paramsmap = new LinkedHashMap<>();
-                  }
-                  paramsmap.put(key, param);
-                  permission.put("params", paramsmap);
-                  clearParamTable();
-                  populateParamTable();
-                  
-                  break;
-          }
+
+        switch (action) {
+            case add_permissions_to_permissions:
+                break;
+
+            case add_param_to_permission:
+                LinkedHashMap<String, Object> param = (LinkedHashMap) optional;
+                String key = "" + System.currentTimeMillis();
+                LinkedHashMap<String, Object> paramsmap = null;
+
+                if (permission.get("params") != null) {
+                    paramsmap = (LinkedHashMap) permission.get("params");
+                } else {
+                    paramsmap = new LinkedHashMap<>();
+                }
+                paramsmap.put(key, param);
+                permission.put("params", paramsmap);
+                clearParamTable();
+                populateParamTable();
+
+                break;
+        }
     }
-    
-    private void clearParamTable(){
+
+    private boolean hasMethod(String method) {
+        boolean methodExists = false;
+        Object m = permission.get("method");
+
+        String key;
+        for (int i = 0; i < allmethods.length; i++) {
+
+            if (m instanceof String) {
+                key = (String) allmethods[i];
+                if (key.contains(allmethods[i])) {
+                    methodExists = true;
+                    break;
+                }
+            }
+        }
+        return methodExists;
+    }
+
+    private void clearParamTable() {
         TableModel model = this.paramsTable.getModel();
-         for (int i = 0; i < model.getRowCount(); i++) {
+        for (int i = 0; i < model.getRowCount(); i++) {
             for (int j = 0; j < model.getColumnCount(); j++) {
                 model.setValueAt("", i, j);
             }
         }
     }
-    
-    private void populateParamTable(){
-          TableModel model = this.paramsTable.getModel();
-          LinkedHashMap<String,LinkedHashMap<String,Object>> map = (LinkedHashMap)permission.get("params");
-          Iterator<String> iter = map.keySet().iterator();
-          String key;
-          LinkedHashMap<String,Object> value;
-          int row = 0;
-          while(iter.hasNext()){
-              key = iter.next();
-              value = map.get(key);
-              model.setValueAt(value.get("key"), row, 0);
-              model.setValueAt(value.get("value").toString(), row, 1);
-              row++;
-          }
+
+    private void populateParamTable() {
+        TableModel model = this.paramsTable.getModel();
+        LinkedHashMap<String, LinkedHashMap<String, Object>> map = (LinkedHashMap) permission.get("params");
+        Iterator<String> iter = map.keySet().iterator();
+        String key;
+        LinkedHashMap<String, Object> value;
+        int row = 0;
+        while (iter.hasNext()) {
+            key = iter.next();
+            value = map.get(key);
+            model.setValueAt(value.get("key"), row, 0);
+            model.setValueAt(value.get("value").toString(), row, 1);
+            row++;
+        }
     }
 
     public void showOKOnlyMessageDialog(String message, Resources.Resource resc) {
@@ -271,24 +346,24 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
         if (role.equals("")) {
             results.add("Role cannot be empty. ");
         }
-        
-        if(results.equals("")){
+
+        if (results.equals("")) {
             // test permission
-           try{
-           Permission test = new Permission();
-           test.load(permission);
- 
-        }catch(Exception e){
-            e.printStackTrace();
-            results.add("Permission Validation FAILED. Reason: "+e.getLocalizedMessage());
-        }
+            try {
+                Permission test = new Permission();
+                test.load(permission);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                results.add("Permission Validation FAILED. Reason: " + e.getLocalizedMessage());
+            }
         }
 
         return results;
     }
-    
-    private void loadParamsIntoPermission(String name, Object nvalue){
-                int rows = this.paramsTable.getModel().getRowCount();
+
+    private void loadParamsIntoPermission(String name, Object nvalue) {
+        int rows = this.paramsTable.getModel().getRowCount();
         LinkedHashMap<String, Object> map = new LinkedHashMap<>();
         map.put(name, nvalue);
         String key, value;
@@ -786,20 +861,20 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
                 this.permission.put("name", permName);
             }
         }
-        
-        if(this.knownPermissionNames.get(permName) != null){
+
+        if (this.knownPermissionNames.get(permName) != null) {
             toggleNonGlobalFields(false);
         }
     }//GEN-LAST:event_doLoadRoleNameAction
 
-    private void toggleNonGlobalFields(boolean b){
-      //  Log.log(getClass(), "Toggle fields: "+b);
-        if(!b){
+    private void toggleNonGlobalFields(boolean b) {
+        //  Log.log(getClass(), "Toggle fields: "+b);
+        if (!b) {
             this.showOKOnlyMessageDialog("You have selected a predefined (known) permission.  Some attributes will be disabled.  \n You can enable these by providing a custom name for the permission. ", Resources.Resource.disk);
         }
         this.pathComboBox.setEditable(b);
         this.pathComboBox.setEnabled(b);
-        
+
         this.paramsTable.setEnabled(b);
         this.beforeComboBox.setEditable(b);
         this.beforeComboBox.setEnabled(b);
@@ -807,7 +882,7 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
         this.POSTCheckbox.setEnabled(b);
         this.DELETECheckbox.setEnabled(b);
         this.HEADCheckbox.setEnabled(b);
-       // this.setParamButton.setEnabled(b);
+        // this.setParamButton.setEnabled(b);
         this.paramBuildButton.setEnabled(b);
         this.wildcardCheckBox.setEnabled(b);
     }
@@ -892,33 +967,33 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
     }//GEN-LAST:event_doInvokeParamBuilder
 
     private void doTestPermission(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doTestPermission
-        try{
-           Permission test = new Permission();
-           test.load(permission);
-            
+        try {
+            Permission test = new Permission();
+            test.load(permission);
+
             this.showOKOnlyMessageDialog("Permission Test OK", Resources.Resource.permission_key);
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            this.showOKOnlyMessageDialog("Permission Test FAILED: "+e.getLocalizedMessage(), Resources.Resource.warn);
+            this.showOKOnlyMessageDialog("Permission Test FAILED: " + e.getLocalizedMessage(), Resources.Resource.warn);
         }
     }//GEN-LAST:event_doTestPermission
 
     private void doCheckNamedPermissionAction(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_doCheckNamedPermissionAction
-        Log.log(getClass(), "Checking Permission Name..."); 
-        if(this.knownPermissionNames.get(this.roleNameField.getText()) == null){
+        Log.log(getClass(), "Checking Permission Name...");
+        if (this.knownPermissionNames.get(this.roleNameField.getText()) == null) {
             toggleNonGlobalFields(true);
         }
     }//GEN-LAST:event_doCheckNamedPermissionAction
 
     private void doCheckPermissionNameChangeAction(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_doCheckPermissionNameChangeAction
-       if(this.knownPermissionNames.get(this.roleNameField.getText()) == null){
+        if (this.knownPermissionNames.get(this.roleNameField.getText()) == null) {
             toggleNonGlobalFields(true);
         }
     }//GEN-LAST:event_doCheckPermissionNameChangeAction
 
     private void doLoadHelpContext(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doLoadHelpContext
-          ContextualHelpDialog dialog = new ContextualHelpDialog(frame.getFrame(), true, "manage_permissions");
-       dialog.setVisible(true);
+        ContextualHelpDialog dialog = new ContextualHelpDialog(frame.getFrame(), true, "manage_permissions");
+        dialog.setVisible(true);
     }//GEN-LAST:event_doLoadHelpContext
 
     private synchronized void cleanPermissionMap() {
@@ -942,17 +1017,17 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
             }
         }
 
-        // check params
+        // check methods
         LinkedHashMap<String, Object> p = (LinkedHashMap) permission.get("params");
-        if(temp.get("name") == null){
-          temp.put("name", this.roleNameField.getText());
+        if (temp.get("name") == null) {
+            temp.put("name", this.roleNameField.getText());
         }
-        
-        if(temp.get("role") == null){
+
+        if (temp.get("role") == null) {
             temp.put("role", this.roleComboBox.getSelectedItem());
         }
-        if (temp.get("name").equals("all") || 
-                ( p!= null &&  p.isEmpty())) {
+        if (temp.get("name").equals("all")
+                || (p != null && p.isEmpty())) {
             temp.remove("params");
         }
 
@@ -982,8 +1057,8 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
             ms += ","+method;
             permission.put("method", ms);
         }*/
-        params.put(method, method);
-        String out = Utils.mapKeysToString(params);
+        methods.put(method, method);
+        String out = Utils.mapKeysToString(methods);
 
         Log.log("Upated METHOD: " + out);
         permission.put("method", out);
@@ -1011,8 +1086,8 @@ public class ManagePermissionFrame extends BaseDialog implements Frameable {
                 permission.put("method", "");
             }
         }*/
-        params.remove(method);
-        String out = Utils.mapKeysToString(params);
+        methods.remove(method);
+        String out = Utils.mapKeysToString(methods);
 
         Log.log("Upated (Remove) METHOD: " + out);
         permission.put("method", out);
