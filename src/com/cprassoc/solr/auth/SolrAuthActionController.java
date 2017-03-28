@@ -262,7 +262,8 @@ public class SolrAuthActionController {
         push_a_version,
         load_a_version,
         add_permissions_to_permissions,
-        add_param_to_permission
+        add_param_to_permission,
+        reset_param_showing_flag
     }
 
     public static enum SystemErrors {

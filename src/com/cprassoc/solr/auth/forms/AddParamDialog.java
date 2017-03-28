@@ -240,6 +240,7 @@ public class AddParamDialog extends BaseDialog implements Frameable {
     }//GEN-LAST:event_doSetStringAsType
 
     private void doCancelAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doCancelAction
+        frame.fireAction(SolrAuthActionController.SolrManagerAction.reset_param_showing_flag, null, null);
         this.setVisible(false);
         this.dispose();
     }//GEN-LAST:event_doCancelAction
