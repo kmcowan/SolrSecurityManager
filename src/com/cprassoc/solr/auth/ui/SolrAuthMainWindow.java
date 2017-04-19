@@ -24,6 +24,7 @@ import com.cprassoc.solr.auth.model.Authorization;
 import com.cprassoc.solr.auth.model.HistoryVersion;
 import com.cprassoc.solr.auth.model.SavedVersion;
 import com.cprassoc.solr.auth.model.SecurityJson;
+import com.cprassoc.solr.auth.ui.tasks.SolrPingTimerTask;
 import com.cprassoc.solr.auth.util.JsonHelper;
 import com.cprassoc.solr.auth.util.Log;
 import com.cprassoc.solr.auth.util.Utils;
@@ -37,6 +38,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Timer;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -60,6 +62,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     private String selectedRoleUser = "";
     private String selectedPermission = "";
     public static int OK_RESPONSE = 0;
+    private final static Timer timer = new Timer();
     private static final HistoryVersion VERSIONS = new HistoryVersion();
 
     /**
@@ -200,6 +203,9 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
             usersTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
             rolesTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
             permissionsTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+            
+            SolrPingTimerTask task = new SolrPingTimerTask(this.serverStatusButton);
+            timer.schedule(task, 30000, 10000);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -418,7 +424,6 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                     Log.log(getClass(), "PUSH version: " + version.getTitle());
                     pushToSolr(version.getSeucrityJson());
                 }
-                
 
                 break;
 
@@ -438,9 +443,9 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 break;
         }
     }
-    
-    private void pushToSolr(SecurityJson secu){
-         String result = SolrAuthActionController.doPushConfigToSolrAction(secu);
+
+    private void pushToSolr(SecurityJson secu) {
+        String result = SolrAuthActionController.doPushConfigToSolrAction(secu);
         if (result.equals("")) {
             this.showOKOnlyMessageDialog("Pushed config to Solr OK...", Resources.Resource.info);
         } else {
@@ -477,17 +482,17 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
             }
         }
     }
-    
-     private synchronized void clearTables() {
+
+    private synchronized void clearTables() {
         TableModel[] models = new TableModel[3];
         models[0] = this.usersTable.getModel();
         models[1] = this.rolesTable.getModel();
         models[2] = this.permissionsTable.getModel();
-        
+
         TableModel model;
-        for(int m=0; m<models.length; m++){
+        for (int m = 0; m < models.length; m++) {
             model = models[m];
-          clearTable(model);
+            clearTable(model);
         }
     }
 
@@ -556,6 +561,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         jMenuItem7 = new javax.swing.JMenuItem();
         jMenuItem8 = new javax.swing.JMenuItem();
         jMenuItem11 = new javax.swing.JMenuItem();
+        jMenuItem12 = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
         jMenuItem10 = new javax.swing.JMenuItem();
 
@@ -1009,6 +1015,14 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         });
         jMenu3.add(jMenuItem11);
 
+        jMenuItem12.setText("Load Empty Security.json");
+        jMenuItem12.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doLoadEmptySecurityJsonAction(evt);
+            }
+        });
+        jMenu3.add(jMenuItem12);
+
         jMenuBar1.add(jMenu3);
 
         jMenu4.setText("Support");
@@ -1170,7 +1184,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
 
     private void doPushConfigToSolrAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doPushConfigToSolrAction
 
-       pushToSolr(securityJson);
+        pushToSolr(securityJson);
     }//GEN-LAST:event_doPushConfigToSolrAction
 
     private void doDeletePermission(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doDeletePermission
@@ -1184,7 +1198,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
 
                 if (perm.get("index") != null) {
                     Object index = perm.get("index");
-                    Log.log("Removing Permission with index: "+index.toString());
+                    Log.log("Removing Permission with index: " + index.toString());
                     int permId = -1;
                     if (index instanceof Integer) {
                         permId = (Integer) index;
@@ -1209,7 +1223,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                         }
                     }
                 } else {
-                     this.showOKOnlyMessageDialog("Failed to delete permission.  No valid index found or provided. ", Resources.Resource.warn);
+                    this.showOKOnlyMessageDialog("Failed to delete permission.  No valid index found or provided. ", Resources.Resource.warn);
                 }
 
             }
@@ -1240,13 +1254,13 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     }//GEN-LAST:event_doLoadHelpContext
 
     private void doShowAllHelpTopics(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doShowAllHelpTopics
-       ContextualHelpDialog dialog = new ContextualHelpDialog(this, true, null);
+        ContextualHelpDialog dialog = new ContextualHelpDialog(this, true, null);
         dialog.setVisible(true);
     }//GEN-LAST:event_doShowAllHelpTopics
 
     private void doReindexPermissions(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doReindexPermissions
-        
-      /*  ArrayList<LinkedHashMap<String,Object>> list = securityJson.getAuthorization().getPermissions();
+
+        /*  ArrayList<LinkedHashMap<String,Object>> list = securityJson.getAuthorization().getPermissions();
         ArrayList<LinkedHashMap<String,Object>> newlist = new ArrayList<>();
         int index = 1;
         for(LinkedHashMap map: list){
@@ -1257,12 +1271,27 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         }
         
         securityJson.getAuthorization().setPermissions(newlist);
-        */
+         */
         securityJson.reIndexPermissions();
         clearTable(this.permissionsTable.getModel());
         populateAuthorizationTable(securityJson.getAuthorization());
-       
+
     }//GEN-LAST:event_doReindexPermissions
+
+    private void doLoadEmptySecurityJsonAction(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doLoadEmptySecurityJsonAction
+        try {
+            JSONObject authoeJson = getDefaultSecurityJson();
+            LinkedHashMap authoeMap = new LinkedHashMap(JsonHelper.jsonToMap(authoeJson));
+            securityJson = new SecurityJson(authoeMap);
+
+            populateAuthorizationTable(securityJson.getAuthorization());
+            populateUserRolesTable(securityJson.getAuthorization());
+            populateAuthenticationTable(securityJson.getAuthentication());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_doLoadEmptySecurityJsonAction
 
     /**
      * @param args the command line arguments
@@ -1322,6 +1351,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem10;
     private javax.swing.JMenuItem jMenuItem11;
+    private javax.swing.JMenuItem jMenuItem12;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
