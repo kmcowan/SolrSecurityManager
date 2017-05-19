@@ -83,6 +83,10 @@ public class SolrAuthManager {
         }
         return properties;
     }
+    
+    public static void setProperties(Properties p){
+        properties = p;
+    }
 
     /**
      * @return the desktop

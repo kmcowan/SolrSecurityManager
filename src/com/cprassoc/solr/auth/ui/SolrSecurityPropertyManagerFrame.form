@@ -221,7 +221,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="zooKeeperPort">
           <Properties>
-            <Property name="text" type="java.lang.String" value="localhost:9993"/>
+            <Property name="text" type="java.lang.String" value="localhost:9983"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JCheckBox" name="usingSSL">

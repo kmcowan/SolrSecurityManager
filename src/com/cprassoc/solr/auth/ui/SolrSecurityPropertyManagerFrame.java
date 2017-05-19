@@ -21,6 +21,8 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
      * Creates new form SolrSecurityPropertyManager
      */
     Properties loadedProperties = null;
+    boolean isFirstRun = false;
+    String[] args = null;
 
     public SolrSecurityPropertyManagerFrame() {
         initComponents();
@@ -32,6 +34,15 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
         initComponents();
         init();
     }
+    
+       public SolrSecurityPropertyManagerFrame(String[] args) {
+        this.args = args;
+        isFirstRun = true;
+        initComponents();
+        init();
+    }
+    
+   
 
     private void init() {
         this.setSize(700, 400);
@@ -79,7 +90,7 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new SolrSecurityPropertyManagerFrame().setVisible(true);
+                new SolrSecurityPropertyManagerFrame(args).setVisible(true);
             }
         });
     }
@@ -146,7 +157,7 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
 
         solrHostPort.setText("localhost:8983");
 
-        zooKeeperPort.setText("localhost:9993");
+        zooKeeperPort.setText("localhost:9983");
 
         usingSSL.setBackground(new java.awt.Color(0, 51, 102));
         usingSSL.setForeground(new java.awt.Color(255, 255, 255));
@@ -301,6 +312,10 @@ public class SolrSecurityPropertyManagerFrame extends javax.swing.JFrame {
         }
         props.setProperty(SolrAuthPropertyKey.isUsingSSL.getKey(), sslEnabled);
         SolrAuthActionController.doSavePropertiesAction(props);
+        if(isFirstRun){
+             SolrAuthManager.setProperties(props);
+             SolrAuthMainWindow.main(args);
+        }
         this.setVisible(false);
         this.dispose();
 

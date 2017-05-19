@@ -25,7 +25,7 @@ public class AuthManagerScriptRenderer {
             
           String script = "cd "+ pathToSolr + "\n\r"; 
           
-        script += "server"+File.separator+"scripts"+File.separator+"cloud-scripts"+File.separator+"zkcli.sh -zkhost localhost:9983 -cmd putfile "+File.separator+"security.json security.json \n\r";
+        script += "server"+File.separator+"scripts"+File.separator+"cloud-scripts"+File.separator+"zkcli."+mime+" -zkhost localhost:9983 -cmd putfile /security.json security.json \n\r";
       //  IOUtils.write(script, new FileWriter(new File(SOLR_AUTH_SCRIPT_NAME+mime)));
       Utils.writeBytesToFile(SOLR_AUTH_SCRIPT_NAME+mime, script);
         
