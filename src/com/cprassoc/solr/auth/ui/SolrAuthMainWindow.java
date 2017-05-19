@@ -1102,7 +1102,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         if (!exportDir.exists()) {
             exportDir.mkdirs();
         }
-        String exportFilePath = exportDir.getAbsolutePath() + File.separator + "security_json_" + new Date().toString() + ".json";
+        String exportFilePath = exportDir.getAbsolutePath() + File.separator + "security_json_" + System.currentTimeMillis() + ".json";
         Utils.writeBytesToFile(exportFilePath, json);
         File file = new File(exportFilePath);
         if (file.exists()) {
