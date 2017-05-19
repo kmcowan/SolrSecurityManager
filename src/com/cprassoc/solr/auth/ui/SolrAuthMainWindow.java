@@ -25,6 +25,7 @@ import com.cprassoc.solr.auth.model.HistoryVersion;
 import com.cprassoc.solr.auth.model.SavedVersion;
 import com.cprassoc.solr.auth.model.SecurityJson;
 import com.cprassoc.solr.auth.ui.tasks.SolrPingTimerTask;
+import com.cprassoc.solr.auth.util.AuthManagerScriptRenderer;
 import com.cprassoc.solr.auth.util.JsonHelper;
 import com.cprassoc.solr.auth.util.Log;
 import com.cprassoc.solr.auth.util.Utils;
@@ -79,12 +80,18 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         Log.log("INIT...");
         Log.setTextPane(logPane);
         Log.log("Solr Auth Manager is starting up...");
-        File cmdFile = new File("solrAuth.sh");
+        String mime = "sh";
+        if(Utils.isWindows()){
+            mime = "bat";
+        }
+        File cmdFile = new File(AuthManagerScriptRenderer.SOLR_AUTH_SCRIPT_NAME + mime);
         if (!cmdFile.exists()) {
-            String template = Utils.streamToString(SolrAuthMainWindow.class.getResourceAsStream("solrAuth.sh.template"));
+          /*  String template = Utils.streamToString(SolrAuthMainWindow.class.getResourceAsStream("solrAuth.sh.template"));
             template = template.replaceAll("\\{PATH_TO_SOLR\\}", props.getProperty("solr.install.path") + File.separator);
             template = template.replaceAll("\\{PATH_TO_SOLR_AUTH\\}", System.getProperty("user.dir") + File.separator);
             Utils.writeBytesToFile("solrAuth.sh", template);
+            */
+          AuthManagerScriptRenderer.renderSolrAuthScript(props.getProperty("solr.install.path"));
 
         }
         try {
@@ -1154,13 +1161,15 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
 
             ArrayList<String> roles = new ArrayList();
             roles.add("null");
-            String resp = SolrAuthActionController.addRole(selectedRoleUser, roles);
+            String resp = SolrAuthActionController.addRole(selectedRoleUser, null);
 
             if (getResponseStatus(getResponse(resp)) == OK_RESPONSE) {
                 this.rolesTable.getModel().setValueAt("null", this.rolesTable.getSelectedRow(), 1);
                 securityJson.getAuthorization().getUserRoles().remove(selectedRoleUser);
                 clearTable(rolesTable.getModel());
                 populateUserRolesTable(securityJson.getAuthorization());
+            } else {
+                 this.showOKOnlyMessageDialog("Failed to Revoke: "+resp, Resources.Resource.warn);
             }
             //
         } else {

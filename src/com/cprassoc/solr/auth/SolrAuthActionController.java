@@ -69,7 +69,10 @@ public class SolrAuthActionController {
         String data = "";
         try {
             String path = SOLR.getSolrBaseUrl() + SolrHttpHandler.AUTHORIZATION_URL_PART;
-            if (roles.size() > 1) {
+            if(roles == null){
+                  // case for null role and null array
+                data = "{ \"set-user-role\": {\"" + user + "\" : null }}";
+            } else  if (roles.size() > 1) {
                 // case for multiple roles
                 data = "{ \"set-user-role\": {\"" + user + "\" : \"" + roles.toString() + "\" }}";
             } else if (roles.size() == 1 && roles.get(0).trim().equals("null")) {
@@ -210,7 +213,11 @@ public class SolrAuthActionController {
     public static String doPushConfigToSolrAction(SecurityJson json) {
         String result = "";
         try {
-            String pathToScript = System.getProperty("user.dir") + File.separator + "solrAuth.sh";
+            String mime = "sh";
+            if(Utils.isWindows()){
+                mime = "bat";
+            }
+            String pathToScript = System.getProperty("user.dir") + File.separator + "solrAuth."+mime;
             String jsonstr = json.export();
             String filePath = SolrAuthManager.getProperties().getProperty("solr.install.path") + File.separator + "security.json";
             File backup = new File("backup");

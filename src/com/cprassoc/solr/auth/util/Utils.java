@@ -20,6 +20,8 @@ import org.apache.commons.io.IOUtils;
  */
 public class Utils {
 
+    private static final String OS = System.getProperty("os.name").toLowerCase();
+
     public static String streamToString(InputStream in) {
         String result = "";
         try {
@@ -95,19 +97,18 @@ public class Utils {
         }
         return result;
     }
-    
-    
-        public static ArrayList<String> mapValuesToList(Map map) {
+
+    public static ArrayList<String> mapValuesToList(Map map) {
         Iterator<String> iter = map.keySet().iterator();
         ArrayList<String> result = new ArrayList<>();
-     
+
         int row = 0;
         String key;
         Object value;
         while (iter.hasNext()) {
             key = iter.next();
             value = map.get(key);
-            
+
             if (value instanceof String || value instanceof ArrayList) {
                 result.add(value.toString());
             } else if (value instanceof Map) {
@@ -134,5 +135,29 @@ public class Utils {
             row++;
         }
         return result;
+    }
+
+    public static boolean isWindows() {
+
+        return (OS.contains("win"));
+
+    }
+
+    public static boolean isMac() {
+
+        return (OS.contains("mac"));
+
+    }
+
+    public static boolean isUnix() {
+
+        return (OS.contains("nix") || OS.contains("nux") || OS.contains("aix"));
+
+    }
+
+    public static boolean isSolaris() {
+
+        return (OS.contains("sunos"));
+
     }
 }
