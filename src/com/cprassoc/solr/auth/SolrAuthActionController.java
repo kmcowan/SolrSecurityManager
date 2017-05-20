@@ -107,6 +107,7 @@ public class SolrAuthActionController {
         try {
             String path = SOLR.getSolrBaseUrl() + SolrHttpHandler.AUTHORIZATION_URL_PART;
             data = "{ \"" + actionKey + "\": " + JsonHelper.objToString(permission) + "}";
+            Log.log(SolrAuthActionController.class, "AddOrEdit: "+ data );
             /*
          curl --user solr:SolrRocks http://localhost:8983/solr/admin/authorization -H 'Content-type:application/json'-d '{ 
   "set-permission": { "name":"a-custom-permission-name",

@@ -30,10 +30,10 @@ import com.cprassoc.solr.auth.util.JsonHelper;
 import com.cprassoc.solr.auth.util.Log;
 import com.cprassoc.solr.auth.util.Utils;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -43,6 +43,9 @@ import java.util.Timer;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableModel;
@@ -211,8 +214,41 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
             rolesTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
             permissionsTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
             
+            // set up main toolbar floating/re-docking
+            
+            mainToolBar.addAncestorListener(new AncestorListener() {
+                    @Override
+                    public void ancestorAdded(AncestorEvent event) {
+                  
+                        if (SwingUtilities.getWindowAncestor(mainToolBar).equals(getFrame())) {
+                            System.out.println("Added...In Main Frame");
+                            toolbarPanel.setSize(500, 49);
+                            toolbarPanel.repaint();
+                        } else {
+                            System.out.println("Added...Maybe floating");
+                        }
+                    }
+
+                    @Override
+                    public void ancestorRemoved(AncestorEvent event) {
+                      
+                        if (SwingUtilities.getWindowAncestor(mainToolBar).equals(getFrame())) {
+                            System.out.println("Removed...In Main Frame");
+                        } else {
+                            System.out.println("Remloved...Maybe floating");
+                              Log.log("Toolbar Panel DIM: "+toolbarPanel.getWidth());
+                        }
+                    }
+
+                    @Override
+                    public void ancestorMoved(AncestorEvent event) {
+                    }
+                });
+            
             SolrPingTimerTask task = new SolrPingTimerTask(this.serverStatusButton);
             timer.schedule(task, 30000, 10000);
+            Log.log("Toolbar Panel DIM: "+toolbarPanel.getWidth());
+            toolbarPanel.setMinimumSize(new Dimension(510,49));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -391,8 +427,11 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 if (getResponseStatus(resp) == OK_RESPONSE) {
                     // securityJson.getAuthorization().updateOrAddPermission(map);
                     securityJson.reloadAuthorization();
-                    clearTable(this.rolesTable.getModel());
+                    clearTable(this.permissionsTable.getModel());
                     populateAuthorizationTable(securityJson.getAuthorization());
+                   
+                } else {
+                    
                 }
                 Log.log(getClass(), result);
                 break;
@@ -404,7 +443,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 if (getResponseStatus(resp) == OK_RESPONSE) {
                     // securityJson.getAuthorization().updateOrAddPermission(map);
                     securityJson.reloadAuthorization();
-                    clearTable(this.rolesTable.getModel());
+                    clearTable(this.permissionsTable.getModel());
                     populateAuthorizationTable(securityJson.getAuthorization());
                 }
                 Log.log(getClass(), result);
@@ -526,6 +565,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jSeparator2 = new javax.swing.JSeparator();
+        jSeparator5 = new javax.swing.JSeparator();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -554,6 +595,18 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         logPane = new javax.swing.JTextPane();
         loggingEnabledCheckbox = new javax.swing.JCheckBox();
         helpButton = new javax.swing.JButton();
+        toolbarPanel = new javax.swing.JPanel();
+        mainToolBar = new javax.swing.JToolBar();
+        jButton8 = new javax.swing.JButton();
+        jSeparator3 = new javax.swing.JToolBar.Separator();
+        jButton9 = new javax.swing.JButton();
+        jSeparator4 = new javax.swing.JToolBar.Separator();
+        jButton10 = new javax.swing.JButton();
+        jSeparator6 = new javax.swing.JToolBar.Separator();
+        jButton11 = new javax.swing.JButton();
+        jSeparator7 = new javax.swing.JToolBar.Separator();
+        jButton12 = new javax.swing.JButton();
+        jSeparator1 = new javax.swing.JSeparator();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem5 = new javax.swing.JMenuItem();
@@ -619,6 +672,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         jLabel2.setText("Authenticated Users:");
 
         jToolBar1.setBackground(new java.awt.Color(0, 51, 153));
+        jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
         jButton5.setBackground(new java.awt.Color(0, 51, 153));
@@ -708,6 +762,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         jLabel3.setText("Authorized Permissions");
 
         jToolBar2.setBackground(new java.awt.Color(0, 51, 153));
+        jToolBar2.setFloatable(false);
         jToolBar2.setRollover(true);
 
         jButton1.setBackground(new java.awt.Color(0, 51, 153));
@@ -785,6 +840,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         jScrollPane4.setViewportView(rolesTable);
 
         jToolBar3.setBackground(new java.awt.Color(0, 51, 153));
+        jToolBar3.setFloatable(false);
         jToolBar3.setRollover(true);
 
         jButton3.setBackground(new java.awt.Color(0, 51, 153));
@@ -843,6 +899,102 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
             }
         });
 
+        toolbarPanel.setBackground(new java.awt.Color(0, 51, 102));
+        toolbarPanel.setAutoscrolls(true);
+
+        mainToolBar.setBackground(new java.awt.Color(0, 102, 51));
+        mainToolBar.setFloatable(false);
+        mainToolBar.setRollover(true);
+
+        jButton8.setBackground(new java.awt.Color(0, 51, 153));
+        jButton8.setForeground(new java.awt.Color(255, 255, 255));
+        jButton8.setText("Push Config ");
+        jButton8.setFocusable(false);
+        jButton8.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton8.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doPushConfigToSolrAction(evt);
+            }
+        });
+        mainToolBar.add(jButton8);
+        mainToolBar.add(jSeparator3);
+
+        jButton9.setBackground(new java.awt.Color(0, 51, 153));
+        jButton9.setForeground(new java.awt.Color(255, 255, 255));
+        jButton9.setText("Manage Properties");
+        jButton9.setFocusable(false);
+        jButton9.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton9.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doManagePropertiesAction(evt);
+            }
+        });
+        mainToolBar.add(jButton9);
+        mainToolBar.add(jSeparator4);
+
+        jButton10.setBackground(new java.awt.Color(0, 51, 153));
+        jButton10.setForeground(new java.awt.Color(255, 255, 255));
+        jButton10.setText("Load Config");
+        jButton10.setFocusable(false);
+        jButton10.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton10.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doLoadConfigAction(evt);
+            }
+        });
+        mainToolBar.add(jButton10);
+        mainToolBar.add(jSeparator6);
+
+        jButton11.setBackground(new java.awt.Color(0, 51, 153));
+        jButton11.setForeground(new java.awt.Color(255, 255, 255));
+        jButton11.setText("Save Version");
+        jButton11.setFocusable(false);
+        jButton11.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton11.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doSaveAVersion(evt);
+            }
+        });
+        mainToolBar.add(jButton11);
+        mainToolBar.add(jSeparator7);
+
+        jButton12.setBackground(new java.awt.Color(0, 51, 153));
+        jButton12.setForeground(new java.awt.Color(255, 255, 255));
+        jButton12.setText("View Versions");
+        jButton12.setFocusable(false);
+        jButton12.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton12.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton12.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doViewSavedVersions(evt);
+            }
+        });
+        mainToolBar.add(jButton12);
+
+        javax.swing.GroupLayout toolbarPanelLayout = new javax.swing.GroupLayout(toolbarPanel);
+        toolbarPanel.setLayout(toolbarPanelLayout);
+        toolbarPanelLayout.setHorizontalGroup(
+            toolbarPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(toolbarPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(toolbarPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jSeparator1)
+                    .addComponent(mainToolBar, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE))
+                .addContainerGap(28, Short.MAX_VALUE))
+        );
+        toolbarPanelLayout.setVerticalGroup(
+            toolbarPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(toolbarPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(mainToolBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(15, 15, 15)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -851,65 +1003,74 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 537, Short.MAX_VALUE)
-                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jScrollPane1))
-                                .addGap(18, 18, 18)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 0, Short.MAX_VALUE))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel6)
-                                .addGap(4, 4, 4)
-                                .addComponent(serverStatusButton)))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(11, 11, 11)
+                                .addComponent(toolbarPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel6)
+                        .addGap(4, 4, 4)
+                        .addComponent(serverStatusButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(helpButton, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(7, 7, 7))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane5)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel5)
-                                    .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addComponent(jLabel4)
-                                        .addGap(37, 37, 37)
-                                        .addComponent(loggingEnabledCheckbox)))
-                                .addGap(0, 0, Short.MAX_VALUE)))
-                        .addGap(142, 142, 142))
+                        .addComponent(jLabel5)
+                        .addGap(0, 670, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane2)
+                            .addComponent(jScrollPane1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap())
+                            .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 632, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addGap(37, 37, 37)
+                                .addComponent(loggingEnabledCheckbox))
+                            .addComponent(jLabel3))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addGap(21, 21, 21)
-                            .addComponent(jLabel2))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                            .addContainerGap()
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabel6)
-                                .addComponent(serverStatusButton))))
-                    .addComponent(helpButton, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(helpButton, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel6)
+                                    .addComponent(serverStatusButton))))
+                        .addGap(0, 45, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(toolbarPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGap(18, 18, 18)
+                .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(29, 29, 29)
+                .addGap(27, 27, 27)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -927,7 +1088,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                     .addComponent(loggingEnabledCheckbox))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -1054,7 +1215,9 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
@@ -1340,12 +1503,17 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton helpButton;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton10;
+    private javax.swing.JButton jButton11;
+    private javax.swing.JButton jButton12;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
+    private javax.swing.JButton jButton8;
+    private javax.swing.JButton jButton9;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -1374,14 +1542,23 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JToolBar.Separator jSeparator3;
+    private javax.swing.JToolBar.Separator jSeparator4;
+    private javax.swing.JSeparator jSeparator5;
+    private javax.swing.JToolBar.Separator jSeparator6;
+    private javax.swing.JToolBar.Separator jSeparator7;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JToolBar jToolBar3;
     private javax.swing.JTextPane logPane;
     private javax.swing.JCheckBox loggingEnabledCheckbox;
+    private javax.swing.JToolBar mainToolBar;
     private javax.swing.JTable permissionsTable;
     private javax.swing.JTable rolesTable;
     private javax.swing.JToggleButton serverStatusButton;
+    private javax.swing.JPanel toolbarPanel;
     private javax.swing.JTable usersTable;
     // End of variables declaration//GEN-END:variables
 }
