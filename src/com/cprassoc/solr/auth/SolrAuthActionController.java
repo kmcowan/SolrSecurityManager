@@ -63,6 +63,8 @@ public class SolrAuthActionController {
         Log.log(SolrAuthActionController.class, "New User hash: " + pwhash);
         return pwhash;
     }
+    
+ 
 
     public static String addRole(String user, ArrayList<String> roles) {
         String result = "";
@@ -260,6 +262,7 @@ public class SolrAuthActionController {
     public static enum SolrManagerAction {
         create_user,
         delete_user,
+        edit_user,
         add_role,
         delete_role,
         update_role,
