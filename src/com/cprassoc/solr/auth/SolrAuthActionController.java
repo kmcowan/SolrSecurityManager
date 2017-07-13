@@ -128,7 +128,7 @@ public class SolrAuthActionController {
         return result;
     }
 
-    public static String deletePermission(String name, int index) {
+    public static synchronized String deletePermission(String name, int index) {
         String result = "";
         String data = "";
 

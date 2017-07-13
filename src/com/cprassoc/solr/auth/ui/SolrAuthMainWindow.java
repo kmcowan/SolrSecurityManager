@@ -674,6 +674,36 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 {null, null},
                 {null, null},
                 {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
                 {null, null}
             },
             new String [] {
@@ -796,6 +826,56 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 {null, null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null, null}
             },
             new String [] {
@@ -868,6 +948,31 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
 
         rolesTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
                 {null, null},
                 {null, null},
                 {null, null},
@@ -1462,12 +1567,13 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     }//GEN-LAST:event_doPushConfigToSolrAction
 
     private void doDeletePermission(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doDeletePermission
+      try{
         if (!selectedPermission.equals("")) {
             int response;
 
             response = JOptionPane.showConfirmDialog(null, "You are about to delete the permission: '" + selectedPermission + "'.\nThis cannot be undone.  Are you sure you want to do this?");
             if (response == JOptionPane.YES_OPTION) {
-
+                 securityJson.reIndexPermissions();
                 LinkedHashMap<String, Object> perm = securityJson.getPermission(selectedPermission);
 
                 if (perm.get("index") != null) {
@@ -1494,6 +1600,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                             this.populateAuthorizationTable(auth);
                             this.selectedPermission = "";
                             this.permissionsTable.changeSelection(0, 0, false, false);
+                        } else {
+                            this.showOKOnlyMessageDialog("Failed to delete permission! ", Resources.Resource.warn);
                         }
                     }
                 } else {
@@ -1505,6 +1613,11 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         } else {
             this.showOKOnlyMessageDialog("No permission selectd. ", Resources.Resource.warn);
         }
+      }catch(Exception e){
+          e.printStackTrace();
+          Log.log("ERROR: "+e.getLocalizedMessage());
+          this.showOKOnlyMessageDialog("An error occurred deleting permission: "+e.getLocalizedMessage(), Resources.Resource.warn);
+      }
     }//GEN-LAST:event_doDeletePermission
 
     private void doSaveAVersion(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doSaveAVersion

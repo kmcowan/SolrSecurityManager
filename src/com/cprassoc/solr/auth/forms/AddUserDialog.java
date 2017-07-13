@@ -171,7 +171,7 @@ public class AddUserDialog extends BaseDialog {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 95, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 41, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton1)
                             .addComponent(jButton2))
@@ -215,6 +215,8 @@ public class AddUserDialog extends BaseDialog {
                        results.put("user", userName);
                        results.put("pwd", result);
                        this.frame.fireAction(SolrManagerAction.create_user, results, null);
+                   } else {
+                       this.showMessageDialog("User Creation Failed.  Response from server was empty. ");
                    }
             } else {
                 String message = "";
@@ -230,7 +232,9 @@ public class AddUserDialog extends BaseDialog {
                 showMessageDialog(message);
             }
         } catch (Exception e) {
-
+                 e.printStackTrace();
+                 Log.log(e.getLocalizedMessage());
+                 this.showMessageDialog("An error occurred creating user "+userNameField.getText()+": "+e.getLocalizedMessage());
         } finally {
             if(allowedChars && pwdMatch){
             this.setVisible(false);

@@ -336,7 +336,7 @@
             <Component class="javax.swing.JTable" name="usersTable">
               <Properties>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                  <Table columnCount="2" rowCount="20">
+                  <Table columnCount="2" rowCount="50">
                     <Column editable="false" title="User Name" type="java.lang.String"/>
                     <Column editable="false" title="Credentials" type="java.lang.String"/>
                   </Table>
@@ -445,7 +445,7 @@
             <Component class="javax.swing.JTable" name="permissionsTable">
               <Properties>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                  <Table columnCount="8" rowCount="50">
+                  <Table columnCount="8" rowCount="100">
                     <Column editable="true" title="Name" type="java.lang.String"/>
                     <Column editable="true" title="Role" type="java.lang.String"/>
                     <Column editable="true" title="Index" type="java.lang.String"/>
@@ -606,7 +606,7 @@
             <Component class="javax.swing.JTable" name="rolesTable">
               <Properties>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                  <Table columnCount="2" rowCount="25">
+                  <Table columnCount="2" rowCount="50">
                     <Column editable="true" title="User" type="java.lang.String"/>
                     <Column editable="true" title="Role" type="java.lang.String"/>
                   </Table>
