@@ -6,7 +6,10 @@
 package com.cprassoc.solr.auth.web;
 
 import com.sun.net.httpserver.HttpServer;
+import java.awt.Desktop;
 import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.URL;
 import java.util.HashMap;
 
 /**
@@ -14,31 +17,39 @@ import java.util.HashMap;
  * @author kevin
  */
 public class WebServer {
-    private static HashMap<String,String> config = null;
-    private WebServer(){
-      
+
+    private static HashMap<String, String> config = null;
+
+    private WebServer() {
+
     }
-    public static void main(String[] args){
-        try{
+
+    public static void main(String[] args) {
+        try {
             config = argsAsMap(args);
             int port = 8081;
-            if(config != null && config.get("-p") != null){
+            String host = config.get("-s");
+            
+            if (config != null && config.get("-p") != null) {
                 port = Integer.parseInt(config.get("-p"));
             }
-            System.out.println("Starting web server on port: "+port);
+            System.out.println("Starting web server on port: " + port);
             HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
             server.start();
             server.createContext("/", new RESTService());
             System.out.println("Server Started OK...");
-        }catch(Exception e){
+            URL url = new URL("http://"+host+":"+port);
+            openWebpage(url.toURI());
+            
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
-     public static HashMap<String, String> argsAsMap(String[] args) {
+
+    public static HashMap<String, String> argsAsMap(String[] args) {
         String key, value;
         HashMap<String, String> params = new HashMap<>();
-                 params.put("-p", "8081");
+        params.put("-p", "8081");
         params.put("-s", "localhost");
         for (int i = 0; i < args.length; i++) {
             key = args[i];
@@ -48,5 +59,16 @@ public class WebServer {
             }
         }
         return params;
+    }
+    
+      private static void openWebpage(URI uri) {
+        Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+        if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+            try {
+                desktop.browse(uri);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
