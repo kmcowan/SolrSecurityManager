@@ -121,8 +121,9 @@ public class RESTService extends GenericServlet implements MessageHandler,HttpHa
                 
                 ex.getResponseHeaders().add("Content-Type", "text/html");
                 ex.getResponseHeaders().add("X-Powered-by", "Solr Auth Manager Server");
-                ex.sendResponseHeaders(200, 0);
+               
                 byte[] outbuf = RequestProcessor.process(ex).getBytes();
+                 ex.sendResponseHeaders(200, 0);
                 OutputStream out = ex.getResponseBody();
                 out.write(outbuf);
              //   in = new ByteArrayInputStream(_out.toByteArray());
