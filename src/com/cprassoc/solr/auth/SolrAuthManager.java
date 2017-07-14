@@ -9,13 +9,13 @@ import com.cprassoc.solr.auth.model.ContextualHelp;
 import com.cprassoc.solr.auth.ui.SolrAuthMainWindow;
 import com.cprassoc.solr.auth.ui.SolrSecurityPropertyManagerFrame;
 import com.cprassoc.solr.auth.util.Log;
+import com.cprassoc.solr.auth.web.WebServer;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.FileReader;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
-
-
 
 /**
  *
@@ -38,34 +38,38 @@ public class SolrAuthManager {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        if (args != null) {
+        if (args != null && args.length > 0) {
             originalArgs = args;
-        }
-        try {
-            File props = new File(SOLR_AUTH_PROPERTIES);
+            WebServer.main(args);
             
-            if (props.exists()) {
-                System.out.println("Properties File exists...");
-                properties = new Properties();
-                properties.load(new FileReader(props));
-                Iterator<Object> iter = properties.keySet().iterator();
-                Object key;
-                String value;
-                while(iter.hasNext()){
-                    key = iter.next();
-                    value = properties.getProperty(key.toString());
-                    Log.log("property "+key.toString()+" value: "+value);
-                }
-                
-                SolrAuthMainWindow.main(args);
-            } else {
-                System.out.println("NO Properties File found...");
-                properties = SolrSecurityPropertyManagerFrame.getSolrAuthProperties();
-                SolrSecurityPropertyManagerFrame.main(args);
+        } else {
+            try {
+                File props = new File(SOLR_AUTH_PROPERTIES);
 
+                if (props.exists()) {
+                    System.out.println("Properties File exists...");
+                    properties = new Properties();
+                    properties.load(new FileReader(props));
+                    Iterator<Object> iter = properties.keySet().iterator();
+                    Object key;
+                    String value;
+                    while (iter.hasNext()) {
+                        key = iter.next();
+                        value = properties.getProperty(key.toString());
+                        Log.log("property " + key.toString() + " value: " + value);
+                    }
+
+                    SolrAuthMainWindow.main(args);
+                } else {
+                    System.out.println("NO Properties File found...");
+                    properties = SolrSecurityPropertyManagerFrame.getSolrAuthProperties();
+                    SolrSecurityPropertyManagerFrame.main(args);
+
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+
         }
     }
 
@@ -83,10 +87,12 @@ public class SolrAuthManager {
         }
         return properties;
     }
-    
-    public static void setProperties(Properties p){
+
+    public static void setProperties(Properties p) {
         properties = p;
     }
+
+   
 
     /**
      * @return the desktop
