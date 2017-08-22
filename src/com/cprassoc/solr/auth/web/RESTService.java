@@ -6,26 +6,29 @@
 package com.cprassoc.solr.auth.web;
 
 import com.cprassoc.solr.auth.util.Utils;
-import com.cprassoc.solr.auth.web.html.HTML;
-import com.cprassoc.solr.auth.web.html.HTML.Page;
+
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+
 import java.util.Iterator;
 import java.util.List;
+
 import javax.servlet.GenericServlet;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import net.cytopia.tofu.ProcessorServlet;
- 
+
 
 /**
  *

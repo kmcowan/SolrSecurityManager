@@ -10,7 +10,9 @@ import com.cprassoc.solr.auth.web.handlers.DefaultRequestHandler;
 import com.cprassoc.solr.auth.web.handlers.NoActionFoundHandler;
 import com.cprassoc.solr.auth.web.handlers.RequestHandler;
 import com.cprassoc.solr.auth.web.html.HTML;
+
 import com.sun.net.httpserver.HttpExchange;
+
 import java.net.URI;
 
 /**
@@ -25,7 +27,6 @@ public class RequestProcessor {
         try {
             RequestHandler handler = getHandler(ex.getRequestURI());
             result = handler.process(ex);
-
         } catch (Exception e) {
 
         } finally {
