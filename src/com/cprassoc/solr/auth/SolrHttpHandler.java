@@ -44,7 +44,8 @@ public class SolrHttpHandler {
     
     private HttpClient client = null;
     private Properties props = null;
-    private CloudSolrClient cloudClient = null;
+    private CloudSolrClient zkCloudClient = null;
+    private CloudSolrClient solrCloudClient = null;
     private String solrBaseUrl = "";
 
     protected SolrHttpHandler() {
@@ -72,8 +73,11 @@ public class SolrHttpHandler {
                 .setDefaultCredentialsProvider(provider)
                 .build();
 
-        cloudClient = new CloudSolrClient(props.getProperty("solr.zookeeper.port"), client);
-        cloudClient.setDefaultCollection(props.getProperty("solr.default.collection"));
+        zkCloudClient = new CloudSolrClient(props.getProperty("solr.zookeeper.port"), client);
+        zkCloudClient.setDefaultCollection(props.getProperty("solr.default.collection"));
+        
+    //     solrCloudClient = new CloudSolrClient(props.getProperty("solr.host.port"), client);
+    //    solrCloudClient.setDefaultCollection(props.getProperty("solr.default.collection"));
 
         System.out.println("Solr Base URL: " + solrBaseUrl);
     }
@@ -143,7 +147,7 @@ public class SolrHttpHandler {
     public boolean isOnline() {
         boolean result = true;
         try {
-            SolrPingResponse resp = cloudClient.ping();
+            SolrPingResponse resp = zkCloudClient.ping();
             if (resp == null) {
                 Log.log(getClass(), "Ping Response was NULL");
                 result = false;
@@ -236,10 +240,10 @@ public class SolrHttpHandler {
     }
 
     /**
-     * @return the cloudClient
+     * @return the zkCloudClient
      */
-    public CloudSolrClient getCloudClient() {
-        return cloudClient;
+    public CloudSolrClient getZkCloudClient() {
+        return zkCloudClient;
     }
 
     /**
