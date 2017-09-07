@@ -1,22 +1,22 @@
 <div class="panel">
 	<div class="titlebar">
-        properties
+        System Properties
         </div>
         <div class="inputform">
-        <label for="solrinstallpath">Input Path</label>
-        <input id="solrinstallpath" ng-model="properties.solrinstallpath" type="text" size="20" class="forminput">
-        <label for="solrhostport">Host:Port</label>
-        <input id="solrhostport" ng-model="properties.solrhostport" type="text" size="20" class="forminput">
-        <label for="solrzookeeperport">Zookeeper Host:Port</label>
-        <input id="solrzookeeperport" ng-model="properties.solrzookeeperport" type="text" size="20" class="forminput">
-        <label for="solrdefaultcollection">Default Collection</label>
-        <input id="solrdefaultcollection" ng-model="properties.solrdefaultcollection" type="text" size="20" class="forminput">
-        <label for="solradminuser">Admin User</label>
-        <input id="solradminuser" ng-model="properties.solradminuser" type="text" size="20" class="forminput">
-        <label for="solradminpwd">Admin Password</label>
-        <input id="solradminpwd" ng-model="properties.solradminpwd" type="text" size="20" class="forminput">
+        <label for="solrinstallpath" class="inputlabel">Input Path</label>
+        <input id="solrinstallpath" ng-model="properties.solrinstallpath" type="text" size="20" class="inputfield">
+        <label for="solrhostport" class="inputlabel">Host:Port</label>
+        <input id="solrhostport" ng-model="properties.solrhostport" type="text" size="20" class="inputfield">
+        <label for="solrzookeeperport" class="inputlabel">Zookeeper Host:Port</label>
+        <input id="solrzookeeperport" ng-model="properties.solrzookeeperport" type="text" size="20" class="inputfield">
+        <label for="solrdefaultcollection" class="inputlabel">Default Collection</label>
+        <input id="solrdefaultcollection" ng-model="properties.solrdefaultcollection" type="text" size="20" class="inputfield">
+        <label for="solradminuser" class="inputlabel">Admin User</label>
+        <input id="solradminuser" ng-model="properties.solradminuser" type="text" size="20" class="inputfield">
+        <label for="solradminpwd" class="inputlabel">Admin Password</label>
+        <input id="solradminpwd" ng-model="properties.solradminpwd" type="text" size="20" class="inputfield">
         </div>
         <div class="controlbar">
-        <button ng-click="saveProperties();">Save</button>
+        <button ng-click="saveProperties();" class="inputbutton">Save</button>
         </div>
 </div>
