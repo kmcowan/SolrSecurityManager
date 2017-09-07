@@ -1,0 +1,9 @@
+<div class="panel">
+<ul class=mainmenu>
+    <li ng-repeat="item in mainMenu" ng-click="showView(item)">
+        <span>{{item.name}}</span>
+    </li>
+</ul>
+<properties-page class="paneldiv" ng-show="showProperties">xxx</properties-page>
+<permissions-page class="paneldiv" ng-show="showPermissions">xxx</permissions-page>
+</div>

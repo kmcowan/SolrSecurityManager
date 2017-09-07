@@ -6,14 +6,13 @@
 package com.cprassoc.solr.auth.web;
 
 import com.cprassoc.solr.auth.util.Utils;
+import com.cprassoc.solr.auth.web.html.HTML;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
@@ -80,22 +79,6 @@ public class RESTService extends GenericServlet implements MessageHandler,HttpHa
         try {
             RESTService service = new RESTService();
             service.init();
-            
-            /*
-            // open websocket
-            final WebClientEndpoint clientEndPoint = new WebClientEndpoint(new URI("wss://localhost:80"));
-            clientEndPoint.start();
-
-            // add listener
-            clientEndPoint.addMessageHandler(new RESTService());
-
-            // send message to websocket
-            clientEndPoint.sendMessage("{'event':'addChannel','channel':'ok_btccny_ticker'}");
-
-            // wait 5 seconds for messages from websocket
-            Thread.sleep(5000);
-            */
- 
         } catch (Exception ex) {
             System.err.println("URISyntaxException exception: " + ex.getMessage());
         }
@@ -108,31 +91,54 @@ public class RESTService extends GenericServlet implements MessageHandler,HttpHa
     @Override
     public void handle(HttpExchange ex) throws IOException{
         try{
-        InputStream in = ex.getRequestBody();
-        
-                
-                ByteArrayOutputStream _out = new ByteArrayOutputStream();
-                byte[] buf = new byte[2048];
-                int read = 0;
-                String line;
-                String content = Utils.streamToString(in) +"\n";
-                content += headersAsString(ex.getRequestHeaders())+"\n";
-                content += "Query: " + ex.getRequestURI().getQuery()+"\n";
-                content += "Path: "+ ex.getRequestURI().getPath()+"\n";
-                
-                System.out.println("REQUEST: \n" + content);
-                
-                ex.getResponseHeaders().add("Content-Type", "text/html");
+                String contentType = "application/json";
+            
+                String page = ex.getRequestURI().getPath();
+                if( page.equals("/") )
+                    page += "index.html";
+            
+                boolean isService = false;
+            
+                if( page.endsWith(".js") ){
+                    contentType = "application/javascript";
+                }
+                else if( page.endsWith(".png") ){
+                    contentType = "image/png";
+                }
+                else if( page.endsWith(".jpg") || page.endsWith(".jpeg") ){
+                    contentType = "image/jpeg";
+                }
+                else if( page.endsWith(".ico") ){
+                    contentType = "image/icon";
+                }
+                else if( page.endsWith(".css") ){
+                    contentType = "text/css";
+                }
+                else if( page.endsWith(".html") ){
+                    contentType = "text/html";
+                }
+                else {
+                    isService = true;
+                }
+                ex.getResponseHeaders().add("Content-Type", contentType);
                 ex.getResponseHeaders().add("X-Powered-by", "Solr Auth Manager Server");
-               
-                byte[] outbuf = RequestProcessor.process(ex).getBytes();
-                 ex.sendResponseHeaders(200, 0);
                 OutputStream out = ex.getResponseBody();
-                out.write(outbuf);
-             //   in = new ByteArrayInputStream(_out.toByteArray());
-              /*  while ((read = in.read(outbuf)) != -1) {
-                    out.write(outbuf, 0, read);
-                }*/
+                if( isService ){
+                    byte[] outbuf = RequestProcessor.process(ex).getBytes();
+                     ex.sendResponseHeaders(200, 0);
+                    
+                    out.write(outbuf);
+                }
+                else {
+                    if( page.startsWith("/") ){
+                        page = page.substring(1);
+                    }
+                    ex.sendResponseHeaders(200, 0);
+                    java.io.InputStream stream = HTML.class.getResourceAsStream(page);
+                    byte bytes[] = Utils.streamToBytes(stream);
+                    out.write(bytes);
+                }
+            
                 out.flush();
                 ex.close();
         }catch(Exception e){

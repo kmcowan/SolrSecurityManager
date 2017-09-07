@@ -41,11 +41,14 @@ public class RequestProcessor {
     private static RequestHandler getHandler(URI uri) {
         RequestHandler handler = null;
         String path = uri.getPath();
+        
         switch (path) {
             case "/":
                 handler = new DefaultRequestHandler();
                 break;
-
+            case "/rest":
+                handler = new DefaultRequestHandler();
+                break;
             case "/create":
                 handler = new CreationRequestHandler();
                 break;

@@ -4,7 +4,6 @@ import com.sun.net.httpserver.HttpExchange;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -20,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
+
+import java.util.Properties;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -43,6 +44,32 @@ public class Helper extends DataBean {
 
     public Helper() {
         super();
+    }
+    /*
+     *         solrHostPort("solr.host.port"),
+        solrInstallPath("solr.install.path"),
+        isUsingSSL("solr.ssl.enabled"),
+        zookeeperPort("solr.zookeeper.port"),
+        defaultCollection("solr.default.collection"),
+        solrAdminUser("solr.admin.user"),
+        solrAdminPwd("solr.admin.pwd");
+     */
+
+    public static DataBean getDataBeanFromProperties(Properties props){
+        DataBean result = new DataBean();
+        
+        if( props != null ){
+            Enumeration propList = props.keys();
+            
+            while( propList.hasMoreElements() ){
+                String entry = propList.nextElement().toString();
+                String newEntry = entry.replaceAll("\\.","");
+                
+                result.setValue(newEntry,props.get(entry));
+            }
+        }
+        
+        return( result );
     }
     
     public static void concatLists(ArrayList<DataBean> dest, ArrayList<DataBean> src) {
@@ -280,9 +307,21 @@ public class Helper extends DataBean {
         DataBean result = new DataBean();
         
         try {
-            //InputStreamReader isr = new InputStreamReader(ex.getRequestBody(),"utf-8");
+            /*String line;
+            InputStream is = ex.getRequestBody();
+            BufferedReader in = new BufferedReader(new InputStreamReader(is));
+            StringBuffer buffer = new StringBuffer();
+            while ((line = in.readLine()) != null) {
+                buffer.append(line);
+            }*/
+            InputStreamReader isr = new InputStreamReader(ex.getRequestBody(),"utf-8");
+            BufferedReader br = new BufferedReader(isr);
+            String query;
+            while( (query = br.readLine()) != null ){
+                readAllParametersFromURI(result,query);
+            }
             
-            InputStream in = ex.getRequestBody();
+            /*InputStream in = ex.getRequestBody();
             ByteArrayOutputStream _out = new ByteArrayOutputStream();
             byte[] buf = new byte[2048];
             int read = 0;
@@ -291,10 +330,8 @@ public class Helper extends DataBean {
                 _out.write(buf, 0, read);
             }
             String query = _out.toString();
-            readAllParametersFromURI(result,query);
-            //BufferedReader br = new BufferedReader(isr);
-            //String query = br.readLine();
-            //readAllParametersFromURI(result,query);
+            readAllParametersFromURI(result,query);*/
+            
 
             URI requestedUri = ex.getRequestURI();
             readAllParametersFromURI(result,requestedUri);
