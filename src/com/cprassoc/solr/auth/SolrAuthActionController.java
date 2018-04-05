@@ -212,6 +212,11 @@ public class SolrAuthActionController {
         }
         return obj;
     }
+    
+    public static String doPullConfigFromSolrAction(){
+        //server/scripts/cloud-scripts/zkcli.sh -zkhost localhost:9983 -cmd clear -z /security.json
+        return "";
+    }
 
     public static String doPushConfigToSolrAction(SecurityJson json) {
         String result = "";
@@ -274,7 +279,10 @@ public class SolrAuthActionController {
         load_a_version,
         add_permissions_to_permissions,
         add_param_to_permission,
-        reset_param_showing_flag
+        reset_param_showing_flag,
+        do_yes_dialog,
+        do_no_dialog,
+        do_cancel_dialog
     }
 
     public static enum SystemErrors {

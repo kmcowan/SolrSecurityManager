@@ -162,6 +162,22 @@ public class SolrHttpHandler {
         }
         return result;
     }
+    
+    
+     public boolean isAuthEnabled() {
+        boolean result = false;
+        try {
+            String test = getAuthorization();
+            if(test != null && !test.contains("No authorization configured")){
+                result = true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.log(getClass(), "Ping Response returned EXCEPTION");
+            result = false;
+        }
+        return result;
+    }
 
     public String getAuthorization() {
         String result = "";
