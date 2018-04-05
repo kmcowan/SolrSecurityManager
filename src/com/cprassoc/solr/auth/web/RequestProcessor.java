@@ -10,7 +10,9 @@ import com.cprassoc.solr.auth.web.handlers.DefaultRequestHandler;
 import com.cprassoc.solr.auth.web.handlers.NoActionFoundHandler;
 import com.cprassoc.solr.auth.web.handlers.RequestHandler;
 import com.cprassoc.solr.auth.web.html.HTML;
+
 import com.sun.net.httpserver.HttpExchange;
+
 import java.net.URI;
 
 /**
@@ -25,7 +27,6 @@ public class RequestProcessor {
         try {
             RequestHandler handler = getHandler(ex.getRequestURI());
             result = handler.process(ex);
-
         } catch (Exception e) {
 
         } finally {
@@ -40,11 +41,14 @@ public class RequestProcessor {
     private static RequestHandler getHandler(URI uri) {
         RequestHandler handler = null;
         String path = uri.getPath();
+        
         switch (path) {
             case "/":
                 handler = new DefaultRequestHandler();
                 break;
-
+            case "/rest":
+                handler = new DefaultRequestHandler();
+                break;
             case "/create":
                 handler = new CreationRequestHandler();
                 break;

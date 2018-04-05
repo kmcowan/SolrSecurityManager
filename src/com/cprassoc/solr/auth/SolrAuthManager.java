@@ -9,6 +9,7 @@ import com.cprassoc.solr.auth.model.ContextualHelp;
 import com.cprassoc.solr.auth.ui.SolrAuthMainWindow;
 import com.cprassoc.solr.auth.ui.SolrSecurityPropertyManagerFrame;
 import com.cprassoc.solr.auth.util.Log;
+import com.cprassoc.solr.auth.web.DataBean;
 import com.cprassoc.solr.auth.web.WebServer;
 import java.awt.Desktop;
 import java.io.File;

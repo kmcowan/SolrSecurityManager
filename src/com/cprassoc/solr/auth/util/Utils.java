@@ -22,6 +22,17 @@ public class Utils {
 
     private static final String OS = System.getProperty("os.name").toLowerCase();
 
+    public static byte[] streamToBytes(InputStream in) {
+        byte result[] = new byte[0];
+        try {
+            result = new byte[in.available()];
+            in.read(result);
+        } catch (Exception e) {
+           // e.printStackTrace();
+        }
+        return result;
+    }
+    
     public static String streamToString(InputStream in) {
         String result = "";
         try {
@@ -29,7 +40,7 @@ public class Utils {
             IOUtils.copy(in, writer, "UTF-8");
             result = writer.toString();
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return result;
     }

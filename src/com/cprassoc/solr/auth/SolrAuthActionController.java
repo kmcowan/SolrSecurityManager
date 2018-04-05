@@ -29,14 +29,19 @@ public class SolrAuthActionController {
 
     public final static SolrHttpHandler SOLR = new SolrHttpHandler();
 
-    public static void doSavePropertiesAction(Properties props) {
+    public static String doSavePropertiesAction(Properties props) {
+        String result = "SUCCESS";
+        
         try {
             File f = new File(SolrAuthManager.SOLR_AUTH_PROPERTIES);
             OutputStream out = new FileOutputStream(f);
             props.store(out, "SolrAuthManager Properties");
         } catch (Exception e) {
+            result = "FAILURE: " + e.toString();
             e.printStackTrace();
         }
+        
+        return( result );
     }
 
     public static String addUser(String uname, String pw) {
