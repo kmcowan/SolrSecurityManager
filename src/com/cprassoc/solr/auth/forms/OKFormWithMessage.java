@@ -80,10 +80,13 @@ public class OKFormWithMessage extends BaseDialog {
         imageIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/cprassoc/solr/auth/forms/resources/info.png"))); // NOI18N
         imageIcon.setText("jLabel1");
 
+        messageArea.setEditable(false);
         messageArea.setBackground(new java.awt.Color(0, 51, 102));
         messageArea.setColumns(20);
         messageArea.setForeground(new java.awt.Color(255, 255, 255));
+        messageArea.setLineWrap(true);
         messageArea.setRows(5);
+        messageArea.setWrapStyleWord(true);
         jScrollPane1.setViewportView(messageArea);
 
         okButton.setText("OK");

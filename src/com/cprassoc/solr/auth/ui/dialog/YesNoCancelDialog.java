@@ -103,7 +103,9 @@ public class YesNoCancelDialog extends JFrame implements Frameable {
     }
 
     public void showOKOnlyMessageDialog(String message, Resources.Resource resc) {
-
+         if(frame != null){
+             frame.showOKOnlyMessageDialog(message, resc);
+         }
     }
 
     private Action getYesAction() {
