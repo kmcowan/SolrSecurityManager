@@ -16,7 +16,11 @@ public class HTML {
     public static String getPage(Page p) {
         String page = "";
         try{
-        page = Utils.streamToString(HTML.class.getResourceAsStream(p.name()+".html"));
+            if(p == Page.notfound){
+                page = Utils.streamToString(HTML.class.getResourceAsStream("404.html"));
+            } else {
+             page = Utils.streamToString(HTML.class.getResourceAsStream(p.name()+".html"));
+            }
         }catch(Exception e){
             e.printStackTrace();
             page = Utils.streamToString(HTML.class.getResourceAsStream("404.html"));
@@ -46,7 +50,8 @@ public class HTML {
         roles,
         permissions_params,
         top_half,
-        bottom_half
+        bottom_half,
+        notfound
     }
     
 }

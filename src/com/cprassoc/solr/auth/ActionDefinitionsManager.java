@@ -18,7 +18,7 @@ import org.json.JSONArray;
  */
 public class ActionDefinitionsManager {
 
-    private static String SOLR_WEB_AUTH_JSON = "solr_web_auth.json";
+    private static String SOLR_WEB_AUTH_JSON = "solr_auth_web.json";
     private static String ACTIONS = "actions", SCRIPTS = "scripts", PAGES = "pages";
     private static JSONObject json = null;
     private static ActionDefinitionsManager actionMgr = null;
@@ -37,20 +37,30 @@ public class ActionDefinitionsManager {
                 json = new JSONObject(jstr);
             }
 
+            // load actions
             actionMap = new HashMap<>();
             JSONArray arr = json.getJSONArray(ACTIONS);
             JSONObject obj = null;
             for (int i = 0; i < arr.length(); i++) {
                 obj = arr.getJSONObject(i);
+                System.out.println("Add ACTION: "+obj.getString(ActionKey.name.name()));
                 actionMap.put(obj.getString(ActionKey.name.name()), obj);
             }
             
+            // load pages
+            pages = new HashMap<>();
             arr = json.getJSONArray(PAGES);
-            String basePath = json.getString("");
+            String basePath = json.getString("action_page_dir");
+            File page = null;
+            String pageName = "";
             for (int i = 0; i < arr.length(); i++) {
                 obj = arr.getJSONObject(i);
-                actionMap.put(obj.getString(ActionKey.name.name()), obj);
+                pageName = obj.getString("page");
+                page = new File(basePath + pageName);
+                pages.put(pageName, page);
             }
+            
+            /**@TODO need to add scripts */ 
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -79,11 +89,20 @@ public class ActionDefinitionsManager {
         }
         return null;
     }
+    
+    public File getPage(String key){
+        if(pages.get(key) != null){
+            return pages.get(key);
+        }
+        return null;
+    }
 
     public boolean isValidAction(String key) {
         if (actionMap.get(key) != null) {
+            System.out.println("Action is VALID: "+key);
             return true;
         }
+        // System.out.println("Action is ** INVALID ** : "+key);
         return false;
     }
 
@@ -93,7 +112,7 @@ public class ActionDefinitionsManager {
         ContentType
     }
 
-    public ActionDefinitionsManager getInstance() {
+    public static ActionDefinitionsManager getInstance() {
         if (actionMgr == null) {
             actionMgr = new ActionDefinitionsManager();
         }

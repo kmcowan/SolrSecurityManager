@@ -5,12 +5,17 @@
  */
 package com.cprassoc.solr.auth.web;
 
+import com.cprassoc.solr.auth.ActionDefinitionsManager;
+import com.cprassoc.solr.auth.ActionDefinitionsManager.ActionKey;
 import com.cprassoc.solr.auth.util.Utils;
 import com.cprassoc.solr.auth.web.html.HTML;
+import com.cprassoc.solr.auth.web.html.HTML.Page;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import java.io.File;
+import java.io.FileInputStream;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.cytopia.tofu.ProcessorServlet;
+import org.json.JSONObject;
 
 
 /**
@@ -36,6 +42,7 @@ import net.cytopia.tofu.ProcessorServlet;
 public class RESTService extends GenericServlet implements MessageHandler,HttpHandler{
     private String message;
     public final static ProcessorServlet PROCESSOR = new ProcessorServlet();
+    private final static ActionDefinitionsManager actionManager = ActionDefinitionsManager.getInstance();
 
     @Override
   public void init() throws ServletException
@@ -92,14 +99,25 @@ public class RESTService extends GenericServlet implements MessageHandler,HttpHa
     public void handle(HttpExchange ex) throws IOException{
         try{
                 String contentType = "application/json";
+                boolean isValidAction = false;
+                 JSONObject action =  null;
+              
             
                 String page = ex.getRequestURI().getPath();
                 if( page.equals("/") )
                     page += "index.html";
             
                 boolean isService = false;
-            
-                if( page.endsWith(".js") ){
+                String actionPage = page;
+                if( actionPage.startsWith("/") ){
+                        actionPage = actionPage.substring(1);
+                    }
+                if(actionManager.isValidAction(actionPage)){
+                    action = actionManager.getAction(actionPage);
+                    contentType = action.getString(ActionKey.ContentType.name());
+                    isValidAction = true;
+                }
+                else if( page.endsWith(".js") ){
                     contentType = "application/javascript";
                 }
                 else if( page.endsWith(".png") ){
@@ -123,16 +141,36 @@ public class RESTService extends GenericServlet implements MessageHandler,HttpHa
                 ex.getResponseHeaders().add("Content-Type", contentType);
                 ex.getResponseHeaders().add("X-Powered-by", "Solr Auth Manager Server");
                 OutputStream out = ex.getResponseBody();
-                System.out.println("Process request FOR: "+page);
-                if( isService ){
+              
+                if( isService && !isValidAction){
+                      System.out.println("Process SERVICE Request: "+page);
                    // System.out.println("Process request as SERVICE");
                     byte[] outbuf = RequestProcessor.process(ex).getBytes();
                      ex.sendResponseHeaders(200, 0);
                     
                     out.write(outbuf);
+                } else if(!isService && isValidAction){
+                    System.out.println("Process ACTION Request: "+actionPage);
+                    if(action.getString(ActionKey.page.name()) != null){
+                     ex.sendResponseHeaders(200, 0);
+                     File file = actionManager.getPage(action.getString(ActionKey.page.name()));
+                     if(!file.exists()){
+                         System.out.println("FILE DOES NOT EXIST: "+file.getAbsolutePath());
+                     } else {
+                          System.out.println("Write file to output: "+file.getAbsolutePath());
+                     }
+                     
+                      byte bytes[] = Utils.streamToBytes(new FileInputStream(file));
+                      out.write(bytes);
+                    } else {
+                        System.out.println("SENDING PAGE NOT FOUND: "+actionPage);
+                         ex.sendResponseHeaders(404, 0);
+                          
+                         out.write(HTML.getPage(Page.notfound).getBytes());
+                    }
                 }
                 else {
-                  //   System.out.println("Process request as NON-SERVICE");
+                     System.out.println("Process request as NON-SERVICE "+page);
                     if( page.startsWith("/") ){
                         page = page.substring(1);
                     }
