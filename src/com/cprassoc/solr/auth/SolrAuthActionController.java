@@ -289,7 +289,8 @@ public class SolrAuthActionController {
         do_no_dialog,
         do_cancel_dialog,
         do_enable_auth,
-        dialog_fired_action
+        dialog_fired_action,
+        do_not_enable_auth
     }
 
     public static enum SystemErrors {

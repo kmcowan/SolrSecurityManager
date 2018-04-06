@@ -272,6 +272,8 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
             if (!isAuthEnabled) {
                 HashMap<String, SolrManagerAction> map = new HashMap<>();
                 map.put("yes", SolrManagerAction.do_enable_auth);
+                map.put("no", SolrManagerAction.do_not_enable_auth);
+                
                 YesNoCancelDialog dialog = new YesNoCancelDialog("Authorization is not enabled.  Would you like to do this now?", null, this, true, map);
                 dialog.setVisible(true);
                 dialog.requestFocus();
@@ -547,6 +549,10 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 } catch (Exception e) {
                 }
 
+                break;
+                
+                case do_not_enable_auth:
+                this.showOKOnlyMessageDialog("**WARNING** Not enabling the auth plug-in may cause undesirable behavior. \n Just sayin'... :)", Resources.Resource.warn);
                 break;
         }
     }

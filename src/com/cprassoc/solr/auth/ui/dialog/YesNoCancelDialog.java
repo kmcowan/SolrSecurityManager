@@ -94,10 +94,11 @@ public class YesNoCancelDialog extends JFrame implements Frameable {
 
     public void fireAction(SolrAuthActionController.SolrManagerAction action, LinkedHashMap<String, String> args, Object optional) {
         System.out.println("Dialog fire action: " + action.name());
+         this.setVisible(false);
         if (this.frame != null) {
             frame.fireAction(action, args, optional);
         }
-        this.setVisible(false);
+       
         this.dispose();
     }
 
