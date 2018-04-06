@@ -171,4 +171,11 @@ public class Utils {
         return (OS.contains("sunos"));
 
     }
+    
+    public  static boolean isHTML(byte[] bytes){
+        if(new String(bytes).toLowerCase().contains("<html>")){
+            return true;
+        }
+        return false;
+    }
 }

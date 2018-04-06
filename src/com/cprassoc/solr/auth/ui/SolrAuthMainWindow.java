@@ -70,6 +70,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     public static int OK_RESPONSE = 0;
     private final static Timer timer = new Timer();
     private static final HistoryVersion VERSIONS = new HistoryVersion();
+    private TableModel[] models = null;
 
     /**
      * Creates new form SolrAuthMainWindow
@@ -273,7 +274,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 HashMap<String, SolrManagerAction> map = new HashMap<>();
                 map.put("yes", SolrManagerAction.do_enable_auth);
                 map.put("no", SolrManagerAction.do_not_enable_auth);
-                
+
                 YesNoCancelDialog dialog = new YesNoCancelDialog("Authorization is not enabled.  Would you like to do this now?", null, this, true, map);
                 dialog.setVisible(true);
                 dialog.requestFocus();
@@ -545,14 +546,14 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                         securityJson = new SecurityJson(authoeMap);
                     }
 
-                    pushToSolr(securityJson); 
+                    pushToSolr(securityJson);
                 } catch (Exception e) {
                 }
 
                 break;
-                
-                case do_not_enable_auth:
-                this.showOKOnlyMessageDialog("**WARNING** Not enabling the auth plug-in may cause undesirable behavior. \n Just sayin'... :)", Resources.Resource.warn);
+
+            case do_not_enable_auth:
+                this.showOKOnlyMessageDialog("\n ************ WARNING ************ \n Not enabling the auth plug-in may cause undesirable behavior.\n \n Just sayin'... ;)", Resources.Resource.warn);
                 break;
         }
     }
@@ -597,7 +598,10 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     }
 
     private synchronized void clearTables() {
-        TableModel[] models = new TableModel[3];
+        if (models == null) {
+            models = new TableModel[3];
+        }
+
         models[0] = this.usersTable.getModel();
         models[1] = this.rolesTable.getModel();
         models[2] = this.permissionsTable.getModel();

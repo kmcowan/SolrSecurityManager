@@ -1,0 +1,12 @@
+{
+   "action_page_dir": "/projects/SolrAuthManager/pages/", 
+   
+   "pages": [
+      {"page": "testpage.html"}
+   ],
+   "scripts": [],
+   
+   "actions": [
+       { "name": "test",  "page": "testpage.html", "ContentType": "text/html" }
+   ]
+}

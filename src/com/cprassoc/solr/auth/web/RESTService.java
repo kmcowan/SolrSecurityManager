@@ -114,7 +114,7 @@ public class RESTService extends GenericServlet implements MessageHandler,HttpHa
                 else if( page.endsWith(".css") ){
                     contentType = "text/css";
                 }
-                else if( page.endsWith(".html") ){
+                else if( page.endsWith(".html") || page.equals("") || page.contains("index.html") ){
                     contentType = "text/html";
                 }
                 else {
@@ -123,19 +123,25 @@ public class RESTService extends GenericServlet implements MessageHandler,HttpHa
                 ex.getResponseHeaders().add("Content-Type", contentType);
                 ex.getResponseHeaders().add("X-Powered-by", "Solr Auth Manager Server");
                 OutputStream out = ex.getResponseBody();
+                System.out.println("Process request FOR: "+page);
                 if( isService ){
+                   // System.out.println("Process request as SERVICE");
                     byte[] outbuf = RequestProcessor.process(ex).getBytes();
                      ex.sendResponseHeaders(200, 0);
                     
                     out.write(outbuf);
                 }
                 else {
+                  //   System.out.println("Process request as NON-SERVICE");
                     if( page.startsWith("/") ){
                         page = page.substring(1);
                     }
                     ex.sendResponseHeaders(200, 0);
                     java.io.InputStream stream = HTML.class.getResourceAsStream(page);
                     byte bytes[] = Utils.streamToBytes(stream);
+                    if(Utils.isHTML(bytes)){
+                          ex.getResponseHeaders().add("Content-Type",  "text/html");
+                    }
                     out.write(bytes);
                 }
             
