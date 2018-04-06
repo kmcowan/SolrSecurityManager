@@ -142,12 +142,12 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 logPane.setText("Solr is offline. ");
             }
 
-            if (!isAuthEnabled) {
+            if (isAuthEnabled) {
                 this.authEnabledButton.setText("YES");
                 this.authEnabledButton.setBackground(Color.green);
             } else {
                 this.authEnabledButton.setText("NO");
-                this.authEnabledButton.setBackground(Color.orange);
+                this.authEnabledButton.setBackground(Color.red);
             }
 
             populateAuthorizationTable(securityJson.getAuthorization());
@@ -269,7 +269,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
             Log.log("Toolbar Panel DIM: " + toolbarPanel.getWidth());
             toolbarPanel.setMinimumSize(new Dimension(510, 49));
 
-            if (isAuthEnabled) {
+            if (!isAuthEnabled) {
                 HashMap<String, SolrManagerAction> map = new HashMap<>();
                 map.put("yes", SolrManagerAction.do_enable_auth);
                 YesNoCancelDialog dialog = new YesNoCancelDialog("Authorization is not enabled.  Would you like to do this now?", null, this, true, map);

@@ -12,6 +12,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -29,6 +31,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.response.SolrPingResponse;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  *
@@ -147,6 +151,11 @@ public class SolrHttpHandler {
     public boolean isOnline() {
         boolean result = true;
         try {
+            if(!collectionExists(zkCloudClient.getDefaultCollection())){
+                Log.log("**WARN** COLLECTION DOES NOT EXIST!! ");
+                
+                zkCloudClient.setDefaultCollection(getCollections().getString(0));
+            }
             SolrPingResponse resp = zkCloudClient.ping();
             if (resp == null) {
                 Log.log(getClass(), "Ping Response was NULL");
@@ -168,13 +177,39 @@ public class SolrHttpHandler {
         boolean result = true;
         try {
             String test = getAuthorization();
-            if(test != null && !test.contains("No authorization configured")){
+            Log.log("auth test: "+test);
+            JSONObject obj = new JSONObject(test);
+            if( obj.get("errorMessages") != null || 
+                    test.contains("No authorization configured")){
                 result = false;
+                Log.log("Auth is NOT Enabled... return false");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Log.log(getClass(), "Ping Response returned EXCEPTION");
+            Log.log(getClass(), "AuthEnabled Response returned EXCEPTION");
             result = false;
+        }
+        return result;
+    }
+     
+    public JSONArray getCollections(){
+       JSONArray list = new JSONArray();
+        String path = solrBaseUrl + COLLECTION_LIST_URL_PART;
+        String result = get(path);
+        JSONObject obj = new JSONObject(result);
+        list = obj.getJSONArray("collections");
+        
+        return list;
+    }
+    
+    public boolean collectionExists(String collection){
+        boolean result = false;
+        JSONArray cols = getCollections();
+        for(int i=0; i<cols.length(); i++){
+            if(cols.get(i).equals(collection)){
+                result = true;
+                break;
+            }
         }
         return result;
     }
