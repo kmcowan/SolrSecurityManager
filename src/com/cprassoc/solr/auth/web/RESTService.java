@@ -8,6 +8,7 @@ package com.cprassoc.solr.auth.web;
 import com.cprassoc.solr.auth.ActionDefinitionsManager;
 import com.cprassoc.solr.auth.ActionDefinitionsManager.ActionKey;
 import com.cprassoc.solr.auth.util.Utils;
+import com.cprassoc.solr.auth.web.handlers.model.Handler;
 import com.cprassoc.solr.auth.web.html.HTML;
 import com.cprassoc.solr.auth.web.html.HTML.Page;
 
@@ -151,7 +152,17 @@ public class RESTService extends GenericServlet implements MessageHandler,HttpHa
                     out.write(outbuf);
                 } else if(!isService && isValidAction){
                     System.out.println("Process ACTION Request: "+actionPage);
-                    if(action.getString(ActionKey.page.name()) != null){
+                    Handler handler = null;
+                    if(action.has(ActionKey.handler.name())){ // handler takes precedence
+                        String handlerCls = action.getString(ActionKey.handler.name());
+                         handler = Utils.getHandler(handlerCls);
+                    } 
+                    if(handler != null){
+                            ex.sendResponseHeaders(200, 0);
+                          byte bytes[] = handler.handle(action, ex);
+                         out.write(bytes);
+                    }
+                   else if(action.getString(ActionKey.page.name()) != null){
                      ex.sendResponseHeaders(200, 0);
                      File file = actionManager.getPage(action.getString(ActionKey.page.name()));
                      if(!file.exists()){

@@ -7,6 +7,6 @@
    "scripts": [],
    
    "actions": [
-       { "name": "test",  "page": "testpage.html", "ContentType": "text/html" }
+       { "name": "test",  "page": "testpage.html", "ContentType": "text/html", "handler": "com.cprassoc.solr.auth.web.handlers.TestPageHandler" }
    ]
 }

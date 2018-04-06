@@ -109,7 +109,8 @@ public class ActionDefinitionsManager {
     public enum ActionKey {
         name,
         page,
-        ContentType
+        ContentType,
+        handler
     }
 
     public static ActionDefinitionsManager getInstance() {
