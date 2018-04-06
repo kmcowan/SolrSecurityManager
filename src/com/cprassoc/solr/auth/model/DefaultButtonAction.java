@@ -7,7 +7,7 @@ package com.cprassoc.solr.auth.model;
 
 import com.cprassoc.solr.auth.Frameable;
 import com.cprassoc.solr.auth.SolrAuthActionController;
-import com.cprassoc.soybeans.tofu.ui.resources.Resources;
+import com.cprassoc.solr.auth.SolrAuthActionController.SolrManagerAction;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import static javax.swing.Action.MNEMONIC_KEY;
@@ -20,6 +20,7 @@ import javax.swing.ImageIcon;
  */
 public class DefaultButtonAction  extends AbstractAction {
     private Frameable frame = null;
+    private SolrAuthActionController.SolrManagerAction action=null;
     public DefaultButtonAction(String text, ImageIcon icon,
                       String desc, Integer mnemonic, Frameable frame) {
         super(text, icon);
@@ -28,18 +29,28 @@ public class DefaultButtonAction  extends AbstractAction {
         this.frame = frame;
     }
     
-    public DefaultButtonAction( Frameable frame) {
-        super("", Resources.INFO_ICON);
-        putValue(SHORT_DESCRIPTION, "Default Button Action");
+  public DefaultButtonAction(){
+      
+  }
+  
+    
+    
+    public DefaultButtonAction( Frameable frame, SolrManagerAction action) {
+      //  super("", Resources.INFO_ICON);
+     //   putValue(SHORT_DESCRIPTION, "Default Button Action");
    
         this.frame = frame;
+        this.action = action;
     }
     
     public void actionPerformed(ActionEvent e) {
       //  displayResult("Action for first button/menu item", e);
       System.out.println(e.toString());
+      if(action ==  null){
+          action = SolrManagerAction.dialog_fired_action;
+      }
       if(frame != null){
-          frame.fireAction(SolrAuthActionController.SolrManagerAction.do_yes_dialog, null, this);
+          frame.fireAction(action, null, this);
       }
       
     }

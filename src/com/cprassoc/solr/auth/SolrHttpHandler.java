@@ -165,11 +165,11 @@ public class SolrHttpHandler {
     
     
      public boolean isAuthEnabled() {
-        boolean result = false;
+        boolean result = true;
         try {
             String test = getAuthorization();
             if(test != null && !test.contains("No authorization configured")){
-                result = true;
+                result = false;
             }
         } catch (Exception e) {
             e.printStackTrace();

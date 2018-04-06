@@ -7,42 +7,122 @@ package com.cprassoc.solr.auth.ui.dialog;
 
 import com.cprassoc.solr.auth.Frameable;
 import com.cprassoc.solr.auth.SolrAuthActionController;
+import com.cprassoc.solr.auth.SolrAuthActionController.SolrManagerAction;
 import com.cprassoc.solr.auth.forms.resources.Resources;
+import com.cprassoc.solr.auth.model.DefaultButtonAction;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import javax.swing.Action;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import static org.bouncycastle.asn1.x500.style.RFC4519Style.l;
 
 /**
  *
  * @author kevin
  */
-public class YesNoCancelDialog extends JFrame implements Frameable{
+public class YesNoCancelDialog extends JFrame implements Frameable {
+
+    private Frameable frame = null;
+    private String label = null;
+    private ImageIcon icon = null;
+    private SolrManagerAction cancelAction = null, yesAction = null, noAction = null;
+    private HashMap<String, SolrManagerAction> map = null;
 
     /**
      * Creates new form YesNoCancelDialog
      */
-    public YesNoCancelDialog(java.awt.Frame parent, boolean modal) {
-      //  super(parent, modal);
+    public YesNoCancelDialog(Frameable parent, boolean modal) {
+
         initComponents();
         init();
+        this.frame = parent;
     }
-    
-    private void init(){
-        
+
+    public YesNoCancelDialog(String label, ImageIcon icon, Frameable parent, boolean modal, HashMap<String, SolrManagerAction> actions) {
+        // super(parent.getFrame(), modal);
+        this.frame = parent;
+        this.label = label;
+        this.icon = icon;
+        this.map = actions;
+        preinit();
+        initComponents();
+        init();
+    } //SolrManagerAction
+
+    private void preinit() {
+        if (map != null) {
+            if (map.get("yes") != null) {
+                yesAction = map.get("yes");
+            }
+
+            if (map.get("no") != null) {
+                noAction = map.get("no");
+            }
+
+            if (map.get("cancel") != null) {
+                cancelAction = map.get("cancel");
+            }
+        }
     }
-    
-    
-     public java.awt.Frame getFrame(){ 
-         return this;
-     }
-    public void fireAction(SolrAuthActionController.SolrManagerAction action, LinkedHashMap<String,String> args, Object optional){
-        System.out.println("Dialog fire action: "+action.name());
+
+    private void init() {
+        if (label != null) {
+            labelArea.setText(label);
+        }
+
+        if (icon != null) {
+            this.dialogIcon.setIcon(icon);
+        }
+        int lwidth = 425;
+        int lheight = 198;
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+
+        int x = (dim.width - lwidth) / 2;
+
+        int y = (dim.height - lheight) / 2;
+
+        this.setLocation(x, y);
+
+    }
+
+    public java.awt.Frame getFrame() {
+        return this;
+    }
+
+    public void fireAction(SolrAuthActionController.SolrManagerAction action, LinkedHashMap<String, String> args, Object optional) {
+        System.out.println("Dialog fire action: " + action.name());
+        if (this.frame != null) {
+            frame.fireAction(action, args, optional);
+        }
         this.setVisible(false);
         this.dispose();
     }
-    public void showOKOnlyMessageDialog(String message, Resources.Resource resc){
-    
+
+    public void showOKOnlyMessageDialog(String message, Resources.Resource resc) {
+
     }
-   
+
+    private Action getYesAction() {
+        Action action = new DefaultButtonAction(this, yesAction);
+
+        return action;
+    }
+
+    private Action getNoAction() {
+        Action action = new DefaultButtonAction(this, noAction);
+
+        return action;
+    }
+
+    private Action getCancelAction() {
+        Action action = new DefaultButtonAction(this, cancelAction);
+
+        return action;
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -53,64 +133,97 @@ public class YesNoCancelDialog extends JFrame implements Frameable{
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        dialogTitle = new javax.swing.JLabel();
+        dialogIcon = new javax.swing.JLabel();
+        jToolBar1 = new javax.swing.JToolBar();
         yesButton = new javax.swing.JButton();
+        jSeparator1 = new javax.swing.JToolBar.Separator();
         noButton = new javax.swing.JButton();
+        jSeparator2 = new javax.swing.JToolBar.Separator();
         cancelButton = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        labelArea = new javax.swing.JEditorPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jPanel1.setBackground(new java.awt.Color(0, 0, 153));
+        jPanel1.setBackground(new java.awt.Color(0, 51, 102));
 
-        dialogTitle.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        dialogTitle.setText("jLabel1");
+        dialogIcon.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        dialogIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/cprassoc/solr/auth/forms/resources/info.png"))); // NOI18N
 
+        jToolBar1.setBackground(new java.awt.Color(0, 51, 102));
+        jToolBar1.setFloatable(false);
+        jToolBar1.setRollover(true);
+
+        yesButton.setAction(getYesAction());
+        yesButton.setBackground(new java.awt.Color(0, 51, 102));
+        yesButton.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        yesButton.setForeground(new java.awt.Color(255, 255, 255));
         yesButton.setText("Yes");
+        jToolBar1.add(yesButton);
+        jToolBar1.add(jSeparator1);
 
+        noButton.setAction(getNoAction());
+        noButton.setBackground(new java.awt.Color(0, 51, 102));
+        noButton.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        noButton.setForeground(new java.awt.Color(255, 255, 255));
         noButton.setText("No");
+        jToolBar1.add(noButton);
+        jToolBar1.add(jSeparator2);
 
+        cancelButton.setAction(getCancelAction());
+        cancelButton.setBackground(new java.awt.Color(0, 51, 102));
+        cancelButton.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        cancelButton.setForeground(new java.awt.Color(255, 255, 255));
         cancelButton.setText("Cancel");
+        jToolBar1.add(cancelButton);
+
+        labelArea.setEditable(false);
+        labelArea.setBackground(new java.awt.Color(0, 51, 102));
+        labelArea.setForeground(new java.awt.Color(255, 255, 255));
+        labelArea.setCaretColor(new java.awt.Color(0, 0, 0));
+        labelArea.setDisabledTextColor(new java.awt.Color(0, 0, 0));
+        labelArea.setEnabled(false);
+        labelArea.setFocusCycleRoot(false);
+        labelArea.setSelectedTextColor(new java.awt.Color(0, 0, 0));
+        jScrollPane2.setViewportView(labelArea);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(dialogIcon)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(39, 39, 39)
-                        .addComponent(yesButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(noButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cancelButton))
+                        .addGap(38, 38, 38)
+                        .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(dialogTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(46, Short.MAX_VALUE))
+                        .addGap(27, 27, 27)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 267, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(49, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(dialogTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(37, 37, 37)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(yesButton)
-                    .addComponent(noButton)
-                    .addComponent(cancelButton))
-                .addContainerGap(39, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(dialogIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(7, 7, 7)
+                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(27, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -146,7 +259,7 @@ public class YesNoCancelDialog extends JFrame implements Frameable{
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                YesNoCancelDialog dialog = new YesNoCancelDialog(new javax.swing.JFrame(), true);
+                YesNoCancelDialog dialog = new YesNoCancelDialog("test", null, null, true, null);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -160,8 +273,13 @@ public class YesNoCancelDialog extends JFrame implements Frameable{
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
-    private javax.swing.JLabel dialogTitle;
+    private javax.swing.JLabel dialogIcon;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JToolBar.Separator jSeparator1;
+    private javax.swing.JToolBar.Separator jSeparator2;
+    private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JEditorPane labelArea;
     private javax.swing.JButton noButton;
     private javax.swing.JButton yesButton;
     // End of variables declaration//GEN-END:variables

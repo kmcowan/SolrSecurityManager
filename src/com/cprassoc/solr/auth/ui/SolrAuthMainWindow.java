@@ -114,7 +114,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
 
                 //  JSON.decode(authorization, type);
                 JSONObject authoeJson = new JSONObject(authentication);
-                if (authoeJson.has("authentication")) {
+                if (isAuthEnabled) {//
                     String clsName = authoeJson.getJSONObject("authentication").getString("class");
                     JSONObject authoJson = new JSONObject(authorization);
                     LinkedHashMap authoMap = new LinkedHashMap(JsonHelper.jsonToMap(authoJson));
@@ -127,9 +127,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                     securityJson = new SecurityJson(map);
 
                 } else {
-                  //  YesNoCancelDialog dialog = new YesNoCancelDialog(this.getFrame(), true);
-                  //  dialog.setVisible(true);
-                  //  dialog.setAlwaysOnTop(true);
+
                     authoeJson = getDefaultSecurityJson();
                     LinkedHashMap authoeMap = new LinkedHashMap(JsonHelper.jsonToMap(authoeJson));
                     securityJson = new SecurityJson(authoeMap);
@@ -143,12 +141,12 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 securityJson = new SecurityJson(authoeMap);
                 logPane.setText("Solr is offline. ");
             }
-            
-            if(isAuthEnabled){
-                 this.authEnabledButton.setText("YES");
+
+            if (!isAuthEnabled) {
+                this.authEnabledButton.setText("YES");
                 this.authEnabledButton.setBackground(Color.green);
             } else {
-                    this.authEnabledButton.setText("NO");
+                this.authEnabledButton.setText("NO");
                 this.authEnabledButton.setBackground(Color.orange);
             }
 
@@ -163,24 +161,24 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                     String selectedData = null;
 
                     int[] selectedRow = usersTable.getSelectedRows();
-                  //  int[] selectedColumns = usersTable.getSelectedColumns();
+                    //  int[] selectedColumns = usersTable.getSelectedColumns();
                     //Log.log("Users: Selected Row: "+selectedRow[0]);
 
-               /*     for (int i = 0; i < selectedRow.length; i++) {
+                    /*     for (int i = 0; i < selectedRow.length; i++) {
                         for (int j = 0; j < selectedColumns.length; j++) {
                             selectedData = (String) usersTable.getValueAt(selectedRow[i], selectedColumns[j]);
                         }
                     }
-                    */
+                     */
                     selectedData = (String) usersTable.getValueAt(selectedRow[0], 0);
                     if (e.getValueIsAdjusting()) {
                         System.out.println("Selected User: " + selectedData);
                         selectedUser = selectedData;
                     }
-                    if(selectedRow.length == 1 && selectedUser.equals("")){
-                         selectedData = (String) usersTable.getValueAt(selectedRow[0], 0);
-                         selectedUser = selectedData;
-                             System.out.println("Selected User (2) : " + selectedData);
+                    if (selectedRow.length == 1 && selectedUser.equals("")) {
+                        selectedData = (String) usersTable.getValueAt(selectedRow[0], 0);
+                        selectedUser = selectedData;
+                        System.out.println("Selected User (2) : " + selectedData);
                     }
                 }
 
@@ -271,6 +269,15 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
             Log.log("Toolbar Panel DIM: " + toolbarPanel.getWidth());
             toolbarPanel.setMinimumSize(new Dimension(510, 49));
 
+            if (isAuthEnabled) {
+                HashMap<String, SolrManagerAction> map = new HashMap<>();
+                map.put("yes", SolrManagerAction.do_enable_auth);
+                YesNoCancelDialog dialog = new YesNoCancelDialog("Authorization is not enabled.  Would you like to do this now?", null, this, true, map);
+                dialog.setVisible(true);
+                dialog.requestFocus();
+                dialog.setAlwaysOnTop(true);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -311,13 +318,11 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                     value = list.get(i).get(key).toString();
                 } else if (tempVal instanceof LinkedHashMap) {
                     value = Utils.mapValuesToString((LinkedHashMap) tempVal);
-                } else {
-                    if(list.get(i).get(key) != null && tempVal instanceof String){
+                } else if (list.get(i).get(key) != null && tempVal instanceof String) {
                     value = (String) list.get(i).get(key);
-                    } else {
-                        Log.log("WARN: Key was null for: "+key+" i=" + i);
-                        value = "";
-                    }
+                } else {
+                    Log.log("WARN: Key was null for: " + key + " i=" + i);
+                    value = "";
                 }
                 col = getPermissionItemColumn(key);
                 this.permissionsTable.getModel().setValueAt(value, i, col);
@@ -407,7 +412,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 String pwd = args.get("pwd");
                 if (securityJson.getAuthentication().getCredentials().get(user) == null) {
                     // user name edit.  In this case, we delete the old user and add the new. 
-                     this.securityJson.getAuthentication().getCredentials().remove(args.get("old_user"));
+                    this.securityJson.getAuthentication().getCredentials().remove(args.get("old_user"));
                 } else {
                     // pwd only edit. In this case, just set the new pwd on the old user. 
                     Log.log(getClass(), "Pwd ONLY user edit...");
@@ -525,6 +530,21 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                     populateAuthorizationTable(securityJson.getAuthorization());
                     populateUserRolesTable(securityJson.getAuthorization());
                     populateAuthenticationTable(securityJson.getAuthentication());
+                }
+
+                break;
+
+            case do_enable_auth:
+                Log.log("Enabling Authentication...");
+                try {
+                    if (securityJson == null) {
+                        JSONObject authoeJson = getDefaultSecurityJson();
+                        LinkedHashMap authoeMap = new LinkedHashMap(JsonHelper.jsonToMap(authoeJson));
+                        securityJson = new SecurityJson(authoeMap);
+                    }
+
+                    pushToSolr(securityJson); 
+                } catch (Exception e) {
                 }
 
                 break;
@@ -1342,6 +1362,9 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
                 .addContainerGap())
         );
 
+        jMenuBar1.setBackground(new java.awt.Color(0, 51, 102));
+
+        jMenu1.setBackground(new java.awt.Color(0, 51, 102));
         jMenu1.setText("File");
 
         jMenuItem5.setText("Load Config");
@@ -1370,6 +1393,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
 
         jMenuBar1.add(jMenu1);
 
+        jMenu2.setBackground(new java.awt.Color(0, 51, 102));
         jMenu2.setText("Server");
 
         jMenuItem9.setText("Server Status");
@@ -1382,6 +1406,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
 
         jMenuBar1.add(jMenu2);
 
+        jMenu3.setBackground(new java.awt.Color(0, 51, 102));
         jMenu3.setText("Tools");
 
         jMenuItem2.setText("Manage Properties");
@@ -1442,6 +1467,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
 
         jMenuBar1.add(jMenu3);
 
+        jMenu4.setBackground(new java.awt.Color(0, 51, 102));
         jMenu4.setText("Support");
 
         jMenuItem10.setText("Help");
@@ -1464,9 +1490,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -1609,57 +1633,57 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     }//GEN-LAST:event_doPushConfigToSolrAction
 
     private void doDeletePermission(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doDeletePermission
-      try{
-        if (!selectedPermission.equals("")) {
-            int response;
+        try {
+            if (!selectedPermission.equals("")) {
+                int response;
 
-            response = JOptionPane.showConfirmDialog(null, "You are about to delete the permission: '" + selectedPermission + "'.\nThis cannot be undone.  Are you sure you want to do this?");
-            if (response == JOptionPane.YES_OPTION) {
-                 securityJson.reIndexPermissions();
-                LinkedHashMap<String, Object> perm = securityJson.getPermission(selectedPermission);
+                response = JOptionPane.showConfirmDialog(null, "You are about to delete the permission: '" + selectedPermission + "'.\nThis cannot be undone.  Are you sure you want to do this?");
+                if (response == JOptionPane.YES_OPTION) {
+                    securityJson.reIndexPermissions();
+                    LinkedHashMap<String, Object> perm = securityJson.getPermission(selectedPermission);
 
-                if (perm.get("index") != null) {
-                    Object index = perm.get("index");
-                    Log.log("Removing Permission with index: " + index.toString());
-                    int permId = -1;
-                    if (index instanceof Integer) {
-                        permId = (Integer) index;
-                    }
-
-                    String result = SolrAuthActionController.deletePermission(selectedPermission, permId);
-                    if (result.equals("")) {
-                        this.showOKOnlyMessageDialog("Failed to delete permission.  No valid index found or provided. ", Resources.Resource.warn);
-                    } else {
-                        JSONObject resp = new JSONObject(result);
-                        if (this.getResponseStatus(resp) == OK_RESPONSE) {
-                            String authorization = SolrAuthActionController.SOLR.getAuthorization();
-                            JSONObject authoJson = new JSONObject(authorization);
-                            LinkedHashMap authoMap = new LinkedHashMap(JsonHelper.jsonToMap(authoJson));
-                            Authorization auth = new Authorization(authoMap);
-                            this.clearTable(this.permissionsTable.getModel());
-                            securityJson.setAuthorization(auth);
-                            securityJson.reIndexPermissions();
-                            this.populateAuthorizationTable(auth);
-                            this.selectedPermission = "";
-                            this.permissionsTable.changeSelection(0, 0, false, false);
-                        } else {
-                            this.showOKOnlyMessageDialog("Failed to delete permission! ", Resources.Resource.warn);
+                    if (perm.get("index") != null) {
+                        Object index = perm.get("index");
+                        Log.log("Removing Permission with index: " + index.toString());
+                        int permId = -1;
+                        if (index instanceof Integer) {
+                            permId = (Integer) index;
                         }
+
+                        String result = SolrAuthActionController.deletePermission(selectedPermission, permId);
+                        if (result.equals("")) {
+                            this.showOKOnlyMessageDialog("Failed to delete permission.  No valid index found or provided. ", Resources.Resource.warn);
+                        } else {
+                            JSONObject resp = new JSONObject(result);
+                            if (this.getResponseStatus(resp) == OK_RESPONSE) {
+                                String authorization = SolrAuthActionController.SOLR.getAuthorization();
+                                JSONObject authoJson = new JSONObject(authorization);
+                                LinkedHashMap authoMap = new LinkedHashMap(JsonHelper.jsonToMap(authoJson));
+                                Authorization auth = new Authorization(authoMap);
+                                this.clearTable(this.permissionsTable.getModel());
+                                securityJson.setAuthorization(auth);
+                                securityJson.reIndexPermissions();
+                                this.populateAuthorizationTable(auth);
+                                this.selectedPermission = "";
+                                this.permissionsTable.changeSelection(0, 0, false, false);
+                            } else {
+                                this.showOKOnlyMessageDialog("Failed to delete permission! ", Resources.Resource.warn);
+                            }
+                        }
+                    } else {
+                        this.showOKOnlyMessageDialog("Failed to delete permission.  No valid index found or provided. ", Resources.Resource.warn);
                     }
-                } else {
-                    this.showOKOnlyMessageDialog("Failed to delete permission.  No valid index found or provided. ", Resources.Resource.warn);
+
                 }
 
+            } else {
+                this.showOKOnlyMessageDialog("No permission selectd. ", Resources.Resource.warn);
             }
-
-        } else {
-            this.showOKOnlyMessageDialog("No permission selectd. ", Resources.Resource.warn);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.log("ERROR: " + e.getLocalizedMessage());
+            this.showOKOnlyMessageDialog("An error occurred deleting permission: " + e.getLocalizedMessage(), Resources.Resource.warn);
         }
-      }catch(Exception e){
-          e.printStackTrace();
-          Log.log("ERROR: "+e.getLocalizedMessage());
-          this.showOKOnlyMessageDialog("An error occurred deleting permission: "+e.getLocalizedMessage(), Resources.Resource.warn);
-      }
     }//GEN-LAST:event_doDeletePermission
 
     private void doSaveAVersion(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doSaveAVersion
