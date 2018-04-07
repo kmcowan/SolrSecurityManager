@@ -66,6 +66,12 @@
             "page": "",
             "ContentType": "application/json",
             "handler": "com.cprassoc.solr.auth.web.handlers.SecurityJsonHandler"
+        },
+        {
+            "name": "properties",
+            "page": "",
+            "ContentType": "application/json",
+            "handler": "com.cprassoc.solr.auth.web.handlers.ManagePropertiesHandler"
         }
     ]
 }
