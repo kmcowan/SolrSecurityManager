@@ -1,18 +1,71 @@
 {
-   "action_page_dir": "/projects/SolrAuthManager/pages/", 
-   
-   "pages": [
-      {"page": "testpage.html"}
-   ],
-   "scripts": [],
-   
-   "actions": [
-       { "name": "test",  "page": "testpage.html", "ContentType": "text/html", "handler": "com.cprassoc.solr.auth.web.handlers.TestPageHandler" },
-        { "name": "isonline",  "page": "", "ContentType": "application/json", "handler": "com.cprassoc.solr.auth.web.handlers.IsOnlineHandler" },
-         { "name": "isauthenabled",  "page": "", "ContentType": "application/json", "handler": "com.cprassoc.solr.auth.web.handlers.IsAuthEnabledHandler" },
-          { "name": "listusers",  "page": "", "ContentType": "application/json", "handler": "com.cprassoc.solr.auth.web.handlers.ManageUsersHandler" }, 
-          { "name": "edituser",  "page": "", "ContentType": "application/json", "handler": "com.cprassoc.solr.auth.web.handlers.ManageUsersHandler" },
-           { "name": "adduser",  "page": "", "ContentType": "application/json", "handler": "com.cprassoc.solr.auth.web.handlers.ManageUsersHandler" },
-            { "name": "deleteuser",  "page": "", "ContentType": "application/json", "handler": "com.cprassoc.solr.auth.web.handlers.ManageUsersHandler" }
-   ]
+    "action_page_dir": "/projects/SolrAuthManager/pages/", 
+    "pages": [
+        {
+            "page": "testpage.html"
+        }
+    ],
+    "scripts": [],
+    "actions": [
+        {
+            "name": "test",
+            "page": "testpage.html",
+            "ContentType": "text/html",
+            "handler": "com.cprassoc.solr.auth.web.handlers.TestPageHandler"
+        },
+        {
+            "name": "isonline",
+            "page": "",
+            "ContentType": "application/json",
+            "handler": "com.cprassoc.solr.auth.web.handlers.IsOnlineHandler"
+        },
+        {
+            "name": "isauthenabled",
+            "page": "",
+            "ContentType": "application/json",
+            "handler": "com.cprassoc.solr.auth.web.handlers.IsAuthEnabledHandler"
+        },
+        {
+            "name": "listusers",
+            "page": "",
+            "ContentType": "application/json",
+            "handler": "com.cprassoc.solr.auth.web.handlers.ManageUsersHandler"
+        },
+        {
+            "name": "edituser",
+            "page": "",
+            "ContentType": "application/json",
+            "handler": "com.cprassoc.solr.auth.web.handlers.ManageUsersHandler"
+        },
+        {
+            "name": "adduser",
+            "page": "",
+            "ContentType": "application/json",
+            "handler": "com.cprassoc.solr.auth.web.handlers.ManageUsersHandler"
+        },
+        {
+            "name": "deleteuser",
+            "page": "",
+            "ContentType": "application/json",
+            "handler": "com.cprassoc.solr.auth.web.handlers.ManageUsersHandler"
+        },
+        {
+            "name": "listroles",
+            "page": "",
+            "ContentType": "application/json",
+            "handler": "com.cprassoc.solr.auth.web.handlers.ManageRolesHandler"
+        },
+        {
+            "name": "listpermissions",
+            "page": "",
+            "ContentType": "application/json",
+            "handler": "com.cprassoc.solr.auth.web.handlers.ManagePermissionsHandler"
+        },
+        {
+            "name": "getsecurityjson",
+            "page": "",
+            "ContentType": "application/json",
+            "handler": "com.cprassoc.solr.auth.web.handlers.SecurityJsonHandler"
+        }
+    ]
 }
