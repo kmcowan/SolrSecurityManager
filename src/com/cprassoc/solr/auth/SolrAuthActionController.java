@@ -222,6 +222,16 @@ public class SolrAuthActionController {
         //server/scripts/cloud-scripts/zkcli.sh -zkhost localhost:9983 -cmd clear -z /security.json
         return "";
     }
+    
+    public static SecurityJson getSecurityJson(){
+        SecurityJson secu = new SecurityJson();
+        try{
+            
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return secu;
+    }
 
     public static String doPushConfigToSolrAction(SecurityJson json) {
         String result = "";

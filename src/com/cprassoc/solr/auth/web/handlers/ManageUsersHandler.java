@@ -6,6 +6,7 @@
 package com.cprassoc.solr.auth.web.handlers;
 
 import com.cprassoc.solr.auth.SolrAuthActionController;
+import com.cprassoc.solr.auth.model.SecurityJson;
 
 import com.cprassoc.solr.auth.web.handlers.model.Handler;
 
@@ -16,11 +17,20 @@ import org.json.JSONObject;
  *
  * @author kevin
  */
-public class IsOnlineHandler implements Handler{
-    
+public class ManageUsersHandler implements Handler{
+     private SecurityJson securityJson = null;
+     
     public byte[] handle(JSONObject action, HttpExchange ex){
-       
-        JSONObject obj = SolrAuthActionController.getServerStatus();
+       JSONObject obj = new JSONObject();
+        securityJson = null;
+        SolrAuthActionController.SOLR.getAuthentication();
+        String currAction = action.getString("name");
+        switch(currAction){
+            case "listusers":
+                
+                break;
+        }
+      
     
         return obj.toString().getBytes();
     }
