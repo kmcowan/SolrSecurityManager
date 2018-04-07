@@ -16,12 +16,14 @@ import org.json.JSONObject;
  *
  * @author kevin
  */
-public class IsOnlineHandler implements Handler{
+public class IsAuthEnabledHandler implements Handler{
     
     public byte[] handle(JSONObject action, HttpExchange ex){
-       
-        JSONObject obj = SolrAuthActionController.getServerStatus();
-    
+      
+        JSONObject obj = new JSONObject();
+        boolean isAuthEnabled = SolrAuthActionController.SOLR.isAuthEnabled();
+        obj.put("enabled", Boolean.toString(isAuthEnabled));
+  
         return obj.toString().getBytes();
     }
     

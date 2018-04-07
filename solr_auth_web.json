@@ -8,6 +8,7 @@
    
    "actions": [
        { "name": "test",  "page": "testpage.html", "ContentType": "text/html", "handler": "com.cprassoc.solr.auth.web.handlers.TestPageHandler" },
-        { "name": "isonline",  "page": "", "ContentType": "application/json", "handler": "com.cprassoc.solr.auth.web.handlers.IsOnlineHandler" }
+        { "name": "isonline",  "page": "", "ContentType": "application/json", "handler": "com.cprassoc.solr.auth.web.handlers.IsOnlineHandler" },
+         { "name": "isauthenabled",  "page": "", "ContentType": "application/json", "handler": "com.cprassoc.solr.auth.web.handlers.IsAuthEnabledHandler" }
    ]
 }
