@@ -5,6 +5,7 @@
  */
 package com.cprassoc.solr.auth.util;
 
+import com.cprassoc.solr.auth.web.handlers.RequestHandler;
 import com.cprassoc.solr.auth.web.handlers.model.Handler;
 import java.io.File;
 import java.io.FileWriter;
@@ -181,6 +182,38 @@ public class Utils {
         return false;
     }
     
+    public static RequestHandler getRequestHandler(String className){
+         RequestHandler handler = null;
+        try{
+             // Create a new JavaClassLoader
+
+            ClassLoader classLoader = Utils.class.getClassLoader();
+
+             
+
+            // Load the target class using its binary name
+
+            Class loadedMyClass = classLoader.loadClass(className);
+
+             
+
+            System.out.println("Loaded class name: " + loadedMyClass.getName());
+
+             
+
+            // Create a new instance from the loaded class
+
+            Constructor constructor = loadedMyClass.getConstructor();
+
+            Object myClassObject = constructor.newInstance();
+            handler = (RequestHandler)myClassObject;
+
+         
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return handler;
+    }
     public static Handler getHandler(String className){
         Handler handler = null;
         try{
