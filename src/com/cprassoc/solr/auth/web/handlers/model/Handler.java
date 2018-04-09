@@ -5,6 +5,7 @@
  */
 package com.cprassoc.solr.auth.web.handlers.model;
 
+import com.cprassoc.solr.auth.web.handlers.RequestHandler;
 import com.sun.net.httpserver.HttpExchange;
 import org.json.JSONObject;
 
@@ -12,7 +13,7 @@ import org.json.JSONObject;
  *
  * @author kevin
  */
-public interface Handler {
+public interface Handler extends RequestHandler {
     
     public byte[] handle(JSONObject action, HttpExchange ex);
     

@@ -5,8 +5,10 @@
  */
 package com.cprassoc.solr.auth.web.handlers;
 
+import com.sun.net.httpserver.HttpExchange;
 import java.util.HashMap;
 import java.util.Map;
+import org.json.JSONObject;
 
 /**
  *
@@ -44,6 +46,10 @@ public abstract class BaseHandler {
         }
         return HandlerAction.noaction;
     }
+    
+     public String process(HttpExchange ex){
+         return "";
+     }
     
     protected enum HandlerAction {
         create,
