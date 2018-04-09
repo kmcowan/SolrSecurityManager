@@ -11,28 +11,49 @@ import com.cprassoc.solr.auth.model.SecurityJson;
 import com.cprassoc.solr.auth.web.handlers.model.Handler;
 
 import com.sun.net.httpserver.HttpExchange;
+import java.util.Map;
 import org.json.JSONObject;
 
 /**
  *
  * @author kevin
  */
-public class ManageUsersHandler implements Handler{
-     private SecurityJson securityJson = null;
-     
-    public byte[] handle(JSONObject action, HttpExchange ex){
-       JSONObject obj = new JSONObject();
+public class ManageUsersHandler extends BaseHandler implements Handler {
+
+    private SecurityJson securityJson = null;
+
+    public byte[] handle(JSONObject action, HttpExchange ex) {
+        JSONObject obj = new JSONObject();
         securityJson = null;
         SolrAuthActionController.SOLR.getAuthentication();
-        String currAction = action.getString("name");
-        switch(currAction){
-            case "listusers":
-                
+        Map params = queryToMap(ex.getRequestURI().getQuery());
+
+        String currAction = (String) params.get("action");
+        if (currAction != null && isValidHandlerAction(currAction)) {
+            HandlerAction cmd = getHandlerActionEnum(currAction);
+            
+            switch (cmd) {
+                case  read:
+
                 break;
+                
+                 case create:
+
+                break;
+                
+                 case update:
+
+                break;
+                
+                 case delete:
+
+                break;
+            }
+        } else {
+            obj.put("error", "No Action specified. ");
         }
-      
-    
+
         return obj.toString().getBytes();
     }
-    
+
 }
