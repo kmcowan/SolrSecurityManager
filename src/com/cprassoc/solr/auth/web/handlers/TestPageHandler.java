@@ -15,7 +15,7 @@ import org.json.JSONObject;
  *
  * @author kevin
  */
-public class TestPageHandler implements Handler{
+public class TestPageHandler extends BaseHandler implements Handler{
     
     public byte[] handle(JSONObject action, HttpExchange ex){
         byte[] bytes = null;

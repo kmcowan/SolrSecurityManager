@@ -16,7 +16,7 @@ import org.json.JSONObject;
  *
  * @author kevin
  */
-public class IsOnlineHandler implements Handler{
+public class IsOnlineHandler extends BaseHandler implements Handler{
     
     public byte[] handle(JSONObject action, HttpExchange ex){
        

@@ -17,7 +17,7 @@ import org.json.JSONObject;
  *
  * @author kevin
  */
-public class SolrActionHandler implements Handler{
+public class SolrActionHandler extends BaseHandler implements Handler{
      private SecurityJson securityJson = null;
      
     public byte[] handle(JSONObject action, HttpExchange ex){

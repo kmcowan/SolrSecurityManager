@@ -52,4 +52,12 @@ public abstract class BaseHandler {
         delete,
         noaction
     }
+    
+    public enum JsonKey {
+        error,
+        message,
+        request,
+        json,
+        documents
+    }
 }

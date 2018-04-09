@@ -16,7 +16,7 @@ import org.json.JSONObject;
  *
  * @author kevin
  */
-public class IsAuthEnabledHandler implements Handler {
+public class IsAuthEnabledHandler extends BaseHandler implements Handler {
 
     public byte[] handle(JSONObject action, HttpExchange ex) {
 

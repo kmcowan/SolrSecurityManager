@@ -17,7 +17,7 @@ import org.json.JSONObject;
  *
  * @author kevin
  */
-public class ManagePropertiesHandler implements Handler{
+public class ManagePropertiesHandler extends BaseHandler implements Handler{
      private SecurityJson securityJson = null;
      
     public byte[] handle(JSONObject action, HttpExchange ex){
