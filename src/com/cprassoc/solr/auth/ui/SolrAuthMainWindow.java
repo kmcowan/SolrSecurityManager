@@ -71,6 +71,7 @@ public class SolrAuthMainWindow extends javax.swing.JFrame implements Frameable 
     private final static Timer timer = new Timer();
     private static final HistoryVersion VERSIONS = new HistoryVersion();
     private TableModel[] models = null;
+    
 
     /**
      * Creates new form SolrAuthMainWindow

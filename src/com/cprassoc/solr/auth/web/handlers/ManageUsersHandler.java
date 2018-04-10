@@ -7,6 +7,7 @@ package com.cprassoc.solr.auth.web.handlers;
 
 import com.cprassoc.solr.auth.SolrAuthActionController;
 import com.cprassoc.solr.auth.model.SecurityJson;
+import com.cprassoc.solr.auth.ui.SolrAuthMainWindow;
 
 import com.cprassoc.solr.auth.web.handlers.model.Handler;
 
@@ -21,6 +22,7 @@ import org.json.JSONObject;
 public class ManageUsersHandler extends BaseHandler implements Handler {
 
     private SecurityJson securityJson = null;
+   // private static final SolrAuthActionController controller = new SolrAuthActionController();
 
     public byte[] handle(JSONObject action, HttpExchange ex) {
         JSONObject obj = new JSONObject();
@@ -34,7 +36,8 @@ public class ManageUsersHandler extends BaseHandler implements Handler {
             
             switch (cmd) {
                 case  read:
-
+                Map users =  SolrAuthActionController.getSecurityJson().getAuthentication().getCredentials();
+                obj.put("users", users);
                 break;
                 
                  case create:
