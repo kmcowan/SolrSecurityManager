@@ -17,7 +17,10 @@ import org.json.JSONObject;
 public abstract class BaseHandler {
 
     public Map<String, String> queryToMap(String query) {
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
+        if(query != null && 
+                !query.trim().equals("") && 
+                query.contains("&")){
         for (String param : query.split("&")) {
             String pair[] = param.split("=");
             if (pair.length > 1) {
@@ -26,38 +29,34 @@ public abstract class BaseHandler {
                 result.put(pair[0], "");
             }
         }
+        }
         return result;
     }
     
-    protected boolean isValidHandlerAction(String action){
-        for(int i=0; i<HandlerAction.values().length; i++){
-            if(HandlerAction.values()[i].name().equals(action)){
+    protected boolean isValidHandlerAction(String action, Enum[] list){
+        for(int i=0; i<list.length; i++){
+            if(list[i].name().equals(action)){
                 return true;
             }
         }
         return false;
     }
     
-    protected HandlerAction getHandlerActionEnum(String action){
-          for(int i=0; i<HandlerAction.values().length; i++){
-            if(HandlerAction.values()[i].name().equals(action)){
-                return HandlerAction.values()[i];
+    protected Enum getHandlerActionEnum(String action, Enum[] list){
+        
+          for(int i=0; i<list.length; i++){
+            if(list[i].name().equals(action)){
+                return list[i];
             }
         }
-        return HandlerAction.noaction;
+        return null;
     }
     
      public String process(HttpExchange ex){
          return "";
      }
     
-    protected enum HandlerAction {
-        create,
-        read,
-        update,
-        delete,
-        noaction
-    }
+    
     
     public enum JsonKey {
         error,

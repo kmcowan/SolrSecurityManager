@@ -117,6 +117,7 @@ public class RESTService extends GenericServlet implements MessageHandler,HttpHa
                     action = actionManager.getAction(actionPage);
                     contentType = action.getString(ActionKey.ContentType.name());
                     isValidAction = true;
+                    
                 }
                 else if( page.endsWith(".js") ){
                     contentType = "application/javascript";
@@ -148,8 +149,11 @@ public class RESTService extends GenericServlet implements MessageHandler,HttpHa
                    // System.out.println("Process request as SERVICE");
                     byte[] outbuf = RequestProcessor.process(ex).getBytes();
                      ex.sendResponseHeaders(200, 0);
-                    
+                    if(outbuf != null && outbuf.length > 0){
                     out.write(outbuf);
+                    } else {
+                        out.write("an error occurred...".getBytes());
+                    }
                 } else if(!isService && isValidAction){
                     System.out.println("Process ACTION Request: "+actionPage);
                     Handler handler = null;
@@ -159,7 +163,8 @@ public class RESTService extends GenericServlet implements MessageHandler,HttpHa
                     } 
                     if(handler != null){
                             ex.sendResponseHeaders(200, 0);
-                          byte bytes[] = handler.handle(action, ex);
+                            action.put("action", actionPage);
+                          byte[] bytes = handler.handle(action, ex);
                          out.write(bytes);
                     }
                    else if(action.getString(ActionKey.page.name()) != null){

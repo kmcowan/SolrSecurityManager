@@ -30,25 +30,25 @@ public class ManageUsersHandler extends BaseHandler implements Handler {
         SolrAuthActionController.SOLR.getAuthentication();
         Map params = queryToMap(ex.getRequestURI().getQuery());
 
-        String currAction = (String) params.get("action");
-        if (currAction != null && isValidHandlerAction(currAction)) {
-            HandlerAction cmd = getHandlerActionEnum(currAction);
+        String currAction = (String) action.get("action");
+        if (isValidHandlerAction(currAction, Action.values())) {
+           Action cmd = (Action)getHandlerActionEnum(currAction, Action.values());
             
             switch (cmd) {
-                case  read:
+                case  listusers:
                 Map users =  SolrAuthActionController.getSecurityJson().getAuthentication().getCredentials();
                 obj.put("users", users);
                 break;
                 
-                 case create:
+                 case adduser:
 
                 break;
                 
-                 case update:
+                 case edituser:
 
                 break;
                 
-                 case delete:
+                 case deleteuser:
 
                 break;
             }
@@ -57,6 +57,13 @@ public class ManageUsersHandler extends BaseHandler implements Handler {
         }
 
         return obj.toString().getBytes();
+    }
+    
+    private static enum Action {
+        listusers,
+        edituser,
+        adduser,
+        deleteuser
     }
 
 }
